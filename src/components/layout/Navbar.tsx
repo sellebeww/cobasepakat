@@ -109,9 +109,9 @@ export const Navbar: React.FC = () => {
     <>
       {/* Top Banner when in Demo Mode to make returning to Company Profile effortless */}
       {appMode === 'demo' && (
-        <div className="bg-brand-navy text-white text-xs px-4 py-2 flex items-center justify-between border-b border-brand-blue/20">
+        <div className="bg-brand-sky/60 text-brand-navy text-xs px-4 py-2 flex items-center justify-between border-b border-brand-border">
           <div className="max-w-7xl mx-auto w-full flex items-center justify-between">
-            <span className="flex items-center gap-1.5 text-slate-200">
+            <span className="flex items-center gap-1.5 text-brand-navy font-medium">
               <span className="w-2 h-2 rounded-full bg-brand-green" />
               <span className="sm:hidden">Mode Demo Interaktif</span>
               <span className="hidden sm:inline">Mode Demo Interaktif Aktif: Kluster Melati RT 04 (Hari ke-8 Uji Coba)</span>
@@ -119,7 +119,7 @@ export const Navbar: React.FC = () => {
 
             <button
               onClick={() => setAppMode('company_profile')}
-              className="px-3 py-1 bg-white/10 hover:bg-white/20 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors"
+              className="px-3.5 py-1 bg-white hover:bg-brand-surface-blue text-brand-blue border border-brand-border rounded-full text-xs font-bold flex items-center gap-1.5 transition-colors"
             >
               <ArrowLeft className="w-3.5 h-3.5" /> <span className="hidden sm:inline">Kembali ke Company Profile Resmi</span><span className="sm:hidden">Profil</span>
             </button>
@@ -161,73 +161,73 @@ export const Navbar: React.FC = () => {
               </nav>
             ) : (
               /* Demo Mode Navigation Tabs */
-              <nav aria-label="Navigasi demo" className="hidden lg:flex items-center gap-4 xl:gap-5 text-xs font-medium text-brand-slate">
+              <nav aria-label="Navigasi demo" className="hidden lg:flex items-center gap-0.5 text-xs font-medium text-brand-slate">
                 <button
                   onClick={() => setActiveTab('beranda')}
-                  className={`hover:text-brand-navy transition-colors whitespace-nowrap py-1 border-b-2 ${
+                  className={`hover:text-brand-navy transition-colors whitespace-nowrap px-2.5 py-1.5 rounded-full ${
                     activeTab === 'beranda'
-                      ? 'border-brand-blue text-brand-navy font-bold'
-                      : 'border-transparent'
+                      ? 'bg-brand-sky/60 text-brand-navy font-bold'
+                      : 'hover:bg-brand-surface-blue/70'
                   }`}
                 >
                   Dasbor Ruang
                 </button>
                 <button
                   onClick={() => setActiveTab('isu')}
-                  className={`hover:text-brand-navy transition-colors whitespace-nowrap py-1 border-b-2 ${
+                  className={`hover:text-brand-navy transition-colors whitespace-nowrap px-2.5 py-1.5 rounded-full ${
                     activeTab === 'isu' || activeTab === 'percobaan'
-                      ? 'border-brand-blue text-brand-navy font-bold'
-                      : 'border-transparent'
+                      ? 'bg-brand-sky/60 text-brand-navy font-bold'
+                      : 'hover:bg-brand-surface-blue/70'
                   }`}
                 >
                   Isu & Percobaan
                 </button>
                 <button
                   onClick={() => setActiveTab('pustaka')}
-                  className={`hover:text-brand-navy transition-colors whitespace-nowrap py-1 border-b-2 ${
+                  className={`hover:text-brand-navy transition-colors whitespace-nowrap px-2.5 py-1.5 rounded-full ${
                     activeTab === 'pustaka'
-                      ? 'border-brand-blue text-brand-navy font-bold'
-                      : 'border-transparent'
+                      ? 'bg-brand-sky/60 text-brand-navy font-bold'
+                      : 'hover:bg-brand-surface-blue/70'
                   }`}
                 >
                   Pustaka Keputusan
                 </button>
                 <button
                   onClick={() => setActiveTab('templat')}
-                  className={`hover:text-brand-navy transition-colors whitespace-nowrap py-1 border-b-2 ${
+                  className={`hover:text-brand-navy transition-colors whitespace-nowrap px-2.5 py-1.5 rounded-full ${
                     activeTab === 'templat'
-                      ? 'border-brand-blue text-brand-navy font-bold'
-                      : 'border-transparent'
+                      ? 'bg-brand-sky/60 text-brand-navy font-bold'
+                      : 'hover:bg-brand-surface-blue/70'
                   }`}
                 >
                   Templat Uji Coba
                 </button>
                 <button
                   onClick={() => setActiveTab('analitik')}
-                  className={`hover:text-brand-navy transition-colors whitespace-nowrap py-1 border-b-2 ${
+                  className={`hover:text-brand-navy transition-colors whitespace-nowrap px-2.5 py-1.5 rounded-full ${
                     activeTab === 'analitik'
-                      ? 'border-brand-blue text-brand-navy font-bold'
-                      : 'border-transparent'
+                      ? 'bg-brand-sky/60 text-brand-navy font-bold'
+                      : 'hover:bg-brand-surface-blue/70'
                   }`}
                 >
                   Analitik Dampak
                 </button>
                 <button
                   onClick={() => setActiveTab('fasilitator')}
-                  className={`hover:text-brand-navy transition-colors whitespace-nowrap py-1 border-b-2 ${
+                  className={`hover:text-brand-navy transition-colors whitespace-nowrap px-2.5 py-1.5 rounded-full ${
                     activeTab === 'fasilitator'
-                      ? 'border-brand-blue text-brand-navy font-bold'
-                      : 'border-transparent'
+                      ? 'bg-brand-sky/60 text-brand-navy font-bold'
+                      : 'hover:bg-brand-surface-blue/70'
                   }`}
                 >
                   Layanan Fasilitasi
                 </button>
                 <button
                   onClick={() => setActiveTab('audit')}
-                  className={`hover:text-brand-navy transition-colors whitespace-nowrap py-1 border-b-2 ${
+                  className={`hover:text-brand-navy transition-colors whitespace-nowrap px-2.5 py-1.5 rounded-full ${
                     activeTab === 'audit'
-                      ? 'border-brand-blue text-brand-navy font-bold'
-                      : 'border-transparent'
+                      ? 'bg-brand-sky/60 text-brand-navy font-bold'
+                      : 'hover:bg-brand-surface-blue/70'
                   }`}
                 >
                   Log Audit

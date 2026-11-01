@@ -118,7 +118,7 @@ export const FeasibilityGateModal: React.FC<FeasibilityGateModalProps> = ({
               <ShieldCheck className="w-6 h-6" />
             </div>
             <div>
-              <h2 className="text-xl font-bold text-brand-navy">Gerbang Kelayakan (Safety Gate)</h2>
+              <h2 className="text-xl font-extrabold text-brand-navy">Gerbang Kelayakan (Safety Gate)</h2>
               <p className="text-xs text-brand-slate">
                 Fitur keselamatan wajib: hanya perselisihan faktual yang dapat dibalik dan aman yang boleh diuji coba.
               </p>

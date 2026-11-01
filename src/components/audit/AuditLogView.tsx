@@ -37,7 +37,7 @@ export const AuditLogView: React.FC = () => {
             <div className="text-xs font-bold text-brand-navy uppercase tracking-wider mb-1">
               Integritas & Kepatuhan Tata Kelola
             </div>
-            <h1 className="text-2xl font-extrabold text-brand-navy">
+            <h1 className="text-3xl font-extrabold text-brand-navy">
               Log Audit & Rekam Jejak Tak Terubah
             </h1>
             <p className="text-xs text-brand-slate mt-1">
@@ -60,7 +60,7 @@ export const AuditLogView: React.FC = () => {
           <button
             onClick={handleExport}
             disabled={filteredLogs.length === 0}
-            className="shrink-0 px-3.5 py-2 bg-brand-navy hover:bg-brand-blue-dark disabled:opacity-40 text-white rounded-xl text-xs font-bold flex items-center gap-1.5"
+            className="shrink-0 px-3.5 py-2 bg-brand-navy hover:bg-brand-blue-dark disabled:opacity-40 text-white rounded-full text-xs font-bold flex items-center gap-1.5"
           >
             <Download className="w-3.5 h-3.5" /> Ekspor
           </button>

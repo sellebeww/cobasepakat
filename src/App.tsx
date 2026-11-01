@@ -62,7 +62,13 @@ const MainAppContent: React.FC = () => {
     <div className="min-h-screen flex flex-col bg-brand-surface text-brand-navy">
       <Navbar />
 
-      <main className="flex-1 w-full">
+      <main className="relative flex-1 w-full overflow-hidden">
+        {appMode === 'demo' && (
+          <>
+            <img src="/assets/landing/blue-green-blob.svg" alt="" aria-hidden="true" className="pointer-events-none absolute -top-16 right-[-14%] w-[60%] max-w-[800px] rotate-12 opacity-60" />
+            <img src="/assets/landing/blue-green-blob.svg" alt="" aria-hidden="true" className="pointer-events-none absolute top-[55%] -left-[18%] w-[50%] max-w-[700px] -rotate-6 opacity-40" />
+          </>
+        )}
         <AnimatePresence mode="wait">
           {appMode === 'company_profile' ? (
             <motion.div
@@ -81,7 +87,7 @@ const MainAppContent: React.FC = () => {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -12 }}
               transition={{ duration: 0.3 }}
-              className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8 space-y-6"
+              className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8 space-y-6"
             >
               <Suspense fallback={<p role="status" className="py-16 text-center text-sm text-brand-slate">Memuat…</p>}>
                 <motion.div

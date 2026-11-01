@@ -131,15 +131,15 @@ export const HeroIllustration: React.FC<{ className?: string }> = ({ className =
         <ellipse cx="310" cy="338" rx="6" ry="8" fill={SKIN_SHADE} />
       </g>
 
-      {/* ── Woman (left): long hair, pointing up at the screen ── */}
+      {/* ── Woman (left): long side-parted hair, pointing up at the screen ── */}
       <g>
-        {/* hair behind head and shoulders */}
-        <path d="M60 318C48 262 80 222 124 224c42 2 66 38 58 84-3 22 6 46 10 96H62c6-36 2-56-2-86Z" fill={NAVY} />
+        {/* back hair: one soft silhouette that tapers behind the shoulders */}
+        <path d="M88 300C84 256 106 236 128 236c26 0 44 20 40 62-2 28 6 56 16 90H80c10-34 12-60 8-88Z" fill={NAVY} />
         {/* torso with a rounded neckline */}
         <path d="M24 440c0-52 36-86 86-90h26c52 4 84 38 84 90Z" fill="#2476E8" />
         <path d="M24 440c0-28 10-50 28-66-6 22-4 46 2 66Z" fill="#1B5FC4" opacity=".55" />
-        {/* neck: trapezoid that flares into the shoulders */}
-        <path d="M104 332h34l6 28c-14 14-34 14-46 0Z" fill={SKIN_SHADE} />
+        {/* neck */}
+        <path d="M106 330h32l6 28c-14 14-34 14-46 0Z" fill={SKIN_SHADE} />
         {/* raised arm: sleeve grows out of the shoulder */}
         <motion.g
           style={{ transformBox: 'fill-box', transformOrigin: '0% 100%' }}
@@ -156,16 +156,17 @@ export const HeroIllustration: React.FC<{ className?: string }> = ({ className =
         </motion.g>
         {/* head */}
         <ellipse cx="122" cy="306" rx="32" ry="36" fill={SKIN} transform="rotate(-6 122 306)" />
-        {/* hair front: side-swept fringe + volume on both sides */}
-        <path d="M86 304c-4-38 30-56 64-40 16 8 22 24 18 40-12-22-38-30-62-18-8 4-14 10-20 18Z" fill={NAVY} />
-        <path d="M88 306c-6 26-2 52 10 72-18-14-26-44-10-72Z" fill={NAVY} />
-        <path d="M156 300c8 22 6 46-4 66 14-16 20-44 4-66Z" fill={NAVY} />
+        {/* front hair: side part, forehead stays open, tucked behind the ear on the left */}
+        <path d="M89 308C82 270 102 252 126 252c24 0 38 18 34 50-6-18-18-30-34-32-16 16-26 28-37 38Z" fill={NAVY} />
+        <path d="M126 252c-6 6-14 8-22 8 6-6 14-10 22-8Z" fill="#2A5599" opacity=".55" />
+        {/* lock over the right shoulder */}
+        <path d="M156 300c12 26 12 56 4 86-10 4-14-6-10-18 4-22 4-42 2-64Z" fill={NAVY} />
         {/* ear */}
-        <circle cx="90" cy="318" r="5.5" fill={SKIN_SHADE} />
-        {/* face details: brows, eyes with lashes, nose, smile, blush */}
-        <path d="M105 296q6-5 12-1M132 292q6-5 12-1" fill="none" stroke={NAVY} strokeWidth="2.2" strokeLinecap="round" />
-        <ellipse cx="111" cy="305" rx="3" ry="3.4" fill={NAVY} />
-        <ellipse cx="138" cy="301" rx="3" ry="3.4" fill={NAVY} />
+        <circle cx="91" cy="316" r="5.5" fill={SKIN_SHADE} />
+        {/* face details: brows, eyes, nose, smile, blush */}
+        <path d="M105 294q6-5 12-1M132 290q6-5 12-1" fill="none" stroke={NAVY} strokeWidth="2.2" strokeLinecap="round" />
+        <ellipse cx="111" cy="304" rx="3" ry="3.4" fill={NAVY} />
+        <ellipse cx="138" cy="300" rx="3" ry="3.4" fill={NAVY} />
         <path d="M128 306q6 6 1 10" fill="none" stroke={SKIN_SHADE} strokeWidth="2" strokeLinecap="round" />
         <path d="M112 322q14 12 28-2" fill="none" stroke={NAVY} strokeWidth="2.6" strokeLinecap="round" />
         <circle cx="104" cy="318" r="6.5" fill="#F4A590" opacity=".5" />

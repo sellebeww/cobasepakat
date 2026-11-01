@@ -43,7 +43,7 @@ export const FacilitatorDirectory: React.FC = () => {
         <div className="text-xs font-bold text-brand-green uppercase tracking-wider">
           Pendampingan Ahli Netral
         </div>
-        <h1 className="text-2xl font-extrabold text-brand-navy">
+        <h1 className="text-3xl font-extrabold text-brand-navy">
           Layanan Fasilitasi Mediasi & Percobaan
         </h1>
         <p className="text-xs md:text-sm text-brand-slate max-w-3xl leading-relaxed">
@@ -97,7 +97,7 @@ export const FacilitatorDirectory: React.FC = () => {
               </div>
               <button
                 onClick={() => handleBook(fac)}
-                className="px-4 py-2 bg-brand-blue hover:bg-brand-blue-dark text-white rounded-xl text-xs font-bold transition-all shadow-sm"
+                className="px-4 py-2 bg-brand-blue hover:bg-brand-blue-dark text-white rounded-full text-xs font-bold transition-all shadow-card"
               >
                 Pilih Fasilitator
               </button>
@@ -170,7 +170,7 @@ export const FacilitatorDirectory: React.FC = () => {
                   </button>
                   <button
                     type="submit"
-                    className="px-5 py-2 bg-brand-green hover:bg-[#258768] text-white text-xs font-bold rounded-xl shadow-md"
+                    className="px-5 py-2 bg-brand-green hover:bg-[#258768] text-white text-xs font-bold rounded-full shadow-card"
                   >
                     Kirim Permintaan
                   </button>
@@ -191,7 +191,7 @@ export const FacilitatorDirectory: React.FC = () => {
                 </div>
                 <button
                   onClick={() => setSelectedFacilitator(null)}
-                  className="px-5 py-2 bg-brand-navy text-white text-xs font-semibold rounded-xl"
+                  className="px-5 py-2 bg-brand-navy text-white text-xs font-semibold rounded-full"
                 >
                   Tutup
                 </button>

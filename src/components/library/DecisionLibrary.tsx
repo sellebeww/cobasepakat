@@ -53,7 +53,7 @@ export const DecisionLibrary: React.FC = () => {
             <div className="text-xs font-bold text-brand-green uppercase tracking-wider mb-1">
               Arsip & Memori Kolektif Komunitas
             </div>
-            <h1 className="text-2xl font-extrabold text-brand-navy">
+            <h1 className="text-3xl font-extrabold text-brand-navy">
               Pustaka Keputusan & Pembelajaran
             </h1>
             <p className="text-xs text-brand-slate mt-1">

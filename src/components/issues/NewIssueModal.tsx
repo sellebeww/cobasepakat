@@ -50,7 +50,7 @@ export const NewIssueModal: React.FC<NewIssueModalProps> = ({ onClose }) => {
       <div className="bg-white rounded-3xl max-w-2xl w-full p-6 md:p-8 shadow-2xl border border-brand-border my-8 space-y-5">
         <div className="flex items-start justify-between border-b border-brand-border pb-4">
           <div>
-            <h2 className="text-xl font-bold text-brand-navy">Buka Isu Perbedaan Pendapat Baru</h2>
+            <h2 className="text-xl font-extrabold text-brand-navy">Buka Isu Perbedaan Pendapat Baru</h2>
             <p className="text-xs text-brand-slate">
               Ruang: <span className="font-semibold text-brand-navy">{currentSpace.name}</span>
             </p>
@@ -167,7 +167,7 @@ export const NewIssueModal: React.FC<NewIssueModalProps> = ({ onClose }) => {
               <button
                 type="submit"
                 disabled={!title.trim()}
-                className="px-5 py-2.5 bg-brand-blue hover:bg-brand-blue-dark disabled:bg-slate-300 text-white text-xs font-bold rounded-xl shadow-md transition-all"
+                className="px-5 py-2.5 bg-brand-blue hover:bg-brand-blue-dark disabled:bg-slate-300 text-white text-xs font-bold rounded-full shadow-card transition-all"
               >
                 Buka Isu & Kumpulkan Dugaan
               </button>
@@ -179,7 +179,7 @@ export const NewIssueModal: React.FC<NewIssueModalProps> = ({ onClose }) => {
             {templates.map((tpl) => (
               <div
                 key={tpl.id}
-                className="p-4 bg-brand-surface hover:bg-white rounded-2xl border border-brand-border hover:border-brand-blue transition-all space-y-2 text-xs"
+                className="p-4 bg-brand-surface hover:bg-white rounded-3xl border border-brand-border hover:border-brand-blue transition-all space-y-2 text-xs"
               >
                 <div className="flex items-center justify-between">
                   <span className="font-bold text-brand-navy text-sm">{tpl.title}</span>
@@ -194,7 +194,7 @@ export const NewIssueModal: React.FC<NewIssueModalProps> = ({ onClose }) => {
                     applyTemplateToCreateIssue(tpl);
                     onClose();
                   }}
-                  className="px-3 py-1.5 bg-brand-blue text-white font-semibold rounded-xl text-xs hover:bg-brand-blue-dark transition-colors"
+                  className="px-3 py-1.5 bg-brand-blue text-white font-semibold rounded-full text-xs hover:bg-brand-blue-dark transition-colors"
                 >
                   Terapkan Templat Ini &rarr;
                 </button>

@@ -57,7 +57,7 @@ export const SpaceDashboard: React.FC<SpaceDashboardProps> = ({
               <span>·</span>
               <span>{currentSpace.activeMemberCount} Warga Aktif</span>
             </div>
-            <h1 className="text-2xl font-extrabold text-brand-navy">
+            <h1 className="text-3xl font-extrabold text-brand-navy">
               Musyawarah Berbasis Percobaan Terukur
             </h1>
             <p className="text-xs text-brand-slate max-w-2xl">
@@ -69,7 +69,7 @@ export const SpaceDashboard: React.FC<SpaceDashboardProps> = ({
           <div className="flex items-center gap-2 shrink-0">
             <button
               onClick={onOpenNewIssueModal}
-              className="px-4 py-2.5 bg-brand-blue hover:bg-brand-blue-dark text-white rounded-xl text-xs font-bold transition-all shadow-sm flex items-center gap-1.5"
+              className="px-4 py-2.5 bg-brand-blue hover:bg-brand-blue-dark text-white rounded-full text-xs font-bold transition-all shadow-card flex items-center gap-1.5"
             >
               <Plus className="w-4 h-4" /> Buka Isu Keputusan Baru
             </button>
@@ -116,7 +116,7 @@ export const SpaceDashboard: React.FC<SpaceDashboardProps> = ({
             <div className="text-xs font-bold text-brand-blue flex items-center gap-1.5">
               <Activity className="w-4 h-4" /> Uji Coba Terjadwal 14 Hari
             </div>
-            <h2 className="text-xl font-bold text-brand-navy leading-snug">
+            <h2 className="text-xl font-extrabold text-brand-navy leading-snug">
               {activeTrialIssue.title}
             </h2>
             <p className="text-xs text-brand-slate">
@@ -148,7 +148,7 @@ export const SpaceDashboard: React.FC<SpaceDashboardProps> = ({
                 setActiveIssueId(activeTrialIssue.id);
                 setActiveTab('isu');
               }}
-              className="w-full sm:w-auto px-5 py-2.5 bg-brand-blue hover:bg-brand-blue-dark text-white rounded-xl text-xs font-bold transition-all shadow-sm flex items-center justify-center gap-2"
+              className="w-full sm:w-auto px-5 py-2.5 bg-brand-blue hover:bg-brand-blue-dark text-white rounded-full text-xs font-bold transition-all shadow-card flex items-center justify-center gap-2"
             >
               Buka Pusat Kendali & Catat Data Lapangan &rarr;
             </button>
@@ -173,7 +173,7 @@ export const SpaceDashboard: React.FC<SpaceDashboardProps> = ({
                 setActiveIssueId(iss.id);
                 setActiveTab('isu');
               }}
-              className="bg-white rounded-2xl p-5 border border-brand-border hover:border-brand-blue transition-all cursor-pointer shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4"
+              className="bg-white rounded-3xl p-5 border border-brand-border hover:border-brand-blue transition-all cursor-pointer shadow-card flex flex-col md:flex-row md:items-center justify-between gap-4"
             >
               <div className="space-y-1.5 flex-1">
                 <div className="flex items-center gap-2 text-xs text-brand-slate">

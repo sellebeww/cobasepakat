@@ -226,7 +226,7 @@ export const ExperimentWizardModal: React.FC<ExperimentWizardModalProps> = ({
               <Sparkles className="w-6 h-6" />
             </div>
             <div>
-              <h2 className="text-xl font-bold text-brand-navy">Pembangun Percobaan (Wizard)</h2>
+              <h2 className="text-xl font-extrabold text-brand-navy">Pembangun Percobaan (Wizard)</h2>
               <p className="text-xs text-brand-slate">
                 Rancang eksperimen terbatas 14 hari dengan metrik terukur dan aturan keselamatan.
               </p>
@@ -397,7 +397,7 @@ export const ExperimentWizardModal: React.FC<ExperimentWizardModalProps> = ({
               </div>
 
               {/* Add Metric Form */}
-              <div className="border border-dashed border-brand-border p-4 rounded-2xl bg-white space-y-3">
+              <div className="border border-dashed border-brand-border p-4 rounded-3xl bg-white space-y-3">
                 <div className="text-xs font-bold text-brand-navy flex items-center gap-1.5">
                   <Plus className="w-3.5 h-3.5 text-brand-blue" /> Tambah Ukuran Hasil Baru
                 </div>
@@ -521,7 +521,7 @@ export const ExperimentWizardModal: React.FC<ExperimentWizardModalProps> = ({
                 <button
                   type="button"
                   onClick={handleAddBudget}
-                  className="px-3 py-2 bg-brand-blue text-white rounded-xl text-xs font-semibold shrink-0"
+                  className="px-3 py-2 bg-brand-blue text-white rounded-full text-xs font-semibold shrink-0"
                 >
                   Tambah
                 </button>
@@ -639,7 +639,7 @@ export const ExperimentWizardModal: React.FC<ExperimentWizardModalProps> = ({
               <button
                 type="button"
                 onClick={() => setStep((s) => s + 1)}
-                className="px-5 py-2.5 bg-brand-navy hover:bg-brand-blue-dark text-white text-xs font-semibold rounded-xl flex items-center gap-1.5 transition-colors"
+                className="px-5 py-2.5 bg-brand-navy hover:bg-brand-blue-dark text-white text-xs font-semibold rounded-full flex items-center gap-1.5 transition-colors"
               >
                 Lanjutkan <ArrowRight className="w-3.5 h-3.5" />
               </button>
@@ -648,7 +648,7 @@ export const ExperimentWizardModal: React.FC<ExperimentWizardModalProps> = ({
                 type="button"
                 disabled={qualityIssues.length > 0}
                 onClick={handleSaveAndSubmit}
-                className="px-6 py-2.5 bg-brand-green hover:bg-[#258768] disabled:bg-slate-300 text-white text-xs font-bold rounded-xl shadow-md transition-all flex items-center gap-1.5"
+                className="px-6 py-2.5 bg-brand-green hover:bg-[#258768] disabled:bg-slate-300 text-white text-xs font-bold rounded-full shadow-card transition-all flex items-center gap-1.5"
               >
                 <CheckCircle className="w-4 h-4" /> Ajukan ke Kuorum Persetujuan
               </button>

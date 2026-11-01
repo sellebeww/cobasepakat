@@ -30,7 +30,7 @@ export const TemplateLibrary: React.FC = () => {
         <div className="text-xs font-bold text-brand-blue uppercase tracking-wider">
           Pustaka Desain Percobaan Teruji
         </div>
-        <h1 className="text-2xl font-extrabold text-brand-navy">
+        <h1 className="text-3xl font-extrabold text-brand-navy">
           Templat Uji Coba Komunitas Siap Pakai
         </h1>
         <p className="text-xs md:text-sm text-brand-slate max-w-3xl leading-relaxed">
@@ -101,7 +101,7 @@ export const TemplateLibrary: React.FC = () => {
               </span>
               <button
                 onClick={() => handleApply(tpl)}
-                className="px-4 py-2 bg-brand-blue hover:bg-brand-blue-dark text-white rounded-xl text-xs font-bold transition-all shadow-sm flex items-center gap-1.5"
+                className="px-4 py-2 bg-brand-blue hover:bg-brand-blue-dark text-white rounded-full text-xs font-bold transition-all shadow-card flex items-center gap-1.5"
               >
                 Gunakan Templat Ini <ArrowRight className="w-3.5 h-3.5" />
               </button>

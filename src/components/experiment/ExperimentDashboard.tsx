@@ -162,7 +162,7 @@ export const ExperimentDashboard: React.FC<ExperimentDashboardProps> = ({
             {/* Quick Link to Evaluation or Decision */}
             <button
               onClick={onOpenEvaluation}
-              className="px-4 py-2.5 bg-brand-navy hover:bg-brand-blue-dark text-white rounded-xl text-xs font-bold transition-all shadow-sm flex items-center gap-1.5"
+              className="px-4 py-2.5 bg-brand-navy hover:bg-brand-blue-dark text-white rounded-full text-xs font-bold transition-all shadow-card flex items-center gap-1.5"
             >
               <Activity className="w-4 h-4" />
               Laporan Evaluasi
@@ -171,7 +171,7 @@ export const ExperimentDashboard: React.FC<ExperimentDashboardProps> = ({
             {(currentUser.role === 'pengurus' || currentUser.role === 'pengelola_kawasan') && (
               <button
                 onClick={onOpenDecision}
-                className="px-4 py-2.5 bg-brand-green hover:bg-[#258768] text-white rounded-xl text-xs font-bold transition-all shadow-sm flex items-center gap-1.5"
+                className="px-4 py-2.5 bg-brand-green hover:bg-[#258768] text-white rounded-full text-xs font-bold transition-all shadow-card flex items-center gap-1.5"
               >
                 <FileText className="w-4 h-4" />
                 Catat Keputusan
@@ -244,7 +244,7 @@ export const ExperimentDashboard: React.FC<ExperimentDashboardProps> = ({
               return (
                 <div
                   key={met.id}
-                  className="bg-white rounded-2xl p-4 border border-brand-border shadow-sm space-y-3"
+                  className="bg-white rounded-3xl p-4 border border-brand-border shadow-card space-y-3"
                 >
                   <div className="flex items-start justify-between gap-2">
                     <div>
@@ -382,7 +382,7 @@ export const ExperimentDashboard: React.FC<ExperimentDashboardProps> = ({
                 <button
                   type="submit"
                   disabled={entryValue === ''}
-                  className="px-5 py-2 bg-brand-blue hover:bg-brand-blue-dark disabled:bg-slate-300 text-white rounded-xl text-xs font-bold transition-all shadow-sm flex items-center gap-1.5"
+                  className="px-5 py-2 bg-brand-blue hover:bg-brand-blue-dark disabled:bg-slate-300 text-white rounded-full text-xs font-bold transition-all shadow-card flex items-center gap-1.5"
                 >
                   <Send className="w-3.5 h-3.5" /> Simpan Entri Data
                 </button>
@@ -673,7 +673,7 @@ export const ExperimentDashboard: React.FC<ExperimentDashboardProps> = ({
               <button
                 type="button"
                 onClick={handleVoteDesign}
-                className="px-5 py-2 bg-brand-green hover:bg-[#258768] text-white text-xs font-bold rounded-xl shadow-md"
+                className="px-5 py-2 bg-brand-green hover:bg-[#258768] text-white text-xs font-bold rounded-full shadow-card"
               >
                 Tandatangani & Kirim Suara
               </button>

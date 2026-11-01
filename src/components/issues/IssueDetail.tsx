@@ -243,7 +243,7 @@ export const IssueDetail: React.FC<IssueDetailProps> = ({ issue, onBack }) => {
               <div className="flex flex-col sm:flex-row md:flex-col gap-2 shrink-0">
                 <button
                   onClick={() => setShowFeasibilityModal(true)}
-                  className="px-4 py-2.5 bg-white hover:bg-brand-surface text-brand-blue border border-brand-blue rounded-xl text-xs font-bold transition-all shadow-sm flex items-center justify-center gap-2"
+                  className="px-4 py-2.5 bg-white hover:bg-brand-surface text-brand-blue border border-brand-blue rounded-full text-xs font-bold transition-all shadow-card flex items-center justify-center gap-2"
                 >
                   <ShieldCheck className="w-4 h-4" />
                   {issue.feasibilityOutcome ? 'Status Kelayakan' : 'Gerbang Kelayakan'}
@@ -258,7 +258,7 @@ export const IssueDetail: React.FC<IssueDetailProps> = ({ issue, onBack }) => {
                         setShowWizardModal(true);
                       }
                     }}
-                    className="px-4 py-2.5 bg-brand-blue hover:bg-brand-blue-dark text-white rounded-xl text-xs font-bold transition-all shadow-sm flex items-center justify-center gap-2"
+                    className="px-4 py-2.5 bg-brand-blue hover:bg-brand-blue-dark text-white rounded-full text-xs font-bold transition-all shadow-card flex items-center justify-center gap-2"
                   >
                     {currentExperiment ? (
                       <>
@@ -275,7 +275,7 @@ export const IssueDetail: React.FC<IssueDetailProps> = ({ issue, onBack }) => {
                 {issue.decision && (
                   <button
                     onClick={() => setShowDecisionModal(true)}
-                    className="px-4 py-2.5 bg-brand-green hover:bg-[#258768] text-white rounded-xl text-xs font-bold transition-all shadow-sm flex items-center justify-center gap-2"
+                    className="px-4 py-2.5 bg-brand-green hover:bg-[#258768] text-white rounded-full text-xs font-bold transition-all shadow-card flex items-center justify-center gap-2"
                   >
                     <FileCheck2 className="w-4 h-4" /> Catatan Keputusan
                   </button>
@@ -411,7 +411,7 @@ export const IssueDetail: React.FC<IssueDetailProps> = ({ issue, onBack }) => {
                   </button>
                   <button
                     type="submit"
-                    className="px-4 py-2 bg-brand-blue text-white text-xs font-semibold rounded-xl"
+                    className="px-4 py-2 bg-brand-blue text-white text-xs font-semibold rounded-full"
                   >
                     Kirim Dugaan
                   </button>
@@ -562,7 +562,7 @@ export const IssueDetail: React.FC<IssueDetailProps> = ({ issue, onBack }) => {
                 <button
                   type="submit"
                   disabled={!commentBody.trim()}
-                  className="px-4 py-2.5 bg-brand-blue hover:bg-brand-blue-dark disabled:bg-slate-300 text-white rounded-xl text-xs font-bold transition-all shadow-sm flex items-center gap-1.5"
+                  className="px-4 py-2.5 bg-brand-blue hover:bg-brand-blue-dark disabled:bg-slate-300 text-white rounded-full text-xs font-bold transition-all shadow-card flex items-center gap-1.5"
                 >
                   <Send className="w-3.5 h-3.5" /> Kirim
                 </button>

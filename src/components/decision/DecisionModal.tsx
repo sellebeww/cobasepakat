@@ -99,7 +99,7 @@ export const DecisionModal: React.FC<DecisionModalProps> = ({
               <FileCheck2 className="w-6 h-6" />
             </div>
             <div>
-              <h2 className="text-xl font-bold text-brand-navy">
+              <h2 className="text-xl font-extrabold text-brand-navy">
                 {isSaved ? 'Catatan Keputusan Permanen' : 'Pencatatan Keputusan Akhir'}
               </h2>
               <p className="text-xs text-brand-slate">
@@ -220,7 +220,7 @@ export const DecisionModal: React.FC<DecisionModalProps> = ({
             <div className="space-y-6">
               <div
                 id="printable-record"
-                className="bg-white p-6 rounded-2xl border border-brand-border shadow-sm space-y-5"
+                className="bg-white p-6 rounded-3xl border border-brand-border shadow-card space-y-5"
               >
                 {/* Official Letterhead */}
                 <div className="flex items-center justify-between border-b border-brand-border pb-4">
@@ -374,7 +374,7 @@ export const DecisionModal: React.FC<DecisionModalProps> = ({
                       />
                       <button
                         type="submit"
-                        className="px-4 py-2 bg-brand-navy hover:bg-brand-blue-dark text-white text-xs font-semibold rounded-xl"
+                        className="px-4 py-2 bg-brand-navy hover:bg-brand-blue-dark text-white text-xs font-semibold rounded-full"
                       >
                         Kirim Umpan Balik
                       </button>
@@ -422,7 +422,7 @@ export const DecisionModal: React.FC<DecisionModalProps> = ({
               <button
                 type="button"
                 onClick={handleSaveDecision}
-                className="px-6 py-2.5 bg-brand-green hover:bg-[#258768] text-white text-xs font-bold rounded-xl shadow-md transition-all flex items-center gap-1.5"
+                className="px-6 py-2.5 bg-brand-green hover:bg-[#258768] text-white text-xs font-bold rounded-full shadow-card transition-all flex items-center gap-1.5"
               >
                 <CheckCircle2 className="w-4 h-4" /> Simpan & Kunci Catatan Keputusan
               </button>
@@ -430,7 +430,7 @@ export const DecisionModal: React.FC<DecisionModalProps> = ({
               <button
                 type="button"
                 onClick={onClose}
-                className="px-5 py-2.5 bg-brand-navy hover:bg-brand-blue-dark text-white text-xs font-semibold rounded-xl"
+                className="px-5 py-2.5 bg-brand-navy hover:bg-brand-blue-dark text-white text-xs font-semibold rounded-full"
               >
                 Selesai
               </button>

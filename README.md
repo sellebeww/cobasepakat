@@ -32,6 +32,16 @@ Alur lengkap satu isu: dugaan berbeda beserta bukti pengubah pendapat, hasil ger
 
 ![Isu dan Percobaan](docs/screenshots/03-isu.png)
 
+### Dasbor Percobaan
+Pusat kendali percobaan yang sedang berjalan: progres hari ke-N, aturan keputusan yang disepakati di muka, metrik lapangan terhadap garis dasar, dan status aturan berhenti darurat (guardrails).
+
+![Dasbor Percobaan](docs/screenshots/10-percobaan.png)
+
+### Buka Isu Baru
+Warga dapat mengajukan pertanyaan keputusan baru langsung dari dasbor.
+
+![Buka isu baru](docs/screenshots/09-isu-baru.png)
+
 ### Pustaka Keputusan
 Arsip keputusan resmi beserta dasar datanya, supaya perdebatan yang sama tidak diulang dari nol.
 
@@ -56,6 +66,11 @@ Direktori fasilitator untuk isu yang butuh pendamping netral.
 Jejak setiap perubahan penting agar proses tetap transparan dan bisa dipertanggungjawabkan.
 
 ![Log Audit](docs/screenshots/08-audit.png)
+
+### Responsif
+Landing page dan demo tampil nyaman di layar ponsel.
+
+<img src="docs/screenshots/11-mobile.png" alt="Tampilan mobile" width="280">
 
 ## Teknologi
 

@@ -55,7 +55,7 @@ export const AnalyticsDashboard: React.FC = () => {
             <div className="text-xs font-bold text-brand-blue uppercase tracking-wider mb-1">
               Validasi & Kualitas Pengambilan Keputusan
             </div>
-            <h1 className="text-2xl font-extrabold text-brand-navy">
+            <h1 className="text-3xl font-extrabold text-brand-navy">
               Analitik Dampak CobaSepakat
             </h1>
             <p className="text-xs text-brand-slate mt-1">
@@ -65,7 +65,7 @@ export const AnalyticsDashboard: React.FC = () => {
 
           <button
             onClick={handleExportCSV}
-            className="px-4 py-2.5 bg-brand-navy hover:bg-brand-blue-dark text-white rounded-xl text-xs font-bold transition-all shadow-sm flex items-center gap-2 self-start sm:self-auto"
+            className="px-4 py-2.5 bg-brand-navy hover:bg-brand-blue-dark text-white rounded-full text-xs font-bold transition-all shadow-card flex items-center gap-2 self-start sm:self-auto"
           >
             <Download className="w-4 h-4" /> Ekspor Laporan CSV
           </button>
