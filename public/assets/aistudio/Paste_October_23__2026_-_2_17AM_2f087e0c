@@ -1,0 +1,281 @@
+Prompt Master Pembuatan Aplikasi CobaSepakat
+Salin seluruh isi dokumen ini ke AI pembuat aplikasi (Claude Code, Cursor, Lovable, Bolt, dan sejenisnya). Dokumen ini ditulis sebagai satu instruksi utuh: konsep, merek, peran pengguna, fitur, basis data, API, tampilan, aturan keselamatan, keamanan, dan urutan pengerjaan.
+1. PERAN DAN TUJUAN
+Kamu adalah tim senior full-stack (product engineer, backend engineer, UI/UX engineer, QA). Bangun aplikasi web lengkap bernama CobaSepakat, platform yang membantu komunitas menyelesaikan perbedaan pendapat faktual melalui percobaan kecil yang disepakati bersama, sebelum perdebatan diperpanjang.
+Aturan kerja:
+• Tulis kode produksi yang rapi, bertipe (TypeScript), bisa dijalankan, dan diberi komentar seperlunya.
+• Semua data contoh masuk ke file seed dan ditandai sebagai contoh.
+• Semua teks antarmuka berbahasa Indonesia yang jelas, netral, dan ramah. Siapkan struktur i18n agar bahasa Inggris bisa ditambah kelak.
+• Kerjakan bertahap sesuai Bagian 15, dan setelah tiap tahap pastikan aplikasi berjalan sebelum lanjut.
+• Jika ada keputusan yang belum ditentukan di dokumen ini, pilih opsi paling sederhana yang aman, lalu catat di DECISIONS.md.
+2. MASALAH DAN KONSEP INTI
+Masalah: diskusi di komunitas, koperasi, organisasi mahasiswa, dan kawasan hunian sering berputar tanpa selesai karena pihak-pihak punya dugaan berbeda tentang akibat suatu keputusan (misalnya: "kalau parkir diatur miring, lorong akan lebih lancar" melawan "justru lebih macet"). Voting dan rapat memutuskan siapa yang menang, tetapi tidak menjawab siapa yang benar secara faktual.
+Solusi: peserta menyatakan dugaan mereka dan bukti apa yang dapat mengubah pendapat mereka. Sistem membantu menyusun percobaan terbatas: ruang lingkup, durasi, ukuran hasil, anggaran, aturan berhenti, dan jadwal evaluasi. Semua pihak menyepakati cara menilai sebelum hasil keluar, lalu percobaan dijalankan dan dievaluasi bersama.
+Pembeda: mengubah perselisihan yang dapat diuji menjadi percobaan bersama, bukan sekadar menambah ruang berdebat. Alternatif seperti voting, rapat, dan forum keputusan (misalnya Loomio) kuat dalam pencatatan dan peninjauan, tetapi tidak membantu merancang pengujian atas dugaan itu sendiri.
+Batas yang harus ditegakkan oleh produk (penting):
+• Hanya untuk perselisihan yang berkaitan dengan fakta yang dapat diuji. Konflik nilai atau kekuasaan tidak boleh dipaksakan menjadi percobaan.
+• Hanya untuk keputusan yang dapat dibalik dan tidak mengorbankan hak peserta.
+• Aturan ini diterapkan sebagai fitur nyata (Gerbang Kelayakan, Bagian 7.4), bukan sekadar peringatan.
+Pengguna:
+1. Pengurus komunitas, RT/RW, paguyuban, dan pengelola kawasan
+2. Koperasi dan organisasi mahasiswa
+3. Anggota dan warga yang ikut berdiskusi
+4. Fasilitator (internal atau layanan berbayar)
+5. Admin platform
+3. IDENTITAS MEREK (WAJIB DIIKUTI)
+Logo resmi sudah diunggah sebagai CobaSepakat_Embrace_Check_Logo.png. Simpan di /public/brand/cobasepakat-logo.png dan pakai apa adanya di halaman masuk, landing, email, dan laporan PDF. Buat turunan: favicon (lingkaran dengan centang saja, dipotong dari logo), versi horizontal, dan versi satu warna putih untuk latar gelap.
+Deskripsi logo: dua sosok sederhana, satu biru dan satu hijau, yang saling merangkul membentuk lingkaran, dengan centang navy gelap di tengah. Maknanya: dua pihak berbeda, dirangkul oleh satu kesepakatan yang teruji. Wordmark memakai sans-serif geometris membulat: "Coba" berwarna navy dan "Sepakat" berwarna hijau, ditulis tanpa spasi dan dengan huruf kapital pada C dan S.
+Palet warna (jadikan design token Tailwind):
+• brand-blue: #2272E8 (primer, tombol utama, tautan)
+• brand-green: #2FA882 (aksen, status sepakat dan berhasil)
+• brand-navy: #153A73 (teks utama, judul, centang)
+• brand-blue-dark: #1A58B8 (hover)
+• Netral: putih #FFFFFF, #F5F8FC (latar bagian), #E2E8F0 (garis), #5B6780 (teks sekunder)
+• Status: berjalan = biru, sepakat = hijau, perlu perhatian #F59E0B, dihentikan #DC2626
+Tipografi: Plus Jakarta Sans (judul dan isi), JetBrains Mono (angka dan data). Sudut membulat besar (radius 12 sampai 20 px), bayangan lembut, banyak ruang putih.
+Gaya antarmuka: hangat, tenang, dan netral. Hindari warna merah menyala pada konten diskusi agar tidak memicu ketegangan. Motif dua sosok merangkul dan centang dipakai sebagai elemen visual (penanda "sepakat", progres, keadaan kosong). Mode gelap disediakan, kontras memenuhi WCAG AA, dan tampilan mobile-first.
+Nada tulisan: tidak menghakimi, tidak memihak, mengajak mencoba. Contoh: "Kita belum sepakat soal akibatnya. Ayo coba dua minggu dan lihat bersama."
+4. TEKNOLOGI (STACK)
+Frontend
+• Next.js 14+ (App Router) dengan TypeScript ketat
+• Tailwind CSS + shadcn/ui + lucide-react
+• TanStack Query untuk data server, Zustand untuk status UI lokal
+• React Hook Form + Zod untuk formulir dan validasi
+• Recharts untuk grafik, Framer Motion untuk animasi halus
+• PWA (bisa dipasang di ponsel, formulir pencatatan data tetap bisa dibuka dengan koneksi lemah)
+Backend
+• NestJS (Node.js, TypeScript) modular, REST API, dokumentasi OpenAPI/Swagger
+• PostgreSQL 15+ dengan Prisma ORM dan migrasi
+• Redis untuk sesi, antrean, dan rate limiting; BullMQ untuk pekerjaan terjadwal (pengingat, evaluasi otomatis, PDF)
+• Penyimpanan berkas kompatibel S3 (MinIO untuk lokal) untuk foto dan lampiran
+• Socket.io untuk pembaruan waktu nyata pada dasbor percobaan
+• Autentikasi JWT (access 15 menit + refresh token dalam cookie httpOnly), hash kata sandi argon2; opsi masuk dengan tautan ajaib lewat email atau nomor WhatsApp
+• Email via SMTP (Nodemailer) dan tautan berbagi WhatsApp, semuanya memakai templat berlogo CobaSepakat
+Infrastruktur
+• Docker Compose (web, api, postgres, redis, minio, mailhog)
+• .env.example lengkap
+• GitHub Actions: lint, tes, build
+• Monorepo (pnpm workspace): apps/web, apps/api, packages/shared (tipe, skema Zod, konstanta)
+5. PERAN DAN HAK AKSES (RBAC)
+Peran
+Dapat melakukan
+Anggota
+Melihat isu, menyatakan dugaan, menyebut bukti pengubah pendapat, ikut menyetujui desain percobaan, mencatat data, memberi suara penerimaan
+Pengusul
+Anggota yang membuka isu atau mengusulkan percobaan; dapat mengubah usulan sebelum disetujui
+Fasilitator
+Memandu penyusunan percobaan, menjalankan Gerbang Kelayakan, merangkum dugaan, mengelola jadwal dan evaluasi
+Pengurus
+Menyetujui anggaran dan ruang lingkup, menghentikan percobaan, mencatat keputusan akhir
+Pemantau Independen
+Mengamati dan memverifikasi data tanpa ikut menentukan hasil
+Pengelola Kawasan
+Mengelola banyak ruang (komunitas), templat, anggaran, dan laporan lintas ruang
+Admin Platform
+Mengelola organisasi, templat global, langganan, dan audit
+Pengecekan hak akses dilakukan di backend (guard) dan frontend. Setiap data terikat ke space_id dan organization_id (multi-tenant) dan tidak boleh bocor antar-organisasi.
+6. ALUR UTAMA SATU PERSELISIHAN
+Satu Isu melalui tahap berikut. Setiap tahap punya status, pelaku, dan jejak waktu.
+1. Isu Dibuka. Pengusul menulis pertanyaan keputusan secara netral (misalnya "Apakah parkir miring di Lorong B akan memperlancar jalan?"), konteks, dan pihak terdampak.
+2. Dugaan dan Bukti Pengubah Pendapat. Tiap peserta menyatakan dugaannya tentang akibat dan bukti apa yang dapat mengubah pendapatnya, ditambah tingkat keyakinan (0 sampai 100 persen). Sistem merangkum posisi dan titik temu.
+3. Gerbang Kelayakan. Daftar periksa wajib menilai apakah isu ini layak dicoba (Bagian 7.4). Jika tidak layak, isu dialihkan ke format lain.
+4. Penyusunan Percobaan. Wizard menyusun: hipotesis tiap pihak, ruang lingkup, durasi, ukuran hasil, garis dasar, anggaran, pelaksana, pengumpulan data, aturan berhenti, dan jadwal evaluasi.
+5. Kesepakatan Desain. Peserta menyetujui cara menilai sebelum percobaan dimulai, termasuk pernyataan komitmen: "Saya akan menerima keputusan sesuai kriteria ini." Persetujuan dikunci dan dicap waktu.
+6. Pelaksanaan. Percobaan berjalan. Data dicatat, ada pemeriksaan berkala, dan aturan berhenti dipantau terus-menerus.
+7. Evaluasi. Data dibandingkan dengan garis dasar dan kriteria yang sudah disepakati. Peserta kembali menyatakan keyakinan mereka.
+8. Keputusan. Pengurus mencatat salah satu hasil: Adopsi, Ubah lalu coba lagi, Kembalikan ke semula, atau Naikkan ke musyawarah nilai. Catatan disimpan beserta alasan.
+9. Tinjauan Lanjutan. Sistem menjadwalkan peninjauan ulang (misalnya 1 dan 3 bulan) untuk memeriksa apakah keputusan masih berlaku.
+7. FITUR DETAIL PER MODUL
+7.1 Autentikasi dan Akun
+• Daftar lewat undangan (tautan atau kode ruang), masuk dengan email atau tautan ajaib. Verifikasi email, atur ulang kata sandi.
+• Profil: nama, foto, unit atau blok, peran, dan preferensi notifikasi.
+• Opsi nama tampilan agar anggota boleh menyatakan dugaan tanpa tekanan sosial, tetapi pengurus tetap dapat memverifikasi bahwa satu orang satu suara.
+• Sesi perangkat, keluar dari semua perangkat, dan pembatasan percobaan masuk.
+7.2 Organisasi dan Ruang
+• Organisasi (pengelola kawasan, koperasi, ormawa) punya banyak Ruang (kluster, blok, divisi, kepanitiaan).
+• Impor anggota massal lewat CSV (templat, pratinjau, laporan galat per baris).
+• Aturan ruang yang bisa diatur: kuorum persetujuan desain (misalnya 70 persen anggota aktif), jumlah hari komentar, batas anggaran tanpa persetujuan pengurus, dan batas durasi maksimum percobaan (default 30 hari).
+• Pengelola Kawasan melihat dasbor lintas ruang.
+7.3 Isu dan Dugaan
+• Formulir isu: pertanyaan keputusan (wajib bernada netral, ada pemeriksa kata bernada menyerang), konteks, lokasi atau objek, pihak terdampak, dan lampiran foto atau denah.
+• Kartu Dugaan per peserta: pernyataan "Jika X dilakukan, maka Y akan terjadi", tingkat keyakinan, dan kolom wajib "Bukti apa yang akan mengubah pikiranku?".
+• Ringkasan Posisi otomatis: kelompokkan dugaan serupa, tampilkan peta dukungan, dan sorot titik temu (misalnya kedua pihak setuju bahwa kelancaran jam sibuk dan keluhan penghuni sama-sama penting).
+• Komentar berutas dengan penanda jenis: Fakta, Dugaan, Nilai, Pertanyaan. Sistem menghitung proporsi komentar bertanda "Nilai" untuk membantu Gerbang Kelayakan.
+• Moderasi: laporkan, sembunyikan, dan catatan aturan bersama.
+7.4 Gerbang Kelayakan (Fitur Keselamatan Utama)
+Daftar periksa yang harus lolos sebelum desain percobaan dibuka. Setiap butir dijawab Ya, Tidak, atau Belum Tahu, dengan alasan tertulis dan peninjauan fasilitator:
+1. Apakah perselisihan ini tentang akibat yang dapat diukur (fakta), bukan tentang nilai atau siapa yang berhak?
+2. Apakah perubahan ini dapat dibalik sepenuhnya dalam waktu singkat tanpa biaya besar?
+3. Apakah percobaan tidak mengorbankan hak, keselamatan, atau akses pihak mana pun (termasuk penyandang disabilitas, lansia, akses darurat)?
+4. Apakah ada ukuran hasil yang disepakati semua pihak sebagai adil?
+5. Apakah durasi dan ukuran percobaan cukup kecil untuk risiko yang wajar?
+6. Apakah ada pihak dengan kekuasaan lebih besar yang bisa mengabaikan hasil? (peringatan jika Ya)
+7. Apakah peraturan atau izin yang berlaku mengizinkan percobaan ini?
+Hasil gerbang: Layak, Layak dengan syarat (misalnya wajib pemantau independen), atau Tidak layak. Bila Tidak layak karena konflik nilai atau kekuasaan, sistem menampilkan halaman penjelasan yang ramah dan menyarankan format lain (musyawarah, voting, mediasi), serta mengekspor ringkasan diskusi. Butir 2 dan 3 yang dijawab Tidak adalah penghalang mutlak: percobaan tidak bisa dibuat.
+7.5 Pembangun Percobaan (Wizard)
+Langkah-langkah dengan simpan otomatis:
+• Hipotesis: satu pernyataan per pihak, ditulis dalam bentuk dapat disalahkan.
+• Perlakuan: apa yang diubah, di mana, kapan, oleh siapa. Hanya satu perubahan utama per percobaan.
+• Ruang lingkup dan durasi: area, kelompok, tanggal mulai dan selesai (default 14 hari, maksimum sesuai aturan ruang).
+• Ukuran hasil (metrik): tiap metrik punya nama, satuan, cara mengukur, frekuensi, penanggung jawab, garis dasar (diukur sebelum percobaan), dan ambang keberhasilan yang disepakati. Pilihan jenis: hitungan, durasi, survei skala 1 sampai 5, ya atau tidak, dan angka bebas.
+• Anggaran: rincian biaya (bahan, tenaga, rambu), batas, sumber dana, dan siapa menyetujui. Total otomatis dan peringatan jika melewati batas ruang.
+• Aturan berhenti (guardrail): syarat yang menghentikan percobaan segera, misalnya "3 keluhan akses darurat", "ada cedera", "biaya melewati batas", "penolakan di atas 40 persen pada survei tengah masa". Pengurus dan fasilitator memiliki tombol Hentikan Sekarang yang selalu tampak.
+• Pengumpulan data: formulir cepat, unggah foto bertanda waktu, tabel kunjungan, survei singkat, dan impor CSV. Tentukan siapa mencatat dan seberapa sering.
+• Rencana evaluasi: tanggal rapat evaluasi, siapa hadir, dan bagaimana hasil dibaca (aturan keputusan tertulis di muka, misalnya "Adopsi bila metrik A naik minimal 15 persen dan keluhan tidak naik").
+• Templat: pustaka templat siap pakai (Bagian 14) agar pengguna tidak mulai dari kosong.
+• Pemeriksa kualitas desain: peringatan otomatis bila tidak ada garis dasar, ukuran terlalu sedikit, ada lebih dari satu perubahan, atau kriteria tidak jelas.
+7.6 Kesepakatan Desain
+• Ringkasan desain satu halaman yang mudah dibaca, ditampilkan sebelum persetujuan.
+• Setiap peserta memberi salah satu: Setuju, Setuju dengan catatan, Keberatan (wajib alasan dan usulan perubahan).
+• Persetujuan dihitung berdasarkan kuorum ruang. Perubahan desain setelah ada yang menyetujui membatalkan persetujuan dan perlu diulang (riwayat versi tersimpan).
+• Pernyataan komitmen terhadap aturan keputusan, tercatat dengan cap waktu.
+• Setelah dikunci, metrik, ambang, dan aturan berhenti tidak bisa diubah kecuali dengan persetujuan ulang.
+7.7 Pelaksanaan dan Pemantauan
+• Dasbor percobaan: hari ke-berapa, progres, metrik terbaru dibanding garis dasar, jumlah data masuk, dan status aturan berhenti (hijau, kuning, merah).
+• Pencatatan data cepat dari ponsel (satu ketukan untuk hitungan, unggah foto, isi survei).
+• Pengingat terjadwal untuk pencatat dan survei tengah masa anonim.
+• Pemantau Independen dapat memverifikasi entri data dan menandai yang meragukan.
+• Garis waktu kejadian: perubahan, keluhan, insiden, dan catatan fasilitator.
+• Bila aturan berhenti terpicu, sistem mengubah status menjadi Dihentikan, memberi tahu semua pihak, dan mencatat penyebabnya.
+• Mode luring ringan: data tersimpan lokal lalu disinkronkan.
+7.8 Evaluasi dan Keputusan
+• Laporan evaluasi otomatis: tiap metrik dibandingkan garis dasar (selisih dan persen), ambang tercapai atau tidak, tanda peringatan bila data sedikit atau ada hari yang tidak biasa (hari libur, hujan), serta ringkasan survei. Gunakan bahasa sederhana dan tampilkan rentang ketidakpastian yang mudah dipahami.
+• Pembaruan keyakinan: peserta mengisi ulang tingkat keyakinan setelah melihat hasil. Sistem menampilkan siapa yang berubah pikiran dan seberapa jauh.
+• Penerapan aturan keputusan yang sudah disepakati: sistem menunjukkan apakah kriteria terpenuhi, tetapi keputusan akhir tetap dicatat manusia.
+• Pilihan keputusan: Adopsi, Ubah lalu coba lagi (membuat percobaan turunan), Kembalikan ke semula, atau Naikkan ke musyawarah nilai.
+• Catatan Keputusan permanen: pertanyaan, dugaan, desain, data ringkas, hasil, keputusan, alasan, dan tanggal tinjauan ulang. Dapat diekspor ke PDF berlogo CobaSepakat dan dibagikan lewat tautan.
+• Survei penerimaan pasca-keputusan (skala 1 sampai 5) untuk mengukur apakah hasil diterima, termasuk oleh pihak yang dugaannya tidak terbukti.
+7.9 Pustaka Keputusan dan Pembelajaran
+• Arsip semua isu dan percobaan yang bisa dicari berdasarkan topik, ruang, dan hasil.
+• Fitur "Pernah dicoba": saat isu baru dibuka, sistem menyarankan percobaan serupa di ruang lain (dengan izin) agar tidak mengulang dari nol.
+• Penjadwalan tinjauan ulang dan pengingat otomatis.
+7.10 Layanan Fasilitasi
+• Daftar fasilitator terverifikasi yang dapat dipesan oleh ruang (profil, tarif, ulasan).
+• Permintaan fasilitasi: ruang memilih paket (penyusunan percobaan, pendampingan evaluasi), fasilitator menerima, lalu diberi akses terbatas ke isu terkait.
+• Pencatatan jam kerja dan faktur untuk MVP cukup manual.
+7.11 Analitik Dampak
+Dasbor untuk pengelola dan admin:
+• Waktu mencapai keputusan: hari dari isu dibuka sampai keputusan dicatat, dibandingkan isu serupa tanpa percobaan (jika ada pembanding).
+• Kepatuhan terhadap kriteria: persentase percobaan yang keputusannya sesuai aturan keputusan yang disepakati sebelumnya.
+• Penerimaan hasil: rata-rata skor penerimaan dan persentase peserta yang menerima, dipisah antara pihak yang "menang" dan "kalah".
+• Tambahan: jumlah isu yang dialihkan oleh Gerbang Kelayakan, jumlah percobaan dihentikan oleh aturan berhenti, dan tingkat peserta yang berubah pikiran.
+• Ekspor CSV dan PDF laporan.
+7.12 Notifikasi
+• Dalam aplikasi, email, dan tautan berbagi WhatsApp: isu baru, giliran memberi dugaan, desain siap disetujui, percobaan dimulai, pengingat pencatatan data, peringatan aturan berhenti, evaluasi siap, tinjauan ulang jatuh tempo.
+• Preferensi per pengguna dan ringkasan mingguan opsional.
+7.13 Langganan
+• Dua model: Langganan Pengelola Kawasan (per ruang atau per unit hunian) dan Layanan Fasilitasi (per paket). Untuk MVP cukup status paket manual oleh Admin Platform, dengan antarmuka yang siap dihubungkan ke Midtrans atau Xendit.
+• Faktur PDF dan riwayat tagihan.
+7.14 Log Audit
+• Catat siapa mengubah apa dan kapan: persetujuan, perubahan desain, penghentian, keputusan. Log tidak dapat diedit dan ikut diekspor di Catatan Keputusan.
+8. MODEL DATA (PostgreSQL, Prisma)
+Semua tabel punya id (UUID), created_at, updated_at, dan organization_id atau space_id bila relevan. Gunakan soft delete (deleted_at) untuk data keputusan.
+• organizations: name, type (kawasan, koperasi, ormawa, komunitas), logo_url, plan_id
+• spaces: organization_id, name, rules (JSON: kuorum, hari komentar, batas anggaran, durasi maksimum)
+• users: name, email, phone, password_hash, avatar_url, locale; memberships: user_id, space_id, role, display_name, unit_label, active
+• issues: space_id, author_id, title (pertanyaan keputusan), context, location, affected_parties, status, feasibility_result, created_at
+• issue_attachments: issue_id, storage_key, mime
+• claims: issue_id, user_id, statement, confidence (0 sampai 100), mind_changing_evidence, updated_at; claim_updates: claim_id, confidence, stage (awal, pascaevaluasi), at
+• comments: issue_id, user_id, parent_id, kind (fakta, dugaan, nilai, pertanyaan), body, hidden
+• position_summaries: issue_id, groups (JSON), common_ground (JSON), generated_at
+• feasibility_checks: issue_id, item_key, answer (ya, tidak, belum_tahu), reason, reviewed_by; feasibility_outcomes: issue_id, result, conditions (JSON), redirect_suggestion
+• experiments: issue_id, version, status (draf, menunggu_persetujuan, disepakati, berjalan, dihentikan, evaluasi, selesai), treatment, scope, starts_on, ends_on, decision_rule, evaluation_on
+• hypotheses: experiment_id, owner_claim_id, statement
+• metrics: experiment_id, name, unit, method, frequency, owner_id, baseline_value, threshold, direction, type
+• budget_items: experiment_id, label, amount, funding_source; budget_approvals: experiment_id, approver_id, approved_at
+• stop_rules: experiment_id, condition (JSON), severity, notify_roles
+• approvals: experiment_version_id, user_id, stance (setuju, catatan, keberatan), note, commitment_signed_at
+• data_entries: experiment_id, metric_id, value, recorded_by, recorded_at, photo_key, verified_by, flagged
+• surveys: experiment_id, kind (tengah_masa, pascakeputusan), questions (JSON); survey_responses: survey_id, anonymous_token, answers (JSON)
+• events: experiment_id, type, body, created_by, occurred_at
+• evaluations: experiment_id, results (JSON per metrik), warnings (JSON), computed_at
+• decisions: experiment_id, outcome (adopsi, ubah_coba_lagi, kembalikan, naikkan_ke_musyawarah), reason, decided_by, decided_at, review_dates (JSON)
+• acceptance_responses: decision_id, user_id, score (1 sampai 5), accepts (boolean)
+• templates: organization_id (null = global), title, category, definition (JSON)
+• facilitators, facilitation_requests, notifications, audit_logs, plans, subscriptions, invoices
+Buat indeks pada space_id, issue_id, experiment_id, dan kolom filter yang sering dipakai.
+9. API (REST, prefiks /api/v1)
+Semua respons memakai format { data, meta, error }. Validasi dengan Zod atau class-validator, paginasi ?page=&limit=, urutan ?sort=, dan kode galat yang konsisten.
+• Auth: POST /auth/register, /auth/login, /auth/magic-link, /auth/refresh, /auth/logout, /auth/forgot, /auth/reset, GET /auth/me
+• Organisasi dan ruang: GET/POST/PATCH /organizations, GET/POST/PATCH /spaces, GET/POST /spaces/:id/members, POST /spaces/:id/members/import
+• Isu: GET/POST/PATCH /issues, GET /issues/:id, POST /issues/:id/comments, POST /issues/:id/report
+• Dugaan: PUT /issues/:id/claims/me, GET /issues/:id/claims, GET /issues/:id/position-summary
+• Kelayakan: PUT /issues/:id/feasibility, POST /issues/:id/feasibility/review, GET /issues/:id/feasibility/outcome
+• Percobaan: POST /issues/:id/experiments, GET/PATCH /experiments/:id, PUT /experiments/:id/metrics, PUT /experiments/:id/budget, PUT /experiments/:id/stop-rules, GET /experiments/:id/design-check
+• Persetujuan: POST /experiments/:id/submit-for-approval, PUT /experiments/:id/approvals/me, POST /experiments/:id/lock
+• Pelaksanaan: POST /experiments/:id/start, POST /experiments/:id/data-entries, POST /data-entries/:id/verify, POST /experiments/:id/events, POST /experiments/:id/stop (Hentikan Sekarang), GET /experiments/:id/dashboard
+• Survei: POST /experiments/:id/surveys, POST /surveys/:id/responses
+• Evaluasi dan keputusan: POST /experiments/:id/evaluate, GET /experiments/:id/evaluation, PUT /claims/:id/post-update, POST /experiments/:id/decision, POST /decisions/:id/acceptance, GET /decisions/:id/pdf
+• Pustaka dan templat: GET /templates, POST /templates/:id/apply, GET /library/search, GET /library/similar?issueId=
+• Analitik: GET /analytics/overview, /analytics/time-to-decision, /analytics/criteria-compliance, /analytics/acceptance, GET /analytics/export
+• Lainnya: GET /notifications, PATCH /notifications/:id/read, GET /audit-logs, GET/POST /facilitation-requests, GET /billing/plan, GET /billing/invoices
+Socket.io (namespace /experiments): kejadian entry:added, metric:updated, stoprule:triggered, status:changed, approval:changed. Hanya anggota ruang yang bisa bergabung.
+Logika bisnis penting (wajib diuji):
+• Percobaan tidak dapat dibuat bila Gerbang Kelayakan memberi hasil Tidak layak, atau bila butir "dapat dibalik" dan "tidak mengorbankan hak" dijawab Tidak.
+• Desain terkunci setelah kuorum persetujuan tercapai. Setiap perubahan setelahnya membuat versi baru dan mengulang persetujuan.
+• Metrik wajib punya garis dasar dan ambang sebelum percobaan bisa mulai.
+• Aturan berhenti dievaluasi setiap kali data masuk dan secara berkala oleh pekerjaan latar. Saat terpicu, status berubah menjadi Dihentikan dan notifikasi terkirim.
+• Durasi tidak boleh melebihi batas maksimum ruang, dan anggaran tidak boleh melewati batas tanpa persetujuan pengurus.
+• Keputusan hanya bisa dicatat oleh Pengurus setelah evaluasi tersedia.
+10. DAFTAR HALAMAN DAN TAMPILAN
+Publik: Beranda pemasaran (hero dengan logo, alur "Dugaan, Bukti, Percobaan, Evaluasi, Sepakat", fitur, untuk siapa, batasan penggunaan, harga, FAQ, kontak), Masuk, Daftar, Lupa Kata Sandi, Catatan Keputusan publik (bila dibagikan).
+Anggota: Beranda ruang, Daftar Isu, Detail Isu (dugaan, komentar, ringkasan posisi), Layar Persetujuan Desain, Dasbor Percobaan, Pencatatan Data Cepat, Hasil dan Evaluasi, Catatan Keputusan, Profil dan Notifikasi.
+Fasilitator dan Pengurus: Buka Isu, Gerbang Kelayakan, Wizard Percobaan, Pemeriksa Desain, Pusat Kendali Percobaan (dengan tombol Hentikan Sekarang), Rapat Evaluasi, Pencatatan Keputusan, Jadwal Tinjauan.
+Pengelola Kawasan: Dasbor lintas ruang, Kelola Ruang dan Aturan, Templat, Analitik Dampak, Layanan Fasilitasi, Langganan dan Tagihan, Log Audit.
+Admin Platform: Organisasi, Templat Global, Langganan, Pemantauan Sistem.
+Komponen UI khusus: kartu dugaan berdampingan, peta titik temu, stepper alur sembilan tahap, indikator aturan berhenti (hijau, kuning, merah), grafik metrik dengan garis dasar dan ambang, tombol Hentikan Sekarang, ringkasan desain satu halaman, dan keadaan kosong berilustrasi.
+Aksesibilitas dan performa: navigasi keyboard, label ARIA, ukuran sentuh minimal 44 px, tampilan nyaman di ponsel 360 px, huruf cukup besar untuk lansia, dan skor Lighthouse di atas 90 pada halaman utama.
+11. VALIDASI DAN KUALITAS KEPUTUSAN
+Bangun cara mengukur apakah CobaSepakat benar-benar membantu:
+• Hitung waktu mencapai keputusan dan bandingkan dengan isu yang diputuskan lewat diskusi biasa di ruang yang sama.
+• Hitung kepatuhan terhadap kriteria: apakah pengurus memutuskan sesuai aturan keputusan yang sudah disepakati di muka.
+• Hitung penerimaan hasil, termasuk oleh pihak yang dugaannya tidak terbukti.
+• Pantau risiko utama: isu yang ternyata menyangkut nilai atau kekuasaan. Catat berapa isu dialihkan oleh Gerbang Kelayakan dan berapa percobaan dilaporkan peserta sebagai "tidak adil" setelah berjalan.
+• Sediakan survei umpan balik singkat setelah setiap percobaan dan ekspor data untuk penelitian lembaga.
+12. KEAMANAN, PRIVASI, DAN ETIKA
+• Patuhi UU Pelindungan Data Pribadi (UU PDP). Kumpulkan data seperlunya dan tampilkan persetujuan yang jelas.
+• Survei tengah masa bersifat anonim (token anonim, tidak dapat dikaitkan ke pengguna).
+• Validasi masukan di server, sanitasi teks, batasi tipe dan ukuran berkas, simpan berkas di penyimpanan privat dengan URL bertanda tangan.
+• Rate limiting, proteksi CSRF, header keamanan (Helmet), CORS ketat, dan log galat tanpa data pribadi.
+• Enkripsi saat transit (HTTPS), cadangan basis data harian, serta ekspor dan penghapusan data pribadi atas permintaan.
+• Perlindungan terhadap penyalahgunaan: larangan memakai percobaan untuk keputusan yang menyangkut hak dasar, kontrak kerja, sanksi, atau hal yang tidak dapat dibalik. Tampilkan pernyataan ini di halaman bantuan, di Gerbang Kelayakan, dan di syarat penggunaan.
+• Fasilitator dan pengurus wajib mencatat alasan bila mengesampingkan peringatan sistem, dan tindakan itu masuk log audit.
+13. PENGUJIAN
+• Tes unit untuk Gerbang Kelayakan, aturan berhenti, kuorum persetujuan, perhitungan evaluasi, dan hak akses.
+• Tes integrasi API (Jest + Supertest) untuk alur penuh satu isu dari pembukaan sampai Catatan Keputusan.
+• Tes end-to-end (Playwright): buka isu, isi dugaan dua pihak, lolos gerbang, susun percobaan, setujui, catat data hingga aturan berhenti terpicu pada skenario kedua, evaluasi, putuskan.
+• Tes tampilan responsif dan aksesibilitas (axe).
+• Cakupan minimal 70 persen pada modul inti (kelayakan, persetujuan, aturan berhenti, evaluasi).
+14. DATA CONTOH (SEED) UNTUK MVP
+MVP hanya memuat satu jenis pengaturan ruang atau parkir yang dapat dicoba selama dua minggu.
+• Organisasi: Pengelola Kawasan Contoh. Ruang: Kluster Melati (50 unit). Pengguna: 1 pengelola, 2 pengurus, 1 fasilitator, 15 anggota contoh.
+• Isu: "Apakah mengubah parkir sejajar menjadi parkir miring di Lorong B akan memperlancar lalu lintas jam sibuk?"
+• Dugaan A: parkir miring menambah jumlah slot dan mengurangi mobil yang parkir sembarangan, sehingga lorong lebih lancar. Dugaan B: parkir miring menyempitkan jalan dan memperlambat kendaraan keluar masuk. Isi bukti pengubah pendapat masing-masing.
+• Gerbang Kelayakan: lolos dengan syarat (akses kendaraan darurat tetap harus selebar minimal yang disepakati).
+• Percobaan 14 hari: tandai garis parkir sementara dengan cat semprot atau kerucut. Metrik: waktu tempuh kendaraan melewati lorong pada jam 06.30 sampai 08.00 dan 17.00 sampai 19.00, jumlah slot terpakai, jumlah keluhan, dan skor kenyamanan penghuni (survei 1 sampai 5). Garis dasar diukur 3 hari sebelumnya.
+• Anggaran: kerucut, cat semprot, dan tenaga pencatat.
+• Aturan berhenti: satu insiden kendaraan darurat terhambat, ada cedera, atau lebih dari 40 persen responden survei tengah masa menyatakan sangat terganggu.
+• Aturan keputusan: Adopsi bila waktu tempuh membaik minimal 15 persen dan keluhan tidak naik lebih dari 10 persen.
+• Satu isu contoh yang sudah selesai, lengkap dengan evaluasi dan Catatan Keputusan, agar dasbor tidak kosong.
+• Templat lain di pustaka (data saja, tanpa kode baru): jadwal penggunaan ruang serbaguna, jam operasional ruang belajar, lokasi tempat sampah, jadwal kebersihan.
+Susun kode agar topik baru cukup ditambah sebagai templat data.
+15. URUTAN PENGERJAAN (MILESTONE)
+1. Fondasi: monorepo, Docker Compose, tema merek (token warna, font, logo), autentikasi, organisasi, ruang, RBAC, multi-tenant.
+2. Isu dan dugaan: formulir isu, kartu dugaan, komentar berjenis, ringkasan posisi.
+3. Gerbang Kelayakan: daftar periksa, hasil, penghalang mutlak, halaman pengalihan.
+4. Pembangun Percobaan: wizard, metrik, anggaran, aturan berhenti, pemeriksa desain, templat.
+5. Kesepakatan desain: persetujuan, kuorum, pengunci, riwayat versi, pernyataan komitmen.
+6. Pelaksanaan: pencatatan data, dasbor waktu nyata, survei, aturan berhenti otomatis, tombol Hentikan Sekarang.
+7. Evaluasi dan keputusan: laporan otomatis, pembaruan keyakinan, Catatan Keputusan, PDF, jadwal tinjauan.
+8. Analitik dan pustaka: waktu mencapai keputusan, kepatuhan kriteria, penerimaan hasil, pencarian dan "Pernah dicoba".
+9. Pelengkap: notifikasi dan WhatsApp, layanan fasilitasi, langganan, log audit, PWA, halaman pemasaran.
+10. Penyelesaian: pengujian, optimasi performa dan aksesibilitas, dokumentasi.
+16. KRITERIA SELESAI
+• Satu isu bisa berjalan penuh dari pembukaan sampai Catatan Keputusan tanpa galat, termasuk skenario percobaan dihentikan oleh aturan berhenti.
+• Gerbang Kelayakan benar-benar memblokir percobaan yang tidak dapat dibalik atau mengorbankan hak.
+• Logo dan palet CobaSepakat tampil konsisten di seluruh antarmuka, email, dan PDF.
+• Hak akses dan isolasi antar-organisasi lolos pengujian.
+• docker compose up menjalankan seluruh sistem, dengan seed yang bisa dimuat satu perintah.
+• Tersedia README.md (cara menjalankan, struktur, variabel lingkungan), DECISIONS.md, dokumentasi OpenAPI, dan panduan singkat untuk anggota, fasilitator, pengurus, dan pengelola kawasan.
+17. HASIL AKHIR YANG DIMINTA
+Serahkan: seluruh kode sumber (web, api, shared), skema Prisma dan migrasi, file seed, Docker Compose, .env.example, tes, dokumentasi, dan ringkasan singkat di akhir tiap milestone yang menjelaskan apa yang sudah selesai, cara mencobanya, dan apa yang belum. Mulai dari Milestone 1 dan lanjutkan berurutan.

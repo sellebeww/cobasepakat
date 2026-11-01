@@ -1,0 +1,6 @@
+{
+  "name": "CobaSepakat - Resolusi Perselisihan Berbasis Percobaan",
+  "description": "Platform musyawarah berbasis percobaan terukur untuk menyelesaikan perbedaan pendapat faktual di komunitas, RT/RW, dan organisasi.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
