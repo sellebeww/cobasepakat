@@ -110,16 +110,16 @@ export const FeasibilityGateModal: React.FC<FeasibilityGateModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
-      <div className="bg-white rounded-3xl max-w-3xl w-full p-6 md:p-8 shadow-2xl border border-[#E2E8F0] my-8 max-h-[90vh] flex flex-col">
+      <div className="bg-white rounded-3xl max-w-3xl w-full p-6 md:p-8 shadow-2xl border border-brand-border my-8 max-h-[90vh] flex flex-col">
         {/* Header */}
-        <div className="flex items-start justify-between border-b border-[#E2E8F0] pb-4">
+        <div className="flex items-start justify-between border-b border-brand-border pb-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-[#2272E8]/10 text-[#2272E8] flex items-center justify-center shrink-0">
+            <div className="w-10 h-10 rounded-2xl bg-brand-blue/10 text-brand-blue flex items-center justify-center shrink-0">
               <ShieldCheck className="w-6 h-6" />
             </div>
             <div>
-              <h2 className="text-xl font-bold text-[#153A73]">Gerbang Kelayakan (Safety Gate)</h2>
-              <p className="text-xs text-[#5B6780]">
+              <h2 className="text-xl font-bold text-brand-navy">Gerbang Kelayakan (Safety Gate)</h2>
+              <p className="text-xs text-brand-slate">
                 Fitur keselamatan wajib: hanya perselisihan faktual yang dapat dibalik dan aman yang boleh diuji coba.
               </p>
             </div>
@@ -133,7 +133,7 @@ export const FeasibilityGateModal: React.FC<FeasibilityGateModalProps> = ({
         </div>
 
         {/* 7 Check Tabs */}
-        <div className="flex items-center gap-1.5 overflow-x-auto py-3 border-b border-[#E2E8F0] shrink-0">
+        <div className="flex items-center gap-1.5 overflow-x-auto py-3 border-b border-brand-border shrink-0">
           {issue.feasibilityChecks.map((item, idx) => {
             const currentAns = selectedAnswers[item.questionNumber]?.answer;
             const isItemActive = idx === activeItemIndex;
@@ -143,14 +143,14 @@ export const FeasibilityGateModal: React.FC<FeasibilityGateModalProps> = ({
                 onClick={() => setActiveItemIndex(idx)}
                 className={`px-3 py-1.5 rounded-xl text-xs font-medium whitespace-nowrap transition-all flex items-center gap-1.5 ${
                   isItemActive
-                    ? 'bg-[#153A73] text-white shadow-sm'
-                    : 'bg-[#F5F8FC] text-[#5B6780] hover:bg-slate-200'
+                    ? 'bg-brand-navy text-white shadow-sm'
+                    : 'bg-brand-surface text-brand-slate hover:bg-slate-200'
                 }`}
               >
                 <span>{item.questionNumber}.</span>
                 {item.isAbsoluteBlocker && <span className="text-amber-400 font-bold">*</span>}
-                {currentAns === 'ya' && <CheckCircle2 className="w-3.5 h-3.5 text-[#2FA882]" />}
-                {currentAns === 'tidak' && <XCircle className="w-3.5 h-3.5 text-[#DC2626]" />}
+                {currentAns === 'ya' && <CheckCircle2 className="w-3.5 h-3.5 text-brand-green" />}
+                {currentAns === 'tidak' && <XCircle className="w-3.5 h-3.5 text-status-stopped" />}
                 {currentAns === 'belum_tahu' && <HelpCircle className="w-3.5 h-3.5 text-slate-400" />}
               </button>
             );
@@ -159,24 +159,24 @@ export const FeasibilityGateModal: React.FC<FeasibilityGateModalProps> = ({
 
         {/* Current Question Body */}
         <div className="py-5 overflow-y-auto flex-1 space-y-4">
-          <div className="bg-[#F5F8FC] rounded-2xl p-4 border border-[#E2E8F0]">
+          <div className="bg-brand-surface rounded-2xl p-4 border border-brand-border">
             <div className="flex items-center gap-2 mb-1">
-              <span className="text-xs font-bold text-[#2272E8]">
+              <span className="text-xs font-bold text-brand-blue">
                 Butir {currentCheck.questionNumber} dari 7
               </span>
               {currentCheck.isAbsoluteBlocker && (
-                <span className="text-[11px] font-semibold text-[#DC2626] bg-red-50 border border-red-200 px-2 py-0.5 rounded-full">
+                <span className="text-xs font-semibold text-status-stopped bg-red-50 border border-red-200 px-2 py-0.5 rounded-full">
                   Penghalang Mutlak (Absolute Blocker)
                 </span>
               )}
             </div>
-            <h3 className="text-base font-bold text-[#153A73]">{currentCheck.question}</h3>
-            <p className="text-xs text-[#5B6780] mt-1">{currentCheck.description}</p>
+            <h3 className="text-base font-bold text-brand-navy">{currentCheck.question}</h3>
+            <p className="text-xs text-brand-slate mt-1">{currentCheck.description}</p>
           </div>
 
           {/* Answer choices */}
           <div>
-            <label className="block text-xs font-semibold text-[#153A73] mb-2">
+            <label className="block text-xs font-semibold text-brand-navy mb-2">
               Jawaban Penilaian:
             </label>
             <div className="grid grid-cols-3 gap-3">
@@ -185,8 +185,8 @@ export const FeasibilityGateModal: React.FC<FeasibilityGateModalProps> = ({
                 onClick={() => handleAnswerChange('ya')}
                 className={`py-3 px-4 rounded-xl border text-sm font-semibold transition-all flex items-center justify-center gap-2 ${
                   selectedAnswers[currentCheck.questionNumber]?.answer === 'ya'
-                    ? 'bg-[#2FA882]/10 border-[#2FA882] text-[#2FA882]'
-                    : 'border-[#E2E8F0] bg-white text-[#5B6780] hover:bg-slate-50'
+                    ? 'bg-brand-green/10 border-brand-green text-brand-green'
+                    : 'border-brand-border bg-white text-brand-slate hover:bg-slate-50'
                 }`}
               >
                 <CheckCircle2 className="w-4 h-4" />
@@ -197,8 +197,8 @@ export const FeasibilityGateModal: React.FC<FeasibilityGateModalProps> = ({
                 onClick={() => handleAnswerChange('tidak')}
                 className={`py-3 px-4 rounded-xl border text-sm font-semibold transition-all flex items-center justify-center gap-2 ${
                   selectedAnswers[currentCheck.questionNumber]?.answer === 'tidak'
-                    ? 'bg-[#DC2626]/10 border-[#DC2626] text-[#DC2626]'
-                    : 'border-[#E2E8F0] bg-white text-[#5B6780] hover:bg-slate-50'
+                    ? 'bg-status-stopped/10 border-status-stopped text-status-stopped'
+                    : 'border-brand-border bg-white text-brand-slate hover:bg-slate-50'
                 }`}
               >
                 <XCircle className="w-4 h-4" />
@@ -210,7 +210,7 @@ export const FeasibilityGateModal: React.FC<FeasibilityGateModalProps> = ({
                 className={`py-3 px-4 rounded-xl border text-sm font-semibold transition-all flex items-center justify-center gap-2 ${
                   selectedAnswers[currentCheck.questionNumber]?.answer === 'belum_tahu'
                     ? 'bg-amber-50 border-amber-300 text-amber-700'
-                    : 'border-[#E2E8F0] bg-white text-[#5B6780] hover:bg-slate-50'
+                    : 'border-brand-border bg-white text-brand-slate hover:bg-slate-50'
                 }`}
               >
                 <HelpCircle className="w-4 h-4" />
@@ -221,7 +221,7 @@ export const FeasibilityGateModal: React.FC<FeasibilityGateModalProps> = ({
 
           {/* Reason Input */}
           <div>
-            <label className="block text-xs font-semibold text-[#153A73] mb-1">
+            <label className="block text-xs font-semibold text-brand-navy mb-1">
               Catatan & Alasan Penilaian:
             </label>
             <textarea
@@ -229,14 +229,14 @@ export const FeasibilityGateModal: React.FC<FeasibilityGateModalProps> = ({
               value={selectedAnswers[currentCheck.questionNumber]?.reason || ''}
               onChange={(e) => handleReasonChange(e.target.value)}
               placeholder="Tuliskan data, fakta lapangan, atau pertimbangan fasilitator..."
-              className="w-full text-xs p-3 rounded-xl border border-[#E2E8F0] focus:ring-2 focus:ring-[#2272E8] focus:border-transparent outline-none bg-white text-[#153A73]"
+              className="w-full text-xs p-3 rounded-xl border border-brand-border focus:ring-2 focus:ring-brand-blue focus:border-transparent outline-none bg-white text-brand-navy"
             />
           </div>
 
           {/* Absolute Blocker Warning if answer is Tidak */}
           {currentCheck.isAbsoluteBlocker &&
             selectedAnswers[currentCheck.questionNumber]?.answer === 'tidak' && (
-              <div className="bg-red-50 border border-red-200 rounded-2xl p-4 text-xs text-[#DC2626] flex items-start gap-3">
+              <div className="bg-red-50 border border-red-200 rounded-2xl p-4 text-xs text-status-stopped flex items-start gap-3">
                 <ShieldAlert className="w-5 h-5 shrink-0 mt-0.5" />
                 <div>
                   <span className="font-bold">Penghalang Mutlak Terpicu:</span> Perubahan yang tidak dapat dibalik
@@ -247,8 +247,8 @@ export const FeasibilityGateModal: React.FC<FeasibilityGateModalProps> = ({
             )}
 
           {/* Condition note when passing with condition */}
-          <div className="border-t border-[#E2E8F0] pt-3">
-            <label className="block text-xs font-semibold text-[#153A73] mb-1">
+          <div className="border-t border-brand-border pt-3">
+            <label className="block text-xs font-semibold text-brand-navy mb-1">
               Catatan Syarat Khusus (Bila Lolos dengan Syarat):
             </label>
             <input
@@ -256,27 +256,27 @@ export const FeasibilityGateModal: React.FC<FeasibilityGateModalProps> = ({
               value={conditionNote}
               onChange={(e) => setConditionNote(e.target.value)}
               placeholder="Contoh: Wajib ada pemantau independen atau lajur damkar minimal 3.8 meter..."
-              className="w-full text-xs p-2.5 rounded-xl border border-[#E2E8F0] bg-[#F5F8FC] focus:bg-white focus:ring-2 focus:ring-[#2272E8] outline-none text-[#153A73]"
+              className="w-full text-xs p-2.5 rounded-xl border border-brand-border bg-brand-surface focus:bg-white focus:ring-2 focus:ring-brand-blue outline-none text-brand-navy"
             />
           </div>
         </div>
 
         {/* Footer & Finalize */}
-        <div className="border-t border-[#E2E8F0] pt-4 flex flex-col sm:flex-row items-center justify-between gap-3 shrink-0">
+        <div className="border-t border-brand-border pt-4 flex flex-col sm:flex-row items-center justify-between gap-3 shrink-0">
           <div className="flex items-center gap-2">
-            <span className="text-xs text-[#5B6780]">Hasil Kesimpulan:</span>
+            <span className="text-xs text-brand-slate">Hasil Kesimpulan:</span>
             {computedOutcome === 'layak' && (
-              <span className="text-xs font-bold text-[#2FA882] flex items-center gap-1">
+              <span className="text-xs font-bold text-brand-green flex items-center gap-1">
                 <CheckCircle2 className="w-4 h-4" /> Layak Dicoba
               </span>
             )}
             {computedOutcome === 'layak_dengan_syarat' && (
-              <span className="text-xs font-bold text-[#F59E0B] flex items-center gap-1">
+              <span className="text-xs font-bold text-status-warning flex items-center gap-1">
                 <AlertTriangle className="w-4 h-4" /> Layak dengan Syarat
               </span>
             )}
             {computedOutcome === 'tidak_layak' && (
-              <span className="text-xs font-bold text-[#DC2626] flex items-center gap-1">
+              <span className="text-xs font-bold text-status-stopped flex items-center gap-1">
                 <XCircle className="w-4 h-4" /> Tidak Layak (Dialihkan)
               </span>
             )}
@@ -287,7 +287,7 @@ export const FeasibilityGateModal: React.FC<FeasibilityGateModalProps> = ({
               <button
                 type="button"
                 onClick={() => setActiveItemIndex((prev) => prev + 1)}
-                className="w-full sm:w-auto px-4 py-2 bg-[#F5F8FC] hover:bg-slate-200 text-[#153A73] text-xs font-semibold rounded-xl transition-colors"
+                className="w-full sm:w-auto px-4 py-2 bg-brand-surface hover:bg-slate-200 text-brand-navy text-xs font-semibold rounded-xl transition-colors"
               >
                 Butir Berikutnya &rarr;
               </button>
@@ -298,8 +298,8 @@ export const FeasibilityGateModal: React.FC<FeasibilityGateModalProps> = ({
               onClick={handleFinalize}
               className={`w-full sm:w-auto px-5 py-2.5 text-xs font-semibold rounded-xl text-white transition-all shadow-sm ${
                 computedOutcome === 'tidak_layak'
-                  ? 'bg-[#DC2626] hover:bg-red-700'
-                  : 'bg-[#2272E8] hover:bg-[#1A58B8]'
+                  ? 'bg-status-stopped hover:bg-red-700'
+                  : 'bg-brand-blue hover:bg-brand-blue-dark'
               }`}
             >
               Simpan & Tetapkan Kelayakan

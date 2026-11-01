@@ -4,24 +4,37 @@
   --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
 
-  --color-brand-blue: #2272E8;
-  --color-brand-blue-dark: #1A58B8;
-  --color-brand-green: #2FA882;
-  --color-brand-navy: #153A73;
-  --color-brand-slate: #5B6780;
-  --color-brand-surface: #F5F8FC;
-  --color-brand-border: #E2E8F0;
+  /* text-xs is used for most body copy in the demo; 12px was too small to read comfortably. */
+  --text-xs: 0.8125rem;
+  --text-xs--line-height: 1.3rem;
 
-  --color-status-running: #2272E8;
-  --color-status-agreed: #2FA882;
+  /* Palette from CobaSepakat_UI_UX_Assets. Green text/buttons use the darker
+     #159A78 for contrast; #27B58D is kept for fills and decoration. */
+  --color-brand-blue: #2476E8;
+  --color-brand-blue-dark: #1555A8;
+  --color-brand-green: #159A78;
+  --color-brand-green-light: #27B58D;
+  --color-brand-navy: #173B73;
+  --color-brand-slate: #5B6780;
+  --color-brand-surface: #F5F9FF;
+  --color-brand-surface-blue: #EAF4FF;
+  --color-brand-border: #DCE9F8;
+  --color-brand-mint: #DDF7EF;
+  --color-brand-sky: #D9ECFF;
+  --color-brand-gold: #FFB547;
+
+  --shadow-card: 0 12px 32px rgba(23, 59, 115, 0.08);
+
+  --color-status-running: #2476E8;
+  --color-status-agreed: #159A78;
   --color-status-warning: #F59E0B;
   --color-status-stopped: #DC2626;
 }
 
 body {
   font-family: var(--font-sans);
-  background-color: #F5F8FC;
-  color: #153A73;
+  background-color: #F5F9FF;
+  color: #173B73;
 }
 
 /* Custom scrollbar for clean dashboard view */
@@ -38,4 +51,14 @@ body {
 }
 ::-webkit-scrollbar-thumb:hover {
   background: #94a3b8;
+}
+
+/* Tactile press feedback; MotionConfig handles reduced motion for JS animations only. */
+@media (prefers-reduced-motion: no-preference) {
+  button:not(:disabled) {
+    transition: transform 0.15s ease, background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+  }
+  button:not(:disabled):active {
+    transform: scale(0.97);
+  }
 }

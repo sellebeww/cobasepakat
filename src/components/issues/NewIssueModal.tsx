@@ -47,12 +47,12 @@ export const NewIssueModal: React.FC<NewIssueModalProps> = ({ onClose }) => {
 
   return (
     <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
-      <div className="bg-white rounded-3xl max-w-2xl w-full p-6 md:p-8 shadow-2xl border border-[#E2E8F0] my-8 space-y-5">
-        <div className="flex items-start justify-between border-b border-[#E2E8F0] pb-4">
+      <div className="bg-white rounded-3xl max-w-2xl w-full p-6 md:p-8 shadow-2xl border border-brand-border my-8 space-y-5">
+        <div className="flex items-start justify-between border-b border-brand-border pb-4">
           <div>
-            <h2 className="text-xl font-bold text-[#153A73]">Buka Isu Perbedaan Pendapat Baru</h2>
-            <p className="text-xs text-[#5B6780]">
-              Ruang: <span className="font-semibold text-[#153A73]">{currentSpace.name}</span>
+            <h2 className="text-xl font-bold text-brand-navy">Buka Isu Perbedaan Pendapat Baru</h2>
+            <p className="text-xs text-brand-slate">
+              Ruang: <span className="font-semibold text-brand-navy">{currentSpace.name}</span>
             </p>
           </div>
           <button
@@ -64,12 +64,12 @@ export const NewIssueModal: React.FC<NewIssueModalProps> = ({ onClose }) => {
         </div>
 
         {/* Mode Toggle */}
-        <div className="flex items-center gap-2 p-1 bg-[#F5F8FC] rounded-xl border border-[#E2E8F0]">
+        <div className="flex items-center gap-2 p-1 bg-brand-surface rounded-xl border border-brand-border">
           <button
             type="button"
             onClick={() => setMode('custom')}
             className={`flex-1 py-1.5 text-xs font-semibold rounded-lg transition-all ${
-              mode === 'custom' ? 'bg-white text-[#153A73] shadow-sm' : 'text-[#5B6780]'
+              mode === 'custom' ? 'bg-white text-brand-navy shadow-sm' : 'text-brand-slate'
             }`}
           >
             Tulis Isu Mandiri
@@ -78,20 +78,20 @@ export const NewIssueModal: React.FC<NewIssueModalProps> = ({ onClose }) => {
             type="button"
             onClick={() => setMode('template')}
             className={`flex-1 py-1.5 text-xs font-semibold rounded-lg transition-all flex items-center justify-center gap-1.5 ${
-              mode === 'template' ? 'bg-white text-[#2272E8] shadow-sm' : 'text-[#5B6780]'
+              mode === 'template' ? 'bg-white text-brand-blue shadow-sm' : 'text-brand-slate'
             }`}
           >
-            <Sparkles className="w-3.5 h-3.5 text-[#2272E8]" /> Pilih dari Templat Siap Pakai
+            <Sparkles className="w-3.5 h-3.5 text-brand-blue" /> Pilih dari Templat Siap Pakai
           </button>
         </div>
 
         {mode === 'custom' ? (
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-xs font-bold text-[#153A73] mb-1">
+              <label className="block text-xs font-bold text-brand-navy mb-1">
                 Pertanyaan Keputusan (Wajib Bernada Netral):
               </label>
-              <p className="text-[11px] text-[#5B6780] mb-2">
+              <p className="text-xs text-brand-slate mb-2">
                 Rumuskan dalam bentuk &ldquo;Apakah [tindakan] akan [akibat yang diuji]?&rdquo;. Hindari nada menyudutkan salah satu pihak.
               </p>
               <input
@@ -99,12 +99,12 @@ export const NewIssueModal: React.FC<NewIssueModalProps> = ({ onClose }) => {
                 placeholder="Contoh: Apakah mengubah parkir sejajar menjadi parkir miring di Lorong B akan memperlancar jalan?"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                className="w-full text-xs p-3 rounded-xl border border-[#E2E8F0] focus:ring-2 focus:ring-[#2272E8] outline-none text-[#153A73] font-medium"
+                className="w-full text-xs p-3 rounded-xl border border-brand-border focus:ring-2 focus:ring-brand-blue outline-none text-brand-navy font-medium"
                 required
               />
 
               {detectedBiasedWords.length > 0 && (
-                <div className="mt-2 p-2.5 bg-amber-50 border border-amber-200 rounded-xl text-[11px] text-amber-800 flex items-center gap-1.5">
+                <div className="mt-2 p-2.5 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-800 flex items-center gap-1.5">
                   <ShieldAlert className="w-4 h-4 text-amber-600 shrink-0" />
                   <span>
                     Peringatan Pemeriksa Kata: Terdeteksi kata bermuatan asumsi (&ldquo;{detectedBiasedWords.join(', ')}&rdquo;). Mohon gunakan kalimat netral agar dapat diterima kedua pihak.
@@ -114,7 +114,7 @@ export const NewIssueModal: React.FC<NewIssueModalProps> = ({ onClose }) => {
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-[#153A73] mb-1">
+              <label className="block text-xs font-bold text-brand-navy mb-1">
                 Latar Belakang & Konteks Perselisihan:
               </label>
               <textarea
@@ -122,14 +122,14 @@ export const NewIssueModal: React.FC<NewIssueModalProps> = ({ onClose }) => {
                 placeholder="Jelaskan situasi saat ini dan mengapa ada dua pandangan berbeda..."
                 value={context}
                 onChange={(e) => setContext(e.target.value)}
-                className="w-full text-xs p-3 rounded-xl border border-[#E2E8F0] focus:ring-2 focus:ring-[#2272E8] outline-none text-[#153A73]"
+                className="w-full text-xs p-3 rounded-xl border border-brand-border focus:ring-2 focus:ring-brand-blue outline-none text-brand-navy"
                 required
               />
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label className="block text-xs font-bold text-[#153A73] mb-1">
+                <label className="block text-xs font-bold text-brand-navy mb-1">
                   Lokasi / Objek yang Diperselisihkan:
                 </label>
                 <input
@@ -137,13 +137,13 @@ export const NewIssueModal: React.FC<NewIssueModalProps> = ({ onClose }) => {
                   placeholder="Contoh: Lorong B RT 04"
                   value={location}
                   onChange={(e) => setLocation(e.target.value)}
-                  className="w-full text-xs p-2.5 rounded-xl border border-[#E2E8F0]"
+                  className="w-full text-xs p-2.5 rounded-xl border border-brand-border"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-[#153A73] mb-1">
+                <label className="block text-xs font-bold text-brand-navy mb-1">
                   Pihak Terdampak (Pisahkan dengan Koma):
                 </label>
                 <input
@@ -151,23 +151,23 @@ export const NewIssueModal: React.FC<NewIssueModalProps> = ({ onClose }) => {
                   placeholder="Penghuni Lorong B, Mobil Ambulans, Pengemudi"
                   value={affectedPartiesInput}
                   onChange={(e) => setAffectedPartiesInput(e.target.value)}
-                  className="w-full text-xs p-2.5 rounded-xl border border-[#E2E8F0]"
+                  className="w-full text-xs p-2.5 rounded-xl border border-brand-border"
                 />
               </div>
             </div>
 
-            <div className="flex justify-end gap-2 pt-3 border-t border-[#E2E8F0]">
+            <div className="flex justify-end gap-2 pt-3 border-t border-brand-border">
               <button
                 type="button"
                 onClick={onClose}
-                className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-[#153A73] text-xs font-semibold rounded-xl"
+                className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-brand-navy text-xs font-semibold rounded-xl"
               >
                 Batal
               </button>
               <button
                 type="submit"
                 disabled={!title.trim()}
-                className="px-5 py-2.5 bg-[#2272E8] hover:bg-[#1A58B8] disabled:bg-slate-300 text-white text-xs font-bold rounded-xl shadow-md transition-all"
+                className="px-5 py-2.5 bg-brand-blue hover:bg-brand-blue-dark disabled:bg-slate-300 text-white text-xs font-bold rounded-xl shadow-md transition-all"
               >
                 Buka Isu & Kumpulkan Dugaan
               </button>
@@ -179,22 +179,22 @@ export const NewIssueModal: React.FC<NewIssueModalProps> = ({ onClose }) => {
             {templates.map((tpl) => (
               <div
                 key={tpl.id}
-                className="p-4 bg-[#F5F8FC] hover:bg-white rounded-2xl border border-[#E2E8F0] hover:border-[#2272E8] transition-all space-y-2 text-xs"
+                className="p-4 bg-brand-surface hover:bg-white rounded-2xl border border-brand-border hover:border-brand-blue transition-all space-y-2 text-xs"
               >
                 <div className="flex items-center justify-between">
-                  <span className="font-bold text-[#153A73] text-sm">{tpl.title}</span>
-                  <span className="text-[10px] text-[#2272E8] font-mono font-bold bg-blue-50 px-2 py-0.5 rounded-md">
+                  <span className="font-bold text-brand-navy text-sm">{tpl.title}</span>
+                  <span className="text-xs text-brand-blue font-mono font-bold bg-blue-50 px-2 py-0.5 rounded-md">
                     {tpl.recommendedDuration} Hari
                   </span>
                 </div>
-                <p className="text-[#5B6780] text-[11px]">{tpl.summary}</p>
+                <p className="text-brand-slate text-xs">{tpl.summary}</p>
                 <button
                   type="button"
                   onClick={() => {
                     applyTemplateToCreateIssue(tpl);
                     onClose();
                   }}
-                  className="px-3 py-1.5 bg-[#2272E8] text-white font-semibold rounded-xl text-xs hover:bg-[#1A58B8] transition-colors"
+                  className="px-3 py-1.5 bg-brand-blue text-white font-semibold rounded-xl text-xs hover:bg-brand-blue-dark transition-colors"
                 >
                   Terapkan Templat Ini &rarr;
                 </button>

@@ -29,6 +29,7 @@ import {
   SEED_FACILITATORS,
   INITIAL_AUDIT_LOGS,
 } from '../data/seedData';
+import { notify, ToastTone } from '../lib/notify';
 
 export type NavigationTab =
   | 'beranda'
@@ -38,8 +39,7 @@ export type NavigationTab =
   | 'templat'
   | 'analitik'
   | 'fasilitator'
-  | 'audit'
-  | 'pemasaran';
+  | 'audit';
 
 interface AppContextType {
   currentUser: User;
@@ -81,73 +81,105 @@ interface AppContextType {
   submitAcceptanceRating: (decisionId: string, score: number, accepts: boolean, comment?: string) => void;
   applyTemplateToCreateIssue: (template: TemplateBlueprint) => string;
   resetAllData: () => void;
+  requestFacilitator: (facilitatorName: string, pkg: string, note: string) => void;
 }
 
 const STORAGE_KEY = 'cobasepakat_state_v1';
+
+// Storage can throw (private mode, quota) or hold stale/corrupt JSON; fall back to seed data.
+function load<T>(key: string, fallback: T, valid: (v: unknown) => boolean): T {
+  try {
+    const raw = localStorage.getItem(`${STORAGE_KEY}_${key}`);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (valid(parsed)) return parsed as T;
+    }
+  } catch { /* use fallback */ }
+  return fallback;
+}
+
+function save(key: string, value: unknown) {
+  try { localStorage.setItem(`${STORAGE_KEY}_${key}`, JSON.stringify(value)); } catch { /* ignore */ }
+}
+
+const isObject = (v: unknown) => typeof v === 'object' && v !== null && !Array.isArray(v);
+
+// Hash routes: "#/" = company profile, "#/demo/<tab>[/<issueId>]" = workspace.
+// Hash (not path) routing keeps this working on static hosts without rewrite rules.
+const TABS: NavigationTab[] = ['beranda', 'isu', 'percobaan', 'pustaka', 'templat', 'analitik', 'fasilitator', 'audit'];
+const DEFAULT_ISSUE_ID = 'issue-parkir-lorong-b';
+
+function parseHash() {
+  const [, mode, tab, id] = window.location.hash.split('/');
+  const demo = mode === 'demo';
+  return {
+    appMode: demo ? ('demo' as const) : ('company_profile' as const),
+    activeTab: demo && TABS.includes(tab as NavigationTab) ? (tab as NavigationTab) : ('beranda' as NavigationTab),
+    activeIssueId: id ? decodeURIComponent(id) : DEFAULT_ISSUE_ID,
+  };
+}
+
+function buildHash(appMode: string, tab: NavigationTab, issueId: string | null) {
+  if (appMode !== 'demo') return '#/';
+  const withIssue = (tab === 'isu' || tab === 'percobaan') && issueId;
+  return `#/demo/${tab}${withIssue ? `/${encodeURIComponent(issueId)}` : ''}`;
+}
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   // Initialize state from local storage if exists, otherwise seeds
   const [users] = useState<User[]>(SEED_USERS);
-  const [currentUser, setCurrentUser] = useState<User>(() => {
-    const saved = localStorage.getItem(`${STORAGE_KEY}_user`);
-    if (saved) {
-      try { return JSON.parse(saved); } catch (e) { /* ignore */ }
-    }
-    return SEED_USERS[3]; // Hendra Setiawan (Fasilitator) default for full oversight
-  });
+  // Hendra Setiawan (Fasilitator) default for full oversight
+  const [currentUser, setCurrentUser] = useState<User>(() =>
+    load('user', SEED_USERS[3], (v) => isObject(v) && SEED_USERS.some((u) => u.id === (v as User).id)),
+  );
 
   const [organization] = useState<Organization>(SEED_ORGANIZATION);
   const [spaces] = useState<Space[]>(SEED_SPACES);
   const [currentSpaceId, setCurrentSpaceId] = useState<string>('space-melati');
 
-  const [issues, setIssues] = useState<Issue[]>(() => {
-    const saved = localStorage.getItem(`${STORAGE_KEY}_issues`);
-    if (saved) {
-      try { return JSON.parse(saved); } catch (e) { /* ignore */ }
-    }
-    return INITIAL_ISSUES;
-  });
+  const [issues, setIssues] = useState<Issue[]>(() =>
+    load('issues', INITIAL_ISSUES, (v) => Array.isArray(v) && v.length > 0),
+  );
 
-  const [experiments, setExperiments] = useState<Record<string, Experiment>>(() => {
-    const saved = localStorage.getItem(`${STORAGE_KEY}_experiments`);
-    if (saved) {
-      try { return JSON.parse(saved); } catch (e) { /* ignore */ }
-    }
-    return INITIAL_EXPERIMENTS;
-  });
+  const [experiments, setExperiments] = useState<Record<string, Experiment>>(() =>
+    load('experiments', INITIAL_EXPERIMENTS, isObject),
+  );
 
-  const [activeIssueId, setActiveIssueId] = useState<string | null>('issue-parkir-lorong-b');
-  const [activeTab, setActiveTab] = useState<NavigationTab>('beranda');
-  const [appMode, setAppMode] = useState<'company_profile' | 'demo'>('company_profile');
+  const [activeIssueId, setActiveIssueId] = useState<string | null>(() => parseHash().activeIssueId);
+  const [activeTab, setActiveTab] = useState<NavigationTab>(() => parseHash().activeTab);
+  const [appMode, setAppMode] = useState<'company_profile' | 'demo'>(() => parseHash().appMode);
+
+  // State -> URL
+  useEffect(() => {
+    const hash = buildHash(appMode, activeTab, activeIssueId);
+    if (window.location.hash !== hash) window.location.hash = hash;
+  }, [appMode, activeTab, activeIssueId]);
+
+  // URL -> state (back/forward, manual edits)
+  useEffect(() => {
+    const onHashChange = () => {
+      const next = parseHash();
+      setAppMode(next.appMode);
+      setActiveTab(next.activeTab);
+      setActiveIssueId(next.activeIssueId);
+    };
+    window.addEventListener('hashchange', onHashChange);
+    return () => window.removeEventListener('hashchange', onHashChange);
+  }, []);
   const [showMobileMenu, setShowMobileMenu] = useState<boolean>(false);
   const [templates] = useState<TemplateBlueprint[]>(SEED_TEMPLATES);
   const [facilitators] = useState<Facilitator[]>(SEED_FACILITATORS);
-  const [auditLogs, setAuditLogs] = useState<AuditLog[]>(() => {
-    const saved = localStorage.getItem(`${STORAGE_KEY}_audit`);
-    if (saved) {
-      try { return JSON.parse(saved); } catch (e) { /* ignore */ }
-    }
-    return INITIAL_AUDIT_LOGS;
-  });
+  const [auditLogs, setAuditLogs] = useState<AuditLog[]>(() =>
+    load('audit', INITIAL_AUDIT_LOGS, Array.isArray),
+  );
 
   // Save changes to localStorage
-  useEffect(() => {
-    localStorage.setItem(`${STORAGE_KEY}_issues`, JSON.stringify(issues));
-  }, [issues]);
-
-  useEffect(() => {
-    localStorage.setItem(`${STORAGE_KEY}_experiments`, JSON.stringify(experiments));
-  }, [experiments]);
-
-  useEffect(() => {
-    localStorage.setItem(`${STORAGE_KEY}_audit`, JSON.stringify(auditLogs));
-  }, [auditLogs]);
-
-  useEffect(() => {
-    localStorage.setItem(`${STORAGE_KEY}_user`, JSON.stringify(currentUser));
-  }, [currentUser]);
+  useEffect(() => save('issues', issues), [issues]);
+  useEffect(() => save('experiments', experiments), [experiments]);
+  useEffect(() => save('audit', auditLogs), [auditLogs]);
+  useEffect(() => save('user', currentUser), [currentUser]);
 
   const currentSpace = spaces.find((s) => s.id === currentSpaceId) || spaces[0];
   const currentIssue = issues.find((i) => i.id === activeIssueId) || null;
@@ -684,6 +716,19 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setActiveTab('beranda');
   };
 
+  const requestFacilitator = (facilitatorName: string, pkg: string, note: string) => {
+    logAudit('Permintaan Fasilitasi', facilitatorName, `${pkg}. Catatan: ${note}`);
+    notify(`Permintaan fasilitasi ke ${facilitatorName} terkirim.`);
+  };
+
+  // Every user-facing action confirms itself with a toast so no click feels dead.
+  const withToast = <A extends unknown[], R>(fn: (...args: A) => R, message: string, tone: ToastTone = 'success') =>
+    (...args: A): R => {
+      const result = fn(...args);
+      notify(message, tone);
+      return result;
+    };
+
   return (
     <AppContext.Provider
       value={{
@@ -709,21 +754,22 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         setAppMode,
         showMobileMenu,
         setShowMobileMenu,
-        addIssue,
-        addClaim,
-        updateClaimConfidence,
-        addComment,
+        addIssue: withToast(addIssue, "Isu baru dibuka. Mulai kumpulkan dugaan dari anggota."),
+        addClaim: withToast(addClaim, "Dugaan Anda tersimpan."),
+        updateClaimConfidence: withToast(updateClaimConfidence, "Tingkat keyakinan diperbarui."),
+        addComment: withToast(addComment, "Komentar terkirim."),
         updateFeasibilityItem,
-        finalizeFeasibility,
-        createExperimentForIssue,
-        submitApproval,
-        addDataEntry,
-        verifyDataEntry,
-        triggerEmergencyStop,
-        recordDecision,
-        submitAcceptanceRating,
-        applyTemplateToCreateIssue,
-        resetAllData,
+        finalizeFeasibility: withToast(finalizeFeasibility, "Hasil Gerbang Kelayakan ditetapkan."),
+        createExperimentForIssue: withToast(createExperimentForIssue, "Desain percobaan diajukan ke kuorum persetujuan."),
+        submitApproval: withToast(submitApproval, "Suara Anda tercatat."),
+        addDataEntry: withToast(addDataEntry, "Entri data lapangan disimpan."),
+        verifyDataEntry: withToast(verifyDataEntry, "Entri data diverifikasi."),
+        triggerEmergencyStop: withToast(triggerEmergencyStop, "Percobaan dihentikan. Warga diberi tahu.", 'warning'),
+        recordDecision: withToast(recordDecision, "Catatan keputusan dikunci secara permanen."),
+        submitAcceptanceRating: withToast(submitAcceptanceRating, "Terima kasih, umpan balik penerimaan tercatat."),
+        applyTemplateToCreateIssue: withToast(applyTemplateToCreateIssue, "Isu baru dibuat dari templat."),
+        requestFacilitator,
+        resetAllData: withToast(resetAllData, "Data demo dikembalikan ke kondisi awal."),
       }}
     >
       {children}

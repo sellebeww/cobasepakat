@@ -46,22 +46,22 @@ export const SpaceDashboard: React.FC<SpaceDashboardProps> = ({
   return (
     <div className="space-y-6">
       {/* Space Hero Welcome Card */}
-      <div className="bg-white rounded-3xl p-6 md:p-8 border border-[#E2E8F0] shadow-sm space-y-4">
+      <div className="bg-white rounded-3xl p-6 md:p-8 border border-brand-border shadow-sm space-y-4">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="space-y-1">
-            <div className="flex items-center gap-2 text-xs text-[#5B6780]">
-              <Building2 className="w-3.5 h-3.5 text-[#2272E8]" />
-              <span className="font-semibold text-[#153A73]">{currentSpace.name}</span>
+            <div className="flex items-center gap-2 text-xs text-brand-slate">
+              <Building2 className="w-3.5 h-3.5 text-brand-blue" />
+              <span className="font-semibold text-brand-navy">{currentSpace.name}</span>
               <span>·</span>
               <span>{currentSpace.unitCount} Unit Hunian</span>
               <span>·</span>
               <span>{currentSpace.activeMemberCount} Warga Aktif</span>
             </div>
-            <h1 className="text-2xl font-extrabold text-[#153A73]">
+            <h1 className="text-2xl font-extrabold text-brand-navy">
               Musyawarah Berbasis Percobaan Terukur
             </h1>
-            <p className="text-xs text-[#5B6780] max-w-2xl">
-              Selamat datang, <span className="font-semibold text-[#153A73]">{currentUser.name}</span>.
+            <p className="text-xs text-brand-slate max-w-2xl">
+              Selamat datang, <span className="font-semibold text-brand-navy">{currentUser.name}</span>.
               Selesaikan perbedaan pendapat dengan menguji dugaannya secara langsung selama 14 hari dengan kriteria yang disepakati di muka.
             </p>
           </div>
@@ -69,7 +69,7 @@ export const SpaceDashboard: React.FC<SpaceDashboardProps> = ({
           <div className="flex items-center gap-2 shrink-0">
             <button
               onClick={onOpenNewIssueModal}
-              className="px-4 py-2.5 bg-[#2272E8] hover:bg-[#1A58B8] text-white rounded-xl text-xs font-bold transition-all shadow-sm flex items-center gap-1.5"
+              className="px-4 py-2.5 bg-brand-blue hover:bg-brand-blue-dark text-white rounded-xl text-xs font-bold transition-all shadow-sm flex items-center gap-1.5"
             >
               <Plus className="w-4 h-4" /> Buka Isu Keputusan Baru
             </button>
@@ -78,27 +78,27 @@ export const SpaceDashboard: React.FC<SpaceDashboardProps> = ({
 
         {/* 4 Quick Stat Strips */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
-          <div className="p-3 bg-[#F5F8FC] rounded-2xl border border-[#E2E8F0]">
-            <div className="text-[10px] text-[#5B6780] font-medium">Percobaan Berjalan</div>
-            <div className="text-lg font-extrabold font-mono text-[#2272E8] mt-0.5">
+          <div className="p-3 bg-brand-surface rounded-2xl border border-brand-border">
+            <div className="text-xs text-brand-slate font-medium">Percobaan Berjalan</div>
+            <div className="text-lg font-extrabold font-mono text-brand-blue mt-0.5">
               {spaceIssues.filter((i) => i.status === 'percobaan_berjalan').length} Aktif
             </div>
           </div>
-          <div className="p-3 bg-[#F5F8FC] rounded-2xl border border-[#E2E8F0]">
-            <div className="text-[10px] text-[#5B6780] font-medium">Kuorum Persetujuan</div>
-            <div className="text-lg font-extrabold font-mono text-[#2FA882] mt-0.5">
+          <div className="p-3 bg-brand-surface rounded-2xl border border-brand-border">
+            <div className="text-xs text-brand-slate font-medium">Kuorum Persetujuan</div>
+            <div className="text-lg font-extrabold font-mono text-brand-green mt-0.5">
               {currentSpace.rules.quorumPercentage}% Wajib
             </div>
           </div>
-          <div className="p-3 bg-[#F5F8FC] rounded-2xl border border-[#E2E8F0]">
-            <div className="text-[10px] text-[#5B6780] font-medium">Durasi Maksimum</div>
-            <div className="text-lg font-extrabold font-mono text-[#153A73] mt-0.5">
+          <div className="p-3 bg-brand-surface rounded-2xl border border-brand-border">
+            <div className="text-xs text-brand-slate font-medium">Durasi Maksimum</div>
+            <div className="text-lg font-extrabold font-mono text-brand-navy mt-0.5">
               {currentSpace.rules.maxExperimentDays} Hari
             </div>
           </div>
-          <div className="p-3 bg-[#F5F8FC] rounded-2xl border border-[#E2E8F0]">
-            <div className="text-[10px] text-[#5B6780] font-medium">Plafon Anggaran Mandiri</div>
-            <div className="text-xs font-extrabold font-mono text-[#153A73] mt-1.5 truncate">
+          <div className="p-3 bg-brand-surface rounded-2xl border border-brand-border">
+            <div className="text-xs text-brand-slate font-medium">Plafon Anggaran Mandiri</div>
+            <div className="text-lg font-extrabold font-mono text-brand-navy mt-0.5">
               Rp {currentSpace.rules.budgetCeilingWithoutBoard.toLocaleString('id-ID')}
             </div>
           </div>
@@ -107,39 +107,39 @@ export const SpaceDashboard: React.FC<SpaceDashboardProps> = ({
 
       {/* Spotlight: Active Experiment Running Right Now */}
       {activeTrialIssue && activeExp && (
-        <div className="bg-white rounded-3xl p-6 md:p-8 border-2 border-[#2272E8]/40 shadow-md space-y-4 relative overflow-hidden">
-          <div className="absolute top-0 right-0 bg-[#2272E8] text-white text-[10px] font-bold px-4 py-1 rounded-bl-2xl uppercase tracking-wider">
+        <div className="bg-white rounded-3xl p-6 md:p-8 border-2 border-brand-blue/40 shadow-md space-y-4 relative overflow-hidden">
+          <div className="absolute top-0 right-0 bg-brand-blue text-white text-xs font-bold px-4 py-1 rounded-bl-2xl uppercase tracking-wider">
             Sedang Berjalan di Lapangan
           </div>
 
           <div className="space-y-1">
-            <div className="text-xs font-bold text-[#2272E8] flex items-center gap-1.5">
+            <div className="text-xs font-bold text-brand-blue flex items-center gap-1.5">
               <Activity className="w-4 h-4" /> Uji Coba Terjadwal 14 Hari
             </div>
-            <h2 className="text-xl font-bold text-[#153A73] leading-snug">
+            <h2 className="text-xl font-bold text-brand-navy leading-snug">
               {activeTrialIssue.title}
             </h2>
-            <p className="text-xs text-[#5B6780]">
-              Perlakuan: <span className="text-[#153A73] font-medium">{activeExp.treatment}</span>
+            <p className="text-xs text-brand-slate">
+              Perlakuan: <span className="text-brand-navy font-medium">{activeExp.treatment}</span>
             </p>
           </div>
 
           {/* Quick Metrics Bar */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-[#F5F8FC] p-4 rounded-2xl border border-[#E2E8F0]">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-brand-surface p-4 rounded-2xl border border-brand-border">
             {activeExp.metrics.map((m) => (
               <div key={m.id} className="text-center">
-                <span className="text-[10px] text-[#5B6780] block truncate">{m.name}</span>
-                <span className="text-xs font-mono font-bold text-[#2FA882]">
+                <span className="text-xs text-brand-slate block leading-snug">{m.name}</span>
+                <span className="text-sm font-mono font-bold text-brand-green">
                   {m.currentValue ?? m.baselineValue} {m.unit}
                 </span>
-                <span className="text-[9px] text-[#5B6780] block">Garis Dasar: {m.baselineValue}</span>
+                <span className="text-xs text-brand-slate block">Garis Dasar: {m.baselineValue}</span>
               </div>
             ))}
           </div>
 
           <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2">
-            <div className="text-xs text-[#5B6780] flex items-center gap-1.5">
-              <Clock className="w-4 h-4 text-[#2272E8]" />
+            <div className="text-xs text-brand-slate flex items-center gap-1.5">
+              <Clock className="w-4 h-4 text-brand-blue" />
               <span>Hari ke-8 dari 14 Hari · Rapat Evaluasi: {activeExp.evaluationDate}</span>
             </div>
 
@@ -148,7 +148,7 @@ export const SpaceDashboard: React.FC<SpaceDashboardProps> = ({
                 setActiveIssueId(activeTrialIssue.id);
                 setActiveTab('isu');
               }}
-              className="w-full sm:w-auto px-5 py-2.5 bg-[#2272E8] hover:bg-[#1A58B8] text-white rounded-xl text-xs font-bold transition-all shadow-sm flex items-center justify-center gap-2"
+              className="w-full sm:w-auto px-5 py-2.5 bg-brand-blue hover:bg-brand-blue-dark text-white rounded-xl text-xs font-bold transition-all shadow-sm flex items-center justify-center gap-2"
             >
               Buka Pusat Kendali & Catat Data Lapangan &rarr;
             </button>
@@ -159,10 +159,10 @@ export const SpaceDashboard: React.FC<SpaceDashboardProps> = ({
       {/* List of Community Issues */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-base font-bold text-[#153A73]">
+          <h2 className="text-base font-bold text-brand-navy">
             Daftar Isu & Perbedaan Pendapat Komunitas
           </h2>
-          <span className="text-xs text-[#5B6780]">{spaceIssues.length} Isu Terdaftar</span>
+          <span className="text-xs text-brand-slate">{spaceIssues.length} Isu Terdaftar</span>
         </div>
 
         <div className="grid grid-cols-1 gap-4">
@@ -173,37 +173,37 @@ export const SpaceDashboard: React.FC<SpaceDashboardProps> = ({
                 setActiveIssueId(iss.id);
                 setActiveTab('isu');
               }}
-              className="bg-white rounded-2xl p-5 border border-[#E2E8F0] hover:border-[#2272E8] transition-all cursor-pointer shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4"
+              className="bg-white rounded-2xl p-5 border border-brand-border hover:border-brand-blue transition-all cursor-pointer shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4"
             >
               <div className="space-y-1.5 flex-1">
-                <div className="flex items-center gap-2 text-xs text-[#5B6780]">
-                  <span className="font-semibold text-[#153A73]">{iss.location}</span>
+                <div className="flex items-center gap-2 text-xs text-brand-slate">
+                  <span className="font-semibold text-brand-navy">{iss.location}</span>
                   <span>·</span>
                   <span>{iss.claims.length} Dugaan Terkumpul</span>
                   <span>·</span>
                   <span>{iss.comments.length} Komentar</span>
                 </div>
 
-                <h3 className="text-base font-bold text-[#153A73] hover:text-[#2272E8] transition-colors">
+                <h3 className="text-base font-bold text-brand-navy hover:text-brand-blue transition-colors">
                   {iss.title}
                 </h3>
 
-                <p className="text-xs text-[#5B6780] line-clamp-2">{iss.context}</p>
+                <p className="text-xs text-brand-slate line-clamp-2">{iss.context}</p>
               </div>
 
               <div className="flex items-center gap-3 self-end md:self-center shrink-0">
                 <span
-                  className={`text-[11px] font-bold px-3 py-1 rounded-full capitalize ${
+                  className={`text-xs font-bold px-3 py-1 rounded-full capitalize ${
                     iss.status === 'percobaan_berjalan'
-                      ? 'bg-blue-50 text-[#2272E8] border border-blue-200'
+                      ? 'bg-blue-50 text-brand-blue border border-blue-200'
                       : iss.status === 'keputusan_tercatat'
-                      ? 'bg-emerald-50 text-[#2FA882] border border-emerald-200'
-                      : 'bg-[#F5F8FC] text-[#5B6780]'
+                      ? 'bg-emerald-50 text-brand-green border border-emerald-200'
+                      : 'bg-brand-surface text-brand-slate'
                   }`}
                 >
                   {iss.status.replace(/_/g, ' ')}
                 </span>
-                <span className="text-xs font-semibold text-[#2272E8] flex items-center gap-1">
+                <span className="text-xs font-semibold text-brand-blue flex items-center gap-1">
                   Lihat Detail &rarr;
                 </span>
               </div>

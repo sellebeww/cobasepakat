@@ -218,16 +218,16 @@ export const ExperimentWizardModal: React.FC<ExperimentWizardModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
-      <div className="bg-white rounded-3xl max-w-3xl w-full p-6 md:p-8 shadow-2xl border border-[#E2E8F0] my-8 max-h-[90vh] flex flex-col">
+      <div className="bg-white rounded-3xl max-w-3xl w-full p-6 md:p-8 shadow-2xl border border-brand-border my-8 max-h-[90vh] flex flex-col">
         {/* Header */}
-        <div className="flex items-start justify-between border-b border-[#E2E8F0] pb-4">
+        <div className="flex items-start justify-between border-b border-brand-border pb-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-[#2FA882]/10 text-[#2FA882] flex items-center justify-center shrink-0">
+            <div className="w-10 h-10 rounded-2xl bg-brand-green/10 text-brand-green flex items-center justify-center shrink-0">
               <Sparkles className="w-6 h-6" />
             </div>
             <div>
-              <h2 className="text-xl font-bold text-[#153A73]">Pembangun Percobaan (Wizard)</h2>
-              <p className="text-xs text-[#5B6780]">
+              <h2 className="text-xl font-bold text-brand-navy">Pembangun Percobaan (Wizard)</h2>
+              <p className="text-xs text-brand-slate">
                 Rancang eksperimen terbatas 14 hari dengan metrik terukur dan aturan keselamatan.
               </p>
             </div>
@@ -241,7 +241,7 @@ export const ExperimentWizardModal: React.FC<ExperimentWizardModalProps> = ({
         </div>
 
         {/* Step Indicator */}
-        <div className="grid grid-cols-5 gap-2 py-3 border-b border-[#E2E8F0] text-xs font-semibold shrink-0">
+        <div className="grid grid-cols-5 gap-2 py-3 border-b border-brand-border text-xs font-semibold shrink-0">
           {[
             { n: 1, label: '1. Perlakuan' },
             { n: 2, label: '2. Ukuran Metrik' },
@@ -254,10 +254,10 @@ export const ExperimentWizardModal: React.FC<ExperimentWizardModalProps> = ({
               onClick={() => setStep(s.n)}
               className={`py-1.5 text-center rounded-lg transition-colors truncate px-1 ${
                 step === s.n
-                  ? 'bg-[#2272E8] text-white'
+                  ? 'bg-brand-blue text-white'
                   : step > s.n
-                  ? 'bg-[#2FA882]/10 text-[#2FA882]'
-                  : 'bg-[#F5F8FC] text-[#5B6780]'
+                  ? 'bg-brand-green/10 text-brand-green'
+                  : 'bg-brand-surface text-brand-slate'
               }`}
             >
               {s.label}
@@ -270,35 +270,35 @@ export const ExperimentWizardModal: React.FC<ExperimentWizardModalProps> = ({
           {step === 1 && (
             <div className="space-y-4">
               <div>
-                <label className="block text-xs font-bold text-[#153A73] mb-1">
+                <label className="block text-xs font-bold text-brand-navy mb-1">
                   Satu Perlakuan Utama yang Diubah:
                 </label>
-                <p className="text-[11px] text-[#5B6780] mb-2">
+                <p className="text-xs text-brand-slate mb-2">
                   Aturan metodologis: Hanya boleh satu perubahan variabel per percobaan agar hasil jelas disebabkan oleh apa.
                 </p>
                 <textarea
                   rows={3}
                   value={treatment}
                   onChange={(e) => setTreatment(e.target.value)}
-                  className="w-full text-xs p-3 rounded-xl border border-[#E2E8F0] focus:ring-2 focus:ring-[#2272E8] outline-none text-[#153A73]"
+                  className="w-full text-xs p-3 rounded-xl border border-brand-border focus:ring-2 focus:ring-brand-blue outline-none text-brand-navy"
                   placeholder="Deskripsikan perlakuan fisik/kebijakan sementara secara spesifik..."
                 />
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-bold text-[#153A73] mb-1">
+                  <label className="block text-xs font-bold text-brand-navy mb-1">
                     Ruang Lingkup (Lokasi & Pihak):
                   </label>
                   <input
                     type="text"
                     value={scope}
                     onChange={(e) => setScope(e.target.value)}
-                    className="w-full text-xs p-2.5 rounded-xl border border-[#E2E8F0] text-[#153A73]"
+                    className="w-full text-xs p-2.5 rounded-xl border border-brand-border text-brand-navy"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-[#153A73] mb-1">
+                  <label className="block text-xs font-bold text-brand-navy mb-1">
                     Durasi Percobaan (Maks {currentSpace.rules.maxExperimentDays} Hari):
                   </label>
                   <div className="flex items-center gap-2">
@@ -308,34 +308,34 @@ export const ExperimentWizardModal: React.FC<ExperimentWizardModalProps> = ({
                       max={currentSpace.rules.maxExperimentDays}
                       value={durationDays}
                       onChange={(e) => setDurationDays(Number(e.target.value))}
-                      className="w-24 text-xs p-2.5 rounded-xl border border-[#E2E8F0] font-mono text-[#153A73]"
+                      className="w-24 text-xs p-2.5 rounded-xl border border-brand-border font-mono text-brand-navy"
                     />
-                    <span className="text-xs text-[#5B6780]">Hari Kalender (Default: 14 hari)</span>
+                    <span className="text-xs text-brand-slate">Hari Kalender (Default: 14 hari)</span>
                   </div>
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-bold text-[#153A73] mb-1">
+                  <label className="block text-xs font-bold text-brand-navy mb-1">
                     Tanggal Mulai:
                   </label>
                   <input
                     type="date"
                     value={startDate}
                     onChange={(e) => setStartDate(e.target.value)}
-                    className="w-full text-xs p-2.5 rounded-xl border border-[#E2E8F0] font-mono text-[#153A73]"
+                    className="w-full text-xs p-2.5 rounded-xl border border-brand-border font-mono text-brand-navy"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-[#153A73] mb-1">
+                  <label className="block text-xs font-bold text-brand-navy mb-1">
                     Tanggal Selesai:
                   </label>
                   <input
                     type="date"
                     value={endDate}
                     onChange={(e) => setEndDate(e.target.value)}
-                    className="w-full text-xs p-2.5 rounded-xl border border-[#E2E8F0] font-mono text-[#153A73]"
+                    className="w-full text-xs p-2.5 rounded-xl border border-brand-border font-mono text-brand-navy"
                   />
                 </div>
               </div>
@@ -346,8 +346,8 @@ export const ExperimentWizardModal: React.FC<ExperimentWizardModalProps> = ({
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="text-sm font-bold text-[#153A73]">Ukuran Hasil (Metrik)</h3>
-                  <p className="text-xs text-[#5B6780]">
+                  <h3 className="text-sm font-bold text-brand-navy">Ukuran Hasil (Metrik)</h3>
+                  <p className="text-xs text-brand-slate">
                     Tiap metrik wajib memiliki garis dasar (kondisi sebelum uji) dan ambang batas yang disepakati.
                   </p>
                 </div>
@@ -357,29 +357,29 @@ export const ExperimentWizardModal: React.FC<ExperimentWizardModalProps> = ({
                 {metrics.map((m, idx) => (
                   <div
                     key={m.id}
-                    className="p-3.5 bg-[#F5F8FC] rounded-2xl border border-[#E2E8F0] flex flex-col gap-2"
+                    className="p-3.5 bg-brand-surface rounded-2xl border border-brand-border flex flex-col gap-2"
                   >
                     <div className="flex items-start justify-between">
-                      <div className="font-semibold text-xs text-[#153A73]">
+                      <div className="font-semibold text-xs text-brand-navy">
                         {idx + 1}. {m.name} ({m.unit})
                       </div>
                       <button
                         onClick={() => setMetrics((prev) => prev.filter((item) => item.id !== m.id))}
-                        className="text-slate-400 hover:text-[#DC2626]"
+                        className="text-slate-400 hover:text-status-stopped"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>
                     </div>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-[11px] text-[#5B6780]">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-xs text-brand-slate">
                       <div>
                         <span className="block font-medium">Garis Dasar:</span>
-                        <span className="font-mono text-[#153A73] font-bold">
+                        <span className="font-mono text-brand-navy font-bold">
                           {m.baselineValue} {m.unit}
                         </span>
                       </div>
                       <div>
                         <span className="block font-medium">Ambang Target:</span>
-                        <span className="font-mono text-[#2FA882] font-bold">
+                        <span className="font-mono text-brand-green font-bold">
                           {m.thresholdValue} {m.unit}
                         </span>
                       </div>
@@ -397,9 +397,9 @@ export const ExperimentWizardModal: React.FC<ExperimentWizardModalProps> = ({
               </div>
 
               {/* Add Metric Form */}
-              <div className="border border-dashed border-[#E2E8F0] p-4 rounded-2xl bg-white space-y-3">
-                <div className="text-xs font-bold text-[#153A73] flex items-center gap-1.5">
-                  <Plus className="w-3.5 h-3.5 text-[#2272E8]" /> Tambah Ukuran Hasil Baru
+              <div className="border border-dashed border-brand-border p-4 rounded-2xl bg-white space-y-3">
+                <div className="text-xs font-bold text-brand-navy flex items-center gap-1.5">
+                  <Plus className="w-3.5 h-3.5 text-brand-blue" /> Tambah Ukuran Hasil Baru
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                   <input
@@ -407,14 +407,14 @@ export const ExperimentWizardModal: React.FC<ExperimentWizardModalProps> = ({
                     placeholder="Nama metrik (contoh: Jumlah antrean mobil)"
                     value={newMetricName}
                     onChange={(e) => setNewMetricName(e.target.value)}
-                    className="text-xs p-2 rounded-xl border border-[#E2E8F0]"
+                    className="text-xs p-2 rounded-xl border border-brand-border"
                   />
                   <input
                     type="text"
                     placeholder="Satuan (mobil, menit, skor 1-5)"
                     value={newMetricUnit}
                     onChange={(e) => setNewMetricUnit(e.target.value)}
-                    className="text-xs p-2 rounded-xl border border-[#E2E8F0]"
+                    className="text-xs p-2 rounded-xl border border-brand-border"
                   />
                 </div>
                 <div className="grid grid-cols-2 gap-2">
@@ -423,20 +423,20 @@ export const ExperimentWizardModal: React.FC<ExperimentWizardModalProps> = ({
                     placeholder="Nilai Garis Dasar (baseline)"
                     value={newMetricBaseline || ''}
                     onChange={(e) => setNewMetricBaseline(Number(e.target.value))}
-                    className="text-xs p-2 rounded-xl border border-[#E2E8F0] font-mono"
+                    className="text-xs p-2 rounded-xl border border-brand-border font-mono"
                   />
                   <input
                     type="number"
                     placeholder="Ambang Target Berhasil"
                     value={newMetricThreshold || ''}
                     onChange={(e) => setNewMetricThreshold(Number(e.target.value))}
-                    className="text-xs p-2 rounded-xl border border-[#E2E8F0] font-mono"
+                    className="text-xs p-2 rounded-xl border border-brand-border font-mono"
                   />
                 </div>
                 <button
                   type="button"
                   onClick={handleAddMetric}
-                  className="px-3 py-1.5 bg-[#F5F8FC] hover:bg-slate-200 text-[#153A73] rounded-xl text-xs font-semibold transition-colors"
+                  className="px-3 py-1.5 bg-brand-surface hover:bg-slate-200 text-brand-navy rounded-xl text-xs font-semibold transition-colors"
                 >
                   Tambahkan ke Daftar Metrik
                 </button>
@@ -447,10 +447,10 @@ export const ExperimentWizardModal: React.FC<ExperimentWizardModalProps> = ({
           {step === 3 && (
             <div className="space-y-4">
               <div>
-                <h3 className="text-sm font-bold text-[#153A73]">Rincian Anggaran Percobaan</h3>
-                <p className="text-xs text-[#5B6780]">
+                <h3 className="text-sm font-bold text-brand-navy">Rincian Anggaran Percobaan</h3>
+                <p className="text-xs text-brand-slate">
                   Batas anggaran tanpa persetujuan pengurus ruang:{' '}
-                  <span className="font-mono font-bold text-[#153A73]">
+                  <span className="font-mono font-bold text-brand-navy">
                     Rp {currentSpace.rules.budgetCeilingWithoutBoard.toLocaleString('id-ID')}
                   </span>
                 </p>
@@ -460,19 +460,19 @@ export const ExperimentWizardModal: React.FC<ExperimentWizardModalProps> = ({
                 {budgetItems.map((b) => (
                   <div
                     key={b.id}
-                    className="p-3 bg-[#F5F8FC] rounded-xl border border-[#E2E8F0] flex items-center justify-between text-xs"
+                    className="p-3 bg-brand-surface rounded-xl border border-brand-border flex items-center justify-between text-xs"
                   >
                     <div>
-                      <div className="font-semibold text-[#153A73]">{b.label}</div>
-                      <div className="text-[10px] text-[#5B6780]">Sumber: {b.fundingSource}</div>
+                      <div className="font-semibold text-brand-navy">{b.label}</div>
+                      <div className="text-xs text-brand-slate">Sumber: {b.fundingSource}</div>
                     </div>
                     <div className="flex items-center gap-3">
-                      <span className="font-mono font-bold text-[#153A73]">
+                      <span className="font-mono font-bold text-brand-navy">
                         Rp {b.amount.toLocaleString('id-ID')}
                       </span>
                       <button
                         onClick={() => setBudgetItems((prev) => prev.filter((item) => item.id !== b.id))}
-                        className="text-slate-400 hover:text-[#DC2626]"
+                        className="text-slate-400 hover:text-status-stopped"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>
@@ -481,11 +481,11 @@ export const ExperimentWizardModal: React.FC<ExperimentWizardModalProps> = ({
                 ))}
               </div>
 
-              <div className="p-3 bg-white border border-[#E2E8F0] rounded-xl flex items-center justify-between">
-                <span className="text-xs font-bold text-[#153A73]">Total Anggaran:</span>
+              <div className="p-3 bg-white border border-brand-border rounded-xl flex items-center justify-between">
+                <span className="text-xs font-bold text-brand-navy">Total Anggaran:</span>
                 <span
                   className={`font-mono font-bold text-sm ${
-                    isBudgetOverCeiling ? 'text-[#DC2626]' : 'text-[#2FA882]'
+                    isBudgetOverCeiling ? 'text-status-stopped' : 'text-brand-green'
                   }`}
                 >
                   Rp {totalBudget.toLocaleString('id-ID')}
@@ -503,25 +503,25 @@ export const ExperimentWizardModal: React.FC<ExperimentWizardModalProps> = ({
               )}
 
               {/* Add budget item */}
-              <div className="border border-dashed border-[#E2E8F0] p-3 rounded-2xl flex items-center gap-2">
+              <div className="border border-dashed border-brand-border p-3 rounded-2xl flex items-center gap-2">
                 <input
                   type="text"
                   placeholder="Kebutuhan (contoh: Banner edukasi)"
                   value={newBudgetLabel}
                   onChange={(e) => setNewBudgetLabel(e.target.value)}
-                  className="text-xs p-2 rounded-xl border border-[#E2E8F0] flex-1"
+                  className="text-xs p-2 rounded-xl border border-brand-border flex-1"
                 />
                 <input
                   type="number"
                   placeholder="Nominal (Rp)"
                   value={newBudgetAmount || ''}
                   onChange={(e) => setNewBudgetAmount(Number(e.target.value))}
-                  className="text-xs p-2 rounded-xl border border-[#E2E8F0] font-mono w-32"
+                  className="text-xs p-2 rounded-xl border border-brand-border font-mono w-32"
                 />
                 <button
                   type="button"
                   onClick={handleAddBudget}
-                  className="px-3 py-2 bg-[#2272E8] text-white rounded-xl text-xs font-semibold shrink-0"
+                  className="px-3 py-2 bg-brand-blue text-white rounded-xl text-xs font-semibold shrink-0"
                 >
                   Tambah
                 </button>
@@ -532,8 +532,8 @@ export const ExperimentWizardModal: React.FC<ExperimentWizardModalProps> = ({
           {step === 4 && (
             <div className="space-y-4">
               <div>
-                <h3 className="text-sm font-bold text-[#153A73]">Aturan Berhenti Darurat (Guardrails)</h3>
-                <p className="text-xs text-[#5B6780]">
+                <h3 className="text-sm font-bold text-brand-navy">Aturan Berhenti Darurat (Guardrails)</h3>
+                <p className="text-xs text-brand-slate">
                   Kondisi yang otomatis atau segera menghentikan percobaan untuk mencegah risiko bahaya atau kerugian.
                 </p>
               </div>
@@ -542,15 +542,15 @@ export const ExperimentWizardModal: React.FC<ExperimentWizardModalProps> = ({
                 {stopRules.map((sr, idx) => (
                   <div
                     key={sr.id}
-                    className="p-3 bg-red-50/50 border border-red-200 rounded-2xl flex items-start justify-between text-xs text-[#DC2626]"
+                    className="p-3 bg-red-50/50 border border-red-200 rounded-2xl flex items-start justify-between text-xs text-status-stopped"
                   >
                     <div className="flex items-start gap-2">
                       <span className="font-bold">{idx + 1}.</span>
-                      <span className="font-medium text-[#153A73]">{sr.conditionDescription}</span>
+                      <span className="font-medium text-brand-navy">{sr.conditionDescription}</span>
                     </div>
                     <button
                       onClick={() => setStopRules((prev) => prev.filter((item) => item.id !== sr.id))}
-                      className="text-slate-400 hover:text-[#DC2626] ml-2"
+                      className="text-slate-400 hover:text-status-stopped ml-2"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>
@@ -559,18 +559,18 @@ export const ExperimentWizardModal: React.FC<ExperimentWizardModalProps> = ({
               </div>
 
               {/* Add stop rule */}
-              <div className="border border-dashed border-[#E2E8F0] p-3 rounded-2xl flex items-center gap-2">
+              <div className="border border-dashed border-brand-border p-3 rounded-2xl flex items-center gap-2">
                 <input
                   type="text"
                   placeholder="Kondisi penghenti (contoh: 2 keluhan bau menyengat berturut-turut)..."
                   value={newStopRuleDesc}
                   onChange={(e) => setNewStopRuleDesc(e.target.value)}
-                  className="text-xs p-2 rounded-xl border border-[#E2E8F0] flex-1"
+                  className="text-xs p-2 rounded-xl border border-brand-border flex-1"
                 />
                 <button
                   type="button"
                   onClick={handleAddStopRule}
-                  className="px-3 py-2 bg-[#DC2626] text-white rounded-xl text-xs font-semibold shrink-0"
+                  className="px-3 py-2 bg-status-stopped text-white rounded-xl text-xs font-semibold shrink-0"
                 >
                   Tambah Guardrail
                 </button>
@@ -581,8 +581,8 @@ export const ExperimentWizardModal: React.FC<ExperimentWizardModalProps> = ({
           {step === 5 && (
             <div className="space-y-4">
               <div>
-                <h3 className="text-sm font-bold text-[#153A73]">Aturan Keputusan & Kriteria Adopsi</h3>
-                <p className="text-xs text-[#5B6780]">
+                <h3 className="text-sm font-bold text-brand-navy">Aturan Keputusan & Kriteria Adopsi</h3>
+                <p className="text-xs text-brand-slate">
                   Kriteria tertulis di muka: Bagaimana data akan dibaca setelah 14 hari selesai.
                 </p>
               </div>
@@ -592,18 +592,18 @@ export const ExperimentWizardModal: React.FC<ExperimentWizardModalProps> = ({
                   rows={3}
                   value={decisionRule}
                   onChange={(e) => setDecisionRule(e.target.value)}
-                  className="w-full text-xs p-3 rounded-xl border border-[#E2E8F0] focus:ring-2 focus:ring-[#2272E8] outline-none text-[#153A73]"
+                  className="w-full text-xs p-3 rounded-xl border border-brand-border focus:ring-2 focus:ring-brand-blue outline-none text-brand-navy"
                   placeholder="Contoh: Adopsi bila metrik A membaik minimal 15% dan keluhan tidak bertambah..."
                 />
               </div>
 
               {/* Quality Checker Box */}
-              <div className="bg-[#F5F8FC] border border-[#E2E8F0] rounded-2xl p-4">
-                <div className="text-xs font-bold text-[#153A73] flex items-center gap-2 mb-2">
-                  <ShieldCheck className="w-4 h-4 text-[#2FA882]" /> Pemeriksa Kualitas Desain
+              <div className="bg-brand-surface border border-brand-border rounded-2xl p-4">
+                <div className="text-xs font-bold text-brand-navy flex items-center gap-2 mb-2">
+                  <ShieldCheck className="w-4 h-4 text-brand-green" /> Pemeriksa Kualitas Desain
                 </div>
                 {qualityIssues.length === 0 ? (
-                  <div className="text-xs text-[#2FA882] flex items-center gap-1.5 font-medium">
+                  <div className="text-xs text-brand-green flex items-center gap-1.5 font-medium">
                     <CheckCircle className="w-4 h-4" /> Desain percobaan lengkap, terukur, dan memenuhi standar CobaSepakat!
                   </div>
                 ) : (
@@ -621,13 +621,13 @@ export const ExperimentWizardModal: React.FC<ExperimentWizardModalProps> = ({
         </div>
 
         {/* Footer Navigation */}
-        <div className="border-t border-[#E2E8F0] pt-4 flex items-center justify-between gap-3 shrink-0">
+        <div className="border-t border-brand-border pt-4 flex items-center justify-between gap-3 shrink-0">
           <div>
             {step > 1 && (
               <button
                 type="button"
                 onClick={() => setStep((s) => s - 1)}
-                className="px-4 py-2 bg-[#F5F8FC] hover:bg-slate-200 text-[#153A73] text-xs font-semibold rounded-xl flex items-center gap-1.5 transition-colors"
+                className="px-4 py-2 bg-brand-surface hover:bg-slate-200 text-brand-navy text-xs font-semibold rounded-xl flex items-center gap-1.5 transition-colors"
               >
                 <ArrowLeft className="w-3.5 h-3.5" /> Sebelumnya
               </button>
@@ -639,7 +639,7 @@ export const ExperimentWizardModal: React.FC<ExperimentWizardModalProps> = ({
               <button
                 type="button"
                 onClick={() => setStep((s) => s + 1)}
-                className="px-5 py-2.5 bg-[#153A73] hover:bg-[#1A58B8] text-white text-xs font-semibold rounded-xl flex items-center gap-1.5 transition-colors"
+                className="px-5 py-2.5 bg-brand-navy hover:bg-brand-blue-dark text-white text-xs font-semibold rounded-xl flex items-center gap-1.5 transition-colors"
               >
                 Lanjutkan <ArrowRight className="w-3.5 h-3.5" />
               </button>
@@ -648,7 +648,7 @@ export const ExperimentWizardModal: React.FC<ExperimentWizardModalProps> = ({
                 type="button"
                 disabled={qualityIssues.length > 0}
                 onClick={handleSaveAndSubmit}
-                className="px-6 py-2.5 bg-[#2FA882] hover:bg-[#258768] disabled:bg-slate-300 text-white text-xs font-bold rounded-xl shadow-md transition-all flex items-center gap-1.5"
+                className="px-6 py-2.5 bg-brand-green hover:bg-[#258768] disabled:bg-slate-300 text-white text-xs font-bold rounded-xl shadow-md transition-all flex items-center gap-1.5"
               >
                 <CheckCircle className="w-4 h-4" /> Ajukan ke Kuorum Persetujuan
               </button>

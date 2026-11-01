@@ -47,23 +47,23 @@ export const DecisionLibrary: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Header Banner */}
-      <div className="bg-white rounded-3xl p-6 md:p-8 border border-[#E2E8F0] shadow-sm space-y-4">
+      <div className="bg-white rounded-3xl p-6 md:p-8 border border-brand-border shadow-sm space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <div className="text-xs font-bold text-[#2FA882] uppercase tracking-wider mb-1">
+            <div className="text-xs font-bold text-brand-green uppercase tracking-wider mb-1">
               Arsip & Memori Kolektif Komunitas
             </div>
-            <h1 className="text-2xl font-extrabold text-[#153A73]">
+            <h1 className="text-2xl font-extrabold text-brand-navy">
               Pustaka Keputusan & Pembelajaran
             </h1>
-            <p className="text-xs text-[#5B6780] mt-1">
+            <p className="text-xs text-brand-slate mt-1">
               Catatan riwayat percobaan faktual yang pernah dijalankan. Pelajari data sebelumnya agar komunitas tidak mengulang perdebatan yang sama.
             </p>
           </div>
 
           <div className="p-3 bg-blue-50/50 rounded-2xl border border-blue-100 flex items-center gap-3 shrink-0">
-            <Sparkles className="w-5 h-5 text-[#2272E8] shrink-0" />
-            <div className="text-xs text-[#153A73]">
+            <Sparkles className="w-5 h-5 text-brand-blue shrink-0" />
+            <div className="text-xs text-brand-navy">
               <span className="font-bold">Fitur &ldquo;Pernah Dicoba&rdquo;:</span> Otomatis mencocokkan isu baru dengan rekam jejak ruang lain.
             </div>
           </div>
@@ -78,7 +78,7 @@ export const DecisionLibrary: React.FC = () => {
               placeholder="Cari berdasarkan topik (parkir, jam malam, gerbang, sampah, kebisingan)..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full text-xs pl-10 pr-4 py-2.5 rounded-xl border border-[#E2E8F0] bg-[#F5F8FC] focus:bg-white focus:ring-2 focus:ring-[#2272E8] outline-none text-[#153A73]"
+              className="w-full text-xs pl-10 pr-4 py-2.5 rounded-xl border border-brand-border bg-brand-surface focus:bg-white focus:ring-2 focus:ring-brand-blue outline-none text-brand-navy"
             />
           </div>
 
@@ -94,8 +94,8 @@ export const DecisionLibrary: React.FC = () => {
                 onClick={() => setSelectedOutcomeFilter(f.id)}
                 className={`px-3 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
                   selectedOutcomeFilter === f.id
-                    ? 'bg-[#153A73] text-white'
-                    : 'bg-[#F5F8FC] text-[#5B6780] hover:bg-slate-200'
+                    ? 'bg-brand-navy text-white'
+                    : 'bg-brand-surface text-brand-slate hover:bg-slate-200'
                 }`}
               >
                 {f.label}
@@ -113,23 +113,23 @@ export const DecisionLibrary: React.FC = () => {
           return (
             <div
               key={iss.id}
-              className="bg-white rounded-3xl p-6 border border-[#E2E8F0] shadow-sm hover:border-[#2272E8]/40 transition-all flex flex-col justify-between space-y-4"
+              className="bg-white rounded-3xl p-6 border border-brand-border shadow-sm hover:border-brand-blue/40 transition-all flex flex-col justify-between space-y-4"
             >
               <div className="space-y-3">
                 <div className="flex items-start justify-between gap-2">
-                  <div className="flex items-center gap-1.5 text-[11px] text-[#5B6780]">
-                    <Building2 className="w-3.5 h-3.5 text-[#2272E8]" />
+                  <div className="flex items-center gap-1.5 text-xs text-brand-slate">
+                    <Building2 className="w-3.5 h-3.5 text-brand-blue" />
                     <span>{iss.spaceName}</span>
                     <span>·</span>
                     <span className="font-mono">{new Date(iss.createdAt).toLocaleDateString('id-ID')}</span>
                   </div>
 
                   <span
-                    className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full capitalize ${
+                    className={`text-xs font-bold px-2.5 py-0.5 rounded-full capitalize ${
                       iss.decision?.outcome === 'adopsi'
-                        ? 'bg-[#2FA882]/10 text-[#2FA882]'
+                        ? 'bg-brand-green/10 text-brand-green'
                         : iss.decision?.outcome === 'ubah_coba_lagi'
-                        ? 'bg-blue-50 text-[#2272E8]'
+                        ? 'bg-blue-50 text-brand-blue'
                         : 'bg-purple-50 text-purple-700'
                     }`}
                   >
@@ -137,22 +137,22 @@ export const DecisionLibrary: React.FC = () => {
                   </span>
                 </div>
 
-                <h3 className="text-base font-bold text-[#153A73] leading-snug">
+                <h3 className="text-base font-bold text-brand-navy leading-snug">
                   {iss.title}
                 </h3>
 
-                <p className="text-xs text-[#5B6780] line-clamp-3 leading-relaxed">
+                <p className="text-xs text-brand-slate line-clamp-3 leading-relaxed">
                   {iss.context}
                 </p>
 
                 {hasDecision && (
-                  <div className="p-3.5 bg-[#F5F8FC] rounded-2xl border border-[#E2E8F0] space-y-1 text-xs">
-                    <div className="text-[10px] font-bold uppercase tracking-wider text-[#2FA882]">
+                  <div className="p-3.5 bg-brand-surface rounded-2xl border border-brand-border space-y-1 text-xs">
+                    <div className="text-xs font-bold uppercase tracking-wider text-brand-green">
                       Keputusan Akhir:
                     </div>
-                    <div className="font-bold text-[#153A73]">{iss.decision?.title}</div>
-                    <p className="text-[#5B6780] line-clamp-2 text-[11px]">{iss.decision?.reason}</p>
-                    <div className="text-[10px] font-mono text-slate-500 pt-1">
+                    <div className="font-bold text-brand-navy">{iss.decision?.title}</div>
+                    <p className="text-brand-slate line-clamp-2 text-xs">{iss.decision?.reason}</p>
+                    <div className="text-xs font-mono text-slate-500 pt-1">
                       Skor Penerimaan Warga: {iss.decision?.acceptanceAverageScore}/5.0 ({iss.decision?.acceptancePercentage}% Menerima)
                     </div>
                   </div>
@@ -160,16 +160,16 @@ export const DecisionLibrary: React.FC = () => {
               </div>
 
               {/* Action */}
-              <div className="pt-3 border-t border-[#E2E8F0] flex items-center justify-between">
-                <div className="text-[11px] text-[#5B6780]">
-                  Lokasi: <span className="font-medium text-[#153A73]">{iss.location}</span>
+              <div className="pt-3 border-t border-brand-border flex items-center justify-between">
+                <div className="text-xs text-brand-slate">
+                  Lokasi: <span className="font-medium text-brand-navy">{iss.location}</span>
                 </div>
                 <button
                   onClick={() => {
                     setActiveIssueId(iss.id);
                     setActiveTab('isu');
                   }}
-                  className="px-4 py-1.5 bg-[#F5F8FC] hover:bg-[#2272E8] hover:text-white text-[#153A73] rounded-xl text-xs font-semibold transition-all"
+                  className="px-4 py-1.5 bg-brand-surface hover:bg-brand-blue hover:text-white text-brand-navy rounded-xl text-xs font-semibold transition-all"
                 >
                   Buka Detail & Rekam Jejak &rarr;
                 </button>

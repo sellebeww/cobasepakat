@@ -3,10 +3,10 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useApp } from '../../context/AppContext';
 import { CobaSepakatLogo } from '../brand/CobaSepakatLogo';
-import { BrandKitModal } from '../brand/BrandKitModal';
+import { scrollToSection } from '../company/CompanyProfile';
 import {
   Users,
   ChevronDown,
@@ -43,10 +43,50 @@ export const Navbar: React.FC = () => {
 
   const [showUserDropdown, setShowUserDropdown] = useState(false);
   const [showSpaceDropdown, setShowSpaceDropdown] = useState(false);
-  const [showMethodDropdown, setShowMethodDropdown] = useState(false);
-  const [showCommunityDropdown, setShowCommunityDropdown] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [showBrandKitModal, setShowBrandKitModal] = useState(false);
+  const [confirmReset, setConfirmReset] = useState(false);
+  const headerRef = useRef<HTMLElement>(null);
+
+  // Dropdowns close on outside click and Escape, like any native menu.
+  useEffect(() => {
+    const closeAll = () => {
+      setShowUserDropdown(false);
+      setShowSpaceDropdown(false);
+      setConfirmReset(false);
+    };
+    const onPointer = (e: MouseEvent) => {
+      if (!headerRef.current?.contains(e.target as Node)) closeAll();
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') closeAll();
+    };
+    document.addEventListener('mousedown', onPointer);
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('mousedown', onPointer);
+      document.removeEventListener('keydown', onKey);
+    };
+  }, []);
+
+  // A destructive reset needs a second click within 4s, without a blocking browser dialog.
+  useEffect(() => {
+    if (!confirmReset) return;
+    const t = window.setTimeout(() => setConfirmReset(false), 4000);
+    return () => window.clearTimeout(t);
+  }, [confirmReset]);
+
+  const companyLinks = [
+    { id: 'tentang', label: 'Tentang' },
+    { id: 'fitur', label: 'Fitur' },
+    { id: 'cara-kerja', label: 'Cara Kerja' },
+    { id: 'faq', label: 'FAQ' },
+  ];
+
+  const enterDemo = () => {
+    setAppMode('demo');
+    setActiveTab('beranda');
+    window.scrollTo({ top: 0 });
+  };
 
   const getRoleBadge = (role: string) => {
     switch (role) {
@@ -69,180 +109,64 @@ export const Navbar: React.FC = () => {
     <>
       {/* Top Banner when in Demo Mode to make returning to Company Profile effortless */}
       {appMode === 'demo' && (
-        <div className="bg-[#153A73] text-white text-xs px-4 py-2 flex items-center justify-between border-b border-[#2272E8]/20">
+        <div className="bg-brand-navy text-white text-xs px-4 py-2 flex items-center justify-between border-b border-brand-blue/20">
           <div className="max-w-7xl mx-auto w-full flex items-center justify-between">
             <span className="flex items-center gap-1.5 text-slate-200">
-              <span className="w-2 h-2 rounded-full bg-[#2FA882]" />
-              <span>Mode Demo Interaktif Aktif: Kluster Melati RT 04 (Hari ke-8 Uji Coba)</span>
+              <span className="w-2 h-2 rounded-full bg-brand-green" />
+              <span className="sm:hidden">Mode Demo Interaktif</span>
+              <span className="hidden sm:inline">Mode Demo Interaktif Aktif: Kluster Melati RT 04 (Hari ke-8 Uji Coba)</span>
             </span>
 
             <button
               onClick={() => setAppMode('company_profile')}
               className="px-3 py-1 bg-white/10 hover:bg-white/20 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors"
             >
-              <ArrowLeft className="w-3.5 h-3.5" /> Kembali ke Company Profile Resmi
+              <ArrowLeft className="w-3.5 h-3.5" /> <span className="hidden sm:inline">Kembali ke Company Profile Resmi</span><span className="sm:hidden">Profil</span>
             </button>
           </div>
         </div>
       )}
 
-      <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-[#E2E8F0]">
+      <header ref={headerRef} className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-brand-border">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16 gap-4">
             {/* Zone 1: Brand Wordmark */}
             <div className="flex items-center gap-3 shrink-0">
               <button
                 onClick={() => setAppMode('company_profile')}
-                className="text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2272E8] rounded-lg"
+                className="text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-blue rounded-lg"
               >
                 <CobaSepakatLogo variant="horizontal" size="sm" showTagline={false} />
               </button>
 
-              {/* Mode indicator pill */}
-              <span
-                className={`hidden md:inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
-                  appMode === 'company_profile'
-                    ? 'bg-blue-50 text-[#2272E8] border border-blue-200'
-                    : 'bg-emerald-50 text-[#2FA882] border border-emerald-200'
-                }`}
-              >
-                {appMode === 'company_profile' ? 'Company Profile' : 'Demo Interaktif'}
-              </span>
+              {appMode === 'demo' && (
+                <span className="hidden 2xl:inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider bg-brand-mint text-brand-green border border-brand-green-light/40">
+                  Demo Interaktif
+                </span>
+              )}
             </div>
 
             {/* Zone 2: Navigation Links with Functional Dropdowns (anti-slop, clean) */}
             {appMode === 'company_profile' ? (
-              <nav className="hidden lg:flex items-center gap-6 text-xs font-semibold text-[#5B6780]">
-                {/* Metodologi 9 Tahap Dropdown */}
-                <div className="relative">
+              <nav aria-label="Navigasi utama" className="hidden lg:flex items-center gap-10 text-sm font-semibold text-brand-navy">
+                {companyLinks.map((l) => (
                   <button
-                    onClick={() => setShowMethodDropdown(!showMethodDropdown)}
-                    onBlur={() => setTimeout(() => setShowMethodDropdown(false), 200)}
-                    className="flex items-center gap-1 hover:text-[#153A73] transition-colors py-1"
+                    key={l.id}
+                    onClick={() => scrollToSection(l.id)}
+                    className="hover:text-brand-blue transition-colors"
                   >
-                    <span>Metodologi 9 Tahap</span>
-                    <ChevronDown className="w-3.5 h-3.5" />
+                    {l.label}
                   </button>
-
-                  {showMethodDropdown && (
-                    <div className="absolute left-0 mt-2 w-72 bg-white rounded-2xl shadow-xl border border-[#E2E8F0] p-2 z-50 space-y-1">
-                      <div className="px-3 py-1.5 text-[10px] font-bold text-[#5B6780] uppercase tracking-wider">
-                        Alur Resolusi Empiris
-                      </div>
-                      <button
-                        onClick={() => {
-                          setAppMode('demo');
-                          setActiveTab('isu');
-                        }}
-                        className="w-full text-left p-2.5 rounded-xl hover:bg-[#F5F8FC] transition-colors flex items-start gap-2.5"
-                      >
-                        <Sliders className="w-4 h-4 text-[#2272E8] shrink-0 mt-0.5" />
-                        <div>
-                          <div className="text-xs font-bold text-[#153A73]">Dugaan & Bukti Pengubah</div>
-                          <div className="text-[10px] text-[#5B6780]">Mind-changing evidence sebelum pengujian</div>
-                        </div>
-                      </button>
-                      <button
-                        onClick={() => {
-                          setAppMode('demo');
-                          setActiveTab('isu');
-                        }}
-                        className="w-full text-left p-2.5 rounded-xl hover:bg-[#F5F8FC] transition-colors flex items-start gap-2.5"
-                      >
-                        <ShieldCheck className="w-4 h-4 text-[#DC2626] shrink-0 mt-0.5" />
-                        <div>
-                          <div className="text-xs font-bold text-[#153A73]">Gerbang Kelayakan (Safety Gate)</div>
-                          <div className="text-[10px] text-[#5B6780]">7 butir filter & 2 penghalang mutlak</div>
-                        </div>
-                      </button>
-                      <button
-                        onClick={() => {
-                          setAppMode('demo');
-                          setActiveTab('percobaan');
-                        }}
-                        className="w-full text-left p-2.5 rounded-xl hover:bg-[#F5F8FC] transition-colors flex items-start gap-2.5"
-                      >
-                        <Clock className="w-4 h-4 text-[#2FA882] shrink-0 mt-0.5" />
-                        <div>
-                          <div className="text-xs font-bold text-[#153A73]">Pelaksanaan 14 Hari</div>
-                          <div className="text-[10px] text-[#5B6780]">Garis dasar, guardrail, & pencatatan data</div>
-                        </div>
-                      </button>
-                    </div>
-                  )}
-                </div>
-
-                {/* Komunitas & Sasaran Dropdown */}
-                <div className="relative">
-                  <button
-                    onClick={() => setShowCommunityDropdown(!showCommunityDropdown)}
-                    onBlur={() => setTimeout(() => setShowCommunityDropdown(false), 200)}
-                    className="flex items-center gap-1 hover:text-[#153A73] transition-colors py-1"
-                  >
-                    <span>Solusi Komunitas</span>
-                    <ChevronDown className="w-3.5 h-3.5" />
-                  </button>
-
-                  {showCommunityDropdown && (
-                    <div className="absolute left-0 mt-2 w-64 bg-white rounded-2xl shadow-xl border border-[#E2E8F0] p-2 z-50 space-y-1">
-                      <button
-                        onClick={() => {
-                          setAppMode('demo');
-                          setActiveTab('beranda');
-                        }}
-                        className="w-full text-left p-2 rounded-xl hover:bg-[#F5F8FC] text-xs font-semibold text-[#153A73]"
-                      >
-                        RT/RW & Paguyuban Perumahan
-                      </button>
-                      <button
-                        onClick={() => {
-                          setAppMode('demo');
-                          setActiveTab('templat');
-                        }}
-                        className="w-full text-left p-2 rounded-xl hover:bg-[#F5F8FC] text-xs font-semibold text-[#153A73]"
-                      >
-                        Koperasi & Organisasi Mahasiswa
-                      </button>
-                      <button
-                        onClick={() => {
-                          setAppMode('demo');
-                          setActiveTab('analitik');
-                        }}
-                        className="w-full text-left p-2 rounded-xl hover:bg-[#F5F8FC] text-xs font-semibold text-[#153A73]"
-                      >
-                        Pengelola Kawasan & Apartemen
-                      </button>
-                    </div>
-                  )}
-                </div>
-
-                {/* Direct quick links */}
-                <button
-                  onClick={() => {
-                    setAppMode('demo');
-                    setActiveTab('pustaka');
-                  }}
-                  className="hover:text-[#153A73] transition-colors whitespace-nowrap"
-                >
-                  Studi Kasus Lorong B
-                </button>
-
-                <button
-                  onClick={() => setShowBrandKitModal(true)}
-                  className="hover:text-[#2FA882] transition-colors whitespace-nowrap flex items-center gap-1"
-                >
-                  <Palette className="w-3.5 h-3.5 text-[#2FA882]" />
-                  Brand Kit (No-BG)
-                </button>
+                ))}
               </nav>
             ) : (
               /* Demo Mode Navigation Tabs */
-              <nav className="hidden lg:flex items-center gap-5 text-xs font-medium text-[#5B6780]">
+              <nav aria-label="Navigasi demo" className="hidden lg:flex items-center gap-4 xl:gap-5 text-xs font-medium text-brand-slate">
                 <button
                   onClick={() => setActiveTab('beranda')}
-                  className={`hover:text-[#153A73] transition-colors whitespace-nowrap py-1 border-b-2 ${
+                  className={`hover:text-brand-navy transition-colors whitespace-nowrap py-1 border-b-2 ${
                     activeTab === 'beranda'
-                      ? 'border-[#2272E8] text-[#153A73] font-bold'
+                      ? 'border-brand-blue text-brand-navy font-bold'
                       : 'border-transparent'
                   }`}
                 >
@@ -250,9 +174,9 @@ export const Navbar: React.FC = () => {
                 </button>
                 <button
                   onClick={() => setActiveTab('isu')}
-                  className={`hover:text-[#153A73] transition-colors whitespace-nowrap py-1 border-b-2 ${
+                  className={`hover:text-brand-navy transition-colors whitespace-nowrap py-1 border-b-2 ${
                     activeTab === 'isu' || activeTab === 'percobaan'
-                      ? 'border-[#2272E8] text-[#153A73] font-bold'
+                      ? 'border-brand-blue text-brand-navy font-bold'
                       : 'border-transparent'
                   }`}
                 >
@@ -260,9 +184,9 @@ export const Navbar: React.FC = () => {
                 </button>
                 <button
                   onClick={() => setActiveTab('pustaka')}
-                  className={`hover:text-[#153A73] transition-colors whitespace-nowrap py-1 border-b-2 ${
+                  className={`hover:text-brand-navy transition-colors whitespace-nowrap py-1 border-b-2 ${
                     activeTab === 'pustaka'
-                      ? 'border-[#2272E8] text-[#153A73] font-bold'
+                      ? 'border-brand-blue text-brand-navy font-bold'
                       : 'border-transparent'
                   }`}
                 >
@@ -270,9 +194,9 @@ export const Navbar: React.FC = () => {
                 </button>
                 <button
                   onClick={() => setActiveTab('templat')}
-                  className={`hover:text-[#153A73] transition-colors whitespace-nowrap py-1 border-b-2 ${
+                  className={`hover:text-brand-navy transition-colors whitespace-nowrap py-1 border-b-2 ${
                     activeTab === 'templat'
-                      ? 'border-[#2272E8] text-[#153A73] font-bold'
+                      ? 'border-brand-blue text-brand-navy font-bold'
                       : 'border-transparent'
                   }`}
                 >
@@ -280,9 +204,9 @@ export const Navbar: React.FC = () => {
                 </button>
                 <button
                   onClick={() => setActiveTab('analitik')}
-                  className={`hover:text-[#153A73] transition-colors whitespace-nowrap py-1 border-b-2 ${
+                  className={`hover:text-brand-navy transition-colors whitespace-nowrap py-1 border-b-2 ${
                     activeTab === 'analitik'
-                      ? 'border-[#2272E8] text-[#153A73] font-bold'
+                      ? 'border-brand-blue text-brand-navy font-bold'
                       : 'border-transparent'
                   }`}
                 >
@@ -290,9 +214,9 @@ export const Navbar: React.FC = () => {
                 </button>
                 <button
                   onClick={() => setActiveTab('fasilitator')}
-                  className={`hover:text-[#153A73] transition-colors whitespace-nowrap py-1 border-b-2 ${
+                  className={`hover:text-brand-navy transition-colors whitespace-nowrap py-1 border-b-2 ${
                     activeTab === 'fasilitator'
-                      ? 'border-[#2272E8] text-[#153A73] font-bold'
+                      ? 'border-brand-blue text-brand-navy font-bold'
                       : 'border-transparent'
                   }`}
                 >
@@ -300,9 +224,9 @@ export const Navbar: React.FC = () => {
                 </button>
                 <button
                   onClick={() => setActiveTab('audit')}
-                  className={`hover:text-[#153A73] transition-colors whitespace-nowrap py-1 border-b-2 ${
+                  className={`hover:text-brand-navy transition-colors whitespace-nowrap py-1 border-b-2 ${
                     activeTab === 'audit'
-                      ? 'border-[#2272E8] text-[#153A73] font-bold'
+                      ? 'border-brand-blue text-brand-navy font-bold'
                       : 'border-transparent'
                   }`}
                 >
@@ -316,37 +240,35 @@ export const Navbar: React.FC = () => {
               {appMode === 'company_profile' ? (
                 <>
                   <button
-                    onClick={() => setShowBrandKitModal(true)}
-                    className="hidden sm:flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold text-[#153A73] bg-[#F5F8FC] hover:bg-slate-100 border border-[#E2E8F0] transition-colors"
+                    onClick={() => enterDemo()}
+                    className="hidden sm:block px-5 py-2 rounded-full border border-brand-blue text-brand-blue hover:bg-brand-surface-blue text-xs font-bold transition-colors"
                   >
-                    <Palette className="w-3.5 h-3.5 text-[#2FA882]" />
-                    <span>Brand Kit</span>
+                    Masuk
                   </button>
                   <button
-                    onClick={() => setAppMode('demo')}
-                    className="px-4 py-2 bg-[#2272E8] hover:bg-[#1A58B8] text-white rounded-xl text-xs font-bold transition-all shadow-md flex items-center gap-1.5"
+                    onClick={() => enterDemo()}
+                    className="px-5 py-2 bg-brand-blue-dark hover:bg-brand-navy text-white rounded-full text-xs font-bold transition-colors shadow-card"
                   >
-                    <Play className="w-3.5 h-3.5 fill-white" />
-                    <span>Masuk ke Demo Interaktif</span>
+                    Mulai Sekarang
                   </button>
                 </>
               ) : (
                 /* Demo Mode Persona Switcher & Space Picker */
                 <>
                   {/* Space selector */}
-                  <div className="relative hidden xl:block">
+                  <div className="relative hidden 2xl:block">
                     <button
                       onClick={() => setShowSpaceDropdown(!showSpaceDropdown)}
-                      className="flex items-center gap-1.5 text-xs text-[#5B6780] hover:text-[#153A73] font-medium py-1.5 px-2.5 rounded-xl border border-[#E2E8F0] hover:bg-[#F5F8FC] transition-colors"
+                      className="flex items-center gap-1.5 text-xs text-brand-slate hover:text-brand-navy font-medium py-1.5 px-2.5 rounded-xl border border-brand-border hover:bg-brand-surface transition-colors"
                     >
-                      <Building2 className="w-3.5 h-3.5 text-[#2272E8]" />
+                      <Building2 className="w-3.5 h-3.5 text-brand-blue" />
                       <span className="truncate max-w-[130px]">{currentSpace.name}</span>
-                      <ChevronDown className="w-3 h-3 text-[#5B6780]" />
+                      <ChevronDown className="w-3 h-3 text-brand-slate" />
                     </button>
 
                     {showSpaceDropdown && (
-                      <div className="absolute right-0 mt-1 w-64 bg-white rounded-2xl shadow-lg border border-[#E2E8F0] py-1 z-50">
-                        <div className="px-3 py-1.5 text-[10px] font-bold text-[#5B6780] uppercase tracking-wider">
+                      <div className="absolute right-0 mt-1 w-64 bg-white rounded-2xl shadow-lg border border-brand-border py-1 z-50">
+                        <div className="px-3 py-1.5 text-xs font-bold text-brand-slate uppercase tracking-wider">
                           Pilih Ruang Komunitas
                         </div>
                         {spaces.map((sp) => (
@@ -356,14 +278,14 @@ export const Navbar: React.FC = () => {
                               setCurrentSpaceId(sp.id);
                               setShowSpaceDropdown(false);
                             }}
-                            className={`w-full text-left px-3 py-2 text-xs flex flex-col hover:bg-[#F5F8FC] ${
+                            className={`w-full text-left px-3 py-2 text-xs flex flex-col hover:bg-brand-surface ${
                               sp.id === currentSpace.id
-                                ? 'bg-[#2272E8]/5 text-[#2272E8] font-semibold'
-                                : 'text-[#153A73]'
+                                ? 'bg-brand-blue/5 text-brand-blue font-semibold'
+                                : 'text-brand-navy'
                             }`}
                           >
                             <span>{sp.name}</span>
-                            <span className="text-[10px] text-[#5B6780]">
+                            <span className="text-xs text-brand-slate">
                               {sp.unitCount} Unit · {sp.activeMemberCount} Warga Aktif
                             </span>
                           </button>
@@ -376,8 +298,10 @@ export const Navbar: React.FC = () => {
                   <div className="relative">
                     <button
                       onClick={() => setShowUserDropdown(!showUserDropdown)}
-                      className="flex items-center gap-2 px-2.5 py-1.5 rounded-xl border border-[#E2E8F0] hover:border-[#2272E8] bg-[#F5F8FC] hover:bg-white transition-all text-left"
+                      className="flex items-center gap-2 px-2.5 py-1.5 rounded-xl border border-brand-border hover:border-brand-blue bg-brand-surface hover:bg-white transition-all text-left"
                       title="Ganti Persona untuk Menguji Hak Akses (RBAC)"
+                      aria-haspopup="menu"
+                      aria-expanded={showUserDropdown}
                     >
                       <img
                         src={currentUser.avatarUrl}
@@ -385,21 +309,21 @@ export const Navbar: React.FC = () => {
                         className="w-7 h-7 rounded-full object-cover shrink-0 border border-white"
                       />
                       <div className="hidden sm:flex flex-col text-left leading-none">
-                        <span className="text-xs font-semibold text-[#153A73] truncate max-w-[100px]">
+                        <span className="text-xs font-semibold text-brand-navy truncate max-w-[100px]">
                           {currentUser.displayName || currentUser.name}
                         </span>
-                        <span className="text-[10px] text-[#2FA882] font-medium mt-0.5">
+                        <span className="text-xs text-brand-green font-medium mt-0.5">
                           {getRoleBadge(currentUser.role)}
                         </span>
                       </div>
-                      <ChevronDown className="w-3.5 h-3.5 text-[#5B6780]" />
+                      <ChevronDown className="w-3.5 h-3.5 text-brand-slate" />
                     </button>
 
                     {showUserDropdown && (
-                      <div className="absolute right-0 mt-2 w-72 bg-white rounded-2xl shadow-xl border border-[#E2E8F0] py-2 z-50">
-                        <div className="px-4 py-2 border-b border-[#E2E8F0]">
-                          <div className="text-xs font-bold text-[#153A73]">Uji Peran (RBAC)</div>
-                          <div className="text-[11px] text-[#5B6780]">
+                      <div className="absolute right-0 mt-2 w-72 bg-white rounded-2xl shadow-xl border border-brand-border py-2 z-50">
+                        <div className="px-4 py-2 border-b border-brand-border">
+                          <div className="text-xs font-bold text-brand-navy">Uji Peran (RBAC)</div>
+                          <div className="text-xs text-brand-slate">
                             Ganti persona untuk mencoba alur dari sudut pandang warga, pengusul, pengurus, atau fasilitator:
                           </div>
                         </div>
@@ -411,8 +335,8 @@ export const Navbar: React.FC = () => {
                                 setCurrentUser(u);
                                 setShowUserDropdown(false);
                               }}
-                              className={`w-full px-4 py-2 text-left flex items-center gap-3 hover:bg-[#F5F8FC] transition-colors ${
-                                u.id === currentUser.id ? 'bg-[#2272E8]/5' : ''
+                              className={`w-full px-4 py-2 text-left flex items-center gap-3 hover:bg-brand-surface transition-colors ${
+                                u.id === currentUser.id ? 'bg-brand-blue/5' : ''
                               }`}
                             >
                               <img
@@ -424,33 +348,38 @@ export const Navbar: React.FC = () => {
                                 <span
                                   className={`text-xs ${
                                     u.id === currentUser.id
-                                      ? 'font-bold text-[#2272E8]'
-                                      : 'font-medium text-[#153A73]'
+                                      ? 'font-bold text-brand-blue'
+                                      : 'font-medium text-brand-navy'
                                   }`}
                                 >
                                   {u.displayName || u.name}
                                 </span>
-                                <span className="text-[10px] text-[#5B6780]">
+                                <span className="text-xs text-brand-slate">
                                   {getRoleBadge(u.role)} · {u.unitLabel}
                                 </span>
                               </div>
                             </button>
                           ))}
                         </div>
-                        <div className="px-4 pt-2 border-t border-[#E2E8F0] flex justify-between items-center">
+                        <div className="px-4 pt-2 border-t border-brand-border flex justify-between items-center">
                           <button
                             onClick={() => {
-                              if (confirm('Kembalikan semua data ke kondisi seed awal?')) {
-                                resetAllData();
-                                setShowUserDropdown(false);
+                              if (!confirmReset) {
+                                setConfirmReset(true);
+                                return;
                               }
+                              resetAllData();
+                              setConfirmReset(false);
+                              setShowUserDropdown(false);
                             }}
-                            className="text-[11px] text-[#5B6780] hover:text-[#DC2626] flex items-center gap-1"
+                            className={`text-xs flex items-center gap-1 ${
+                              confirmReset ? 'text-status-stopped font-bold' : 'text-brand-slate hover:text-status-stopped'
+                            }`}
                           >
                             <RotateCcw className="w-3 h-3" />
-                            Reset Data Demo
+                            {confirmReset ? 'Klik lagi untuk konfirmasi' : 'Reset Data Demo'}
                           </button>
-                          <span className="text-[10px] text-slate-400 font-mono">v1.0-MVP</span>
+                          <span className="text-xs text-slate-400 font-mono">v1.0-MVP</span>
                         </div>
                       </div>
                     )}
@@ -458,10 +387,12 @@ export const Navbar: React.FC = () => {
 
                   <button
                     onClick={() => setAppMode('company_profile')}
-                    className="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-[#153A73] rounded-xl text-xs font-semibold flex items-center gap-1 transition-colors"
+                    aria-label="Kembali ke Company Profile"
+                    title="Kembali ke Company Profile"
+                    className="px-3.5 py-2 bg-brand-surface-blue hover:bg-brand-sky text-brand-navy rounded-full text-xs font-semibold flex items-center gap-1 transition-colors"
                   >
                     <ArrowLeft className="w-3.5 h-3.5" />
-                    <span className="hidden md:inline">Company Profile</span>
+                    <span className="hidden 2xl:inline">Company Profile</span>
                   </button>
                 </>
               )}
@@ -469,7 +400,9 @@ export const Navbar: React.FC = () => {
               {/* Mobile Hamburger */}
               <button
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="lg:hidden p-2 rounded-lg text-[#5B6780] hover:text-[#153A73] hover:bg-[#F5F8FC]"
+                aria-label={mobileMenuOpen ? 'Tutup menu' : 'Buka menu'}
+                aria-expanded={mobileMenuOpen}
+                className="lg:hidden p-2 rounded-lg text-brand-slate hover:text-brand-navy hover:bg-brand-surface"
               >
                 {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
               </button>
@@ -479,15 +412,15 @@ export const Navbar: React.FC = () => {
 
         {/* Mobile Navigation Drawer */}
         {mobileMenuOpen && (
-          <div className="lg:hidden border-t border-[#E2E8F0] bg-white px-4 pt-2 pb-4 space-y-2">
-            <div className="flex items-center justify-between pb-2 border-b border-[#E2E8F0]">
-              <span className="text-xs font-bold text-[#153A73]">Navigasi Aplikasi</span>
+          <div className="lg:hidden border-t border-brand-border bg-white px-4 pt-2 pb-4 space-y-2">
+            <div className="flex items-center justify-between pb-2 border-b border-brand-border">
+              <span className="text-xs font-bold text-brand-navy">Navigasi Aplikasi</span>
               <button
                 onClick={() => {
                   setAppMode(appMode === 'company_profile' ? 'demo' : 'company_profile');
                   setMobileMenuOpen(false);
                 }}
-                className="text-xs font-bold text-[#2272E8]"
+                className="text-xs font-bold text-brand-blue"
               >
                 {appMode === 'company_profile' ? 'Buka Demo →' : '← Company Profile'}
               </button>
@@ -495,24 +428,26 @@ export const Navbar: React.FC = () => {
 
             {appMode === 'company_profile' ? (
               <div className="space-y-1">
+                {companyLinks.map((l) => (
+                  <button
+                    key={l.id}
+                    onClick={() => {
+                      scrollToSection(l.id);
+                      setMobileMenuOpen(false);
+                    }}
+                    className="w-full text-left px-3 py-2 text-sm font-semibold text-brand-navy hover:bg-brand-surface rounded-xl"
+                  >
+                    {l.label}
+                  </button>
+                ))}
                 <button
                   onClick={() => {
-                    setAppMode('demo');
-                    setActiveTab('beranda');
+                    enterDemo();
                     setMobileMenuOpen(false);
                   }}
-                  className="w-full text-left px-3 py-2 text-xs font-bold text-[#2272E8] bg-blue-50 rounded-xl"
+                  className="w-full text-left px-3 py-2 text-sm font-bold text-brand-blue bg-brand-surface-blue rounded-xl"
                 >
-                  ▶ Masuk ke Demo Interaktif
-                </button>
-                <button
-                  onClick={() => {
-                    setShowBrandKitModal(true);
-                    setMobileMenuOpen(false);
-                  }}
-                  className="w-full text-left px-3 py-2 text-xs font-semibold text-[#153A73] hover:bg-[#F5F8FC] rounded-xl"
-                >
-                  Logo & Brand Kit (No-BG)
+                  Masuk / Mulai Sekarang
                 </button>
               </div>
             ) : (
@@ -523,7 +458,7 @@ export const Navbar: React.FC = () => {
                     setMobileMenuOpen(false);
                   }}
                   className={`w-full text-left px-3 py-2 text-xs rounded-xl ${
-                    activeTab === 'beranda' ? 'bg-[#2272E8]/10 text-[#2272E8] font-bold' : 'text-[#153A73]'
+                    activeTab === 'beranda' ? 'bg-brand-blue/10 text-brand-blue font-bold' : 'text-brand-navy'
                   }`}
                 >
                   Dasbor Ruang Komunitas
@@ -534,7 +469,7 @@ export const Navbar: React.FC = () => {
                     setMobileMenuOpen(false);
                   }}
                   className={`w-full text-left px-3 py-2 text-xs rounded-xl ${
-                    activeTab === 'isu' ? 'bg-[#2272E8]/10 text-[#2272E8] font-bold' : 'text-[#153A73]'
+                    activeTab === 'isu' ? 'bg-brand-blue/10 text-brand-blue font-bold' : 'text-brand-navy'
                   }`}
                 >
                   Isu & Percobaan
@@ -545,7 +480,7 @@ export const Navbar: React.FC = () => {
                     setMobileMenuOpen(false);
                   }}
                   className={`w-full text-left px-3 py-2 text-xs rounded-xl ${
-                    activeTab === 'pustaka' ? 'bg-[#2272E8]/10 text-[#2272E8] font-bold' : 'text-[#153A73]'
+                    activeTab === 'pustaka' ? 'bg-brand-blue/10 text-brand-blue font-bold' : 'text-brand-navy'
                   }`}
                 >
                   Pustaka Keputusan
@@ -556,7 +491,7 @@ export const Navbar: React.FC = () => {
                     setMobileMenuOpen(false);
                   }}
                   className={`w-full text-left px-3 py-2 text-xs rounded-xl ${
-                    activeTab === 'templat' ? 'bg-[#2272E8]/10 text-[#2272E8] font-bold' : 'text-[#153A73]'
+                    activeTab === 'templat' ? 'bg-brand-blue/10 text-brand-blue font-bold' : 'text-brand-navy'
                   }`}
                 >
                   Templat Uji Coba
@@ -567,10 +502,32 @@ export const Navbar: React.FC = () => {
                     setMobileMenuOpen(false);
                   }}
                   className={`w-full text-left px-3 py-2 text-xs rounded-xl ${
-                    activeTab === 'analitik' ? 'bg-[#2272E8]/10 text-[#2272E8] font-bold' : 'text-[#153A73]'
+                    activeTab === 'analitik' ? 'bg-brand-blue/10 text-brand-blue font-bold' : 'text-brand-navy'
                   }`}
                 >
                   Analitik Dampak
+                </button>
+                <button
+                  onClick={() => {
+                    setActiveTab('fasilitator');
+                    setMobileMenuOpen(false);
+                  }}
+                  className={`w-full text-left px-3 py-2 text-xs rounded-xl ${
+                    activeTab === 'fasilitator' ? 'bg-brand-blue/10 text-brand-blue font-bold' : 'text-brand-navy'
+                  }`}
+                >
+                  Layanan Fasilitasi
+                </button>
+                <button
+                  onClick={() => {
+                    setActiveTab('audit');
+                    setMobileMenuOpen(false);
+                  }}
+                  className={`w-full text-left px-3 py-2 text-xs rounded-xl ${
+                    activeTab === 'audit' ? 'bg-brand-blue/10 text-brand-blue font-bold' : 'text-brand-navy'
+                  }`}
+                >
+                  Log Audit
                 </button>
               </div>
             )}
@@ -578,8 +535,6 @@ export const Navbar: React.FC = () => {
         )}
       </header>
 
-      {/* Brand Kit Modal Trigger */}
-      {showBrandKitModal && <BrandKitModal onClose={() => setShowBrandKitModal(false)} />}
     </>
   );
 };

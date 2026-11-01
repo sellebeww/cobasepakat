@@ -6,3 +6,9 @@ coverage/
 *.log
 .env*
 !.env.example
+
+# internal audit working files
+audit-reports/
+docs/audit/
+.claude/
+.vercel/

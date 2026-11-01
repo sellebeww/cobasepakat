@@ -46,6 +46,9 @@ export const ExperimentDashboard: React.FC<ExperimentDashboardProps> = ({
     triggerEmergencyStop,
     submitApproval,
   } = useApp();
+  const [showAllEntries, setShowAllEntries] = useState(false);
+  // Recorders cannot verify their own entries, so switching persona is part of the demo flow.
+  const canVerify = ['pengurus', 'fasilitator', 'pemantau_independen', 'pengelola_kawasan'].includes(currentUser.role);
 
   // Mobile quick entry states
   const [selectedMetricId, setSelectedMetricId] = useState<string>(
@@ -96,23 +99,23 @@ export const ExperimentDashboard: React.FC<ExperimentDashboardProps> = ({
       {/* Top Banner / Emergency Stop Notice if stopped */}
       {isStopped && (
         <div className="bg-red-50 border-2 border-red-300 rounded-2xl p-5 text-red-900 flex items-start gap-4 shadow-sm">
-          <div className="w-10 h-10 rounded-xl bg-red-100 flex items-center justify-center shrink-0 text-[#DC2626]">
+          <div className="w-10 h-10 rounded-xl bg-red-100 flex items-center justify-center shrink-0 text-status-stopped">
             <ShieldAlert className="w-6 h-6" />
           </div>
           <div className="space-y-1 flex-1">
-            <h3 className="font-bold text-base text-[#DC2626]">
+            <h3 className="font-bold text-base text-status-stopped">
               Percobaan Dihentikan Segera (Aturan Berhenti Terpicu)
             </h3>
             <p className="text-xs text-red-800">
               Penyebab: &ldquo;{experiment.stoppedReason}&rdquo;
             </p>
-            <div className="text-[11px] text-red-600 font-mono">
+            <div className="text-xs text-red-600 font-mono">
               Waktu Penghentian: {experiment.stoppedAt ? new Date(experiment.stoppedAt).toLocaleString('id-ID') : 'Baru saja'}
             </div>
             <div className="pt-2">
               <button
                 onClick={onOpenEvaluation}
-                className="px-4 py-1.5 bg-[#DC2626] text-white rounded-xl text-xs font-semibold hover:bg-red-700 transition-colors"
+                className="px-4 py-1.5 bg-status-stopped text-white rounded-xl text-xs font-semibold hover:bg-red-700 transition-colors"
               >
                 Buka Evaluasi & Tinjauan Insiden &rarr;
               </button>
@@ -122,36 +125,36 @@ export const ExperimentDashboard: React.FC<ExperimentDashboardProps> = ({
       )}
 
       {/* Primary Header Card with Days Progress & Stop Button */}
-      <div className="bg-white rounded-3xl p-6 md:p-8 border border-[#E2E8F0] shadow-sm space-y-6">
+      <div className="bg-white rounded-3xl p-6 md:p-8 border border-brand-border shadow-sm space-y-6">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <div className="flex items-center gap-2 text-xs font-semibold text-[#5B6780] mb-1">
+            <div className="flex items-center gap-2 text-xs font-semibold text-brand-slate mb-1">
               <span>Percobaan Versi {experiment.version}</span>
               <span>·</span>
               <span className="font-mono">{experiment.startDate} s/d {experiment.endDate}</span>
               <span>·</span>
-              <span className="capitalize text-[#2272E8] font-bold">
+              <span className="capitalize text-brand-blue font-bold">
                 {experiment.status.replace('_', ' ')}
               </span>
             </div>
-            <h2 className="text-xl md:text-2xl font-extrabold text-[#153A73] leading-snug">
+            <h2 className="text-xl md:text-2xl font-extrabold text-brand-navy leading-snug">
               {experiment.treatment}
             </h2>
-            <p className="text-xs text-[#5B6780] mt-1">
-              Ruang Lingkup: <span className="font-semibold text-[#153A73]">{experiment.scope}</span>
+            <p className="text-xs text-brand-slate mt-1">
+              Ruang Lingkup: <span className="font-semibold text-brand-navy">{experiment.scope}</span>
             </p>
           </div>
 
           {/* Action cluster */}
-          <div className="flex items-center gap-2 shrink-0">
+          <div className="flex flex-wrap items-center gap-2 md:shrink-0">
             {/* Panic Stop Button */}
             {!isStopped && !isDone && (
               <button
                 onClick={() => setShowStopModal(true)}
-                className="px-4 py-2.5 bg-red-50 hover:bg-red-100 text-[#DC2626] border border-red-200 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shadow-sm active:scale-95"
+                className="px-4 py-2.5 bg-red-50 hover:bg-red-100 text-status-stopped border border-red-200 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shadow-sm active:scale-95"
                 title="Hentikan percobaan detik ini juga jika keselamatan terancam"
               >
-                <AlertTriangle className="w-4 h-4 text-[#DC2626]" />
+                <AlertTriangle className="w-4 h-4 text-status-stopped" />
                 Hentikan Sekarang
               </button>
             )}
@@ -159,7 +162,7 @@ export const ExperimentDashboard: React.FC<ExperimentDashboardProps> = ({
             {/* Quick Link to Evaluation or Decision */}
             <button
               onClick={onOpenEvaluation}
-              className="px-4 py-2.5 bg-[#153A73] hover:bg-[#1A58B8] text-white rounded-xl text-xs font-bold transition-all shadow-sm flex items-center gap-1.5"
+              className="px-4 py-2.5 bg-brand-navy hover:bg-brand-blue-dark text-white rounded-xl text-xs font-bold transition-all shadow-sm flex items-center gap-1.5"
             >
               <Activity className="w-4 h-4" />
               Laporan Evaluasi
@@ -168,7 +171,7 @@ export const ExperimentDashboard: React.FC<ExperimentDashboardProps> = ({
             {(currentUser.role === 'pengurus' || currentUser.role === 'pengelola_kawasan') && (
               <button
                 onClick={onOpenDecision}
-                className="px-4 py-2.5 bg-[#2FA882] hover:bg-[#258768] text-white rounded-xl text-xs font-bold transition-all shadow-sm flex items-center gap-1.5"
+                className="px-4 py-2.5 bg-brand-green hover:bg-[#258768] text-white rounded-xl text-xs font-bold transition-all shadow-sm flex items-center gap-1.5"
               >
                 <FileText className="w-4 h-4" />
                 Catat Keputusan
@@ -178,20 +181,20 @@ export const ExperimentDashboard: React.FC<ExperimentDashboardProps> = ({
         </div>
 
         {/* Day tracker and progress bar */}
-        <div className="bg-[#F5F8FC] rounded-2xl p-4 border border-[#E2E8F0]">
+        <div className="bg-brand-surface rounded-2xl p-4 border border-brand-border">
           <div className="flex items-center justify-between text-xs mb-2">
-            <span className="font-bold text-[#153A73] flex items-center gap-1.5">
-              <Clock className="w-4 h-4 text-[#2272E8]" />
+            <span className="font-bold text-brand-navy flex items-center gap-1.5">
+              <Clock className="w-4 h-4 text-brand-blue" />
               Progres Percobaan: Hari ke-{isDone ? experiment.durationDays : 8} dari {experiment.durationDays} Hari
             </span>
-            <span className="font-mono text-[#5B6780] font-semibold">
+            <span className="font-mono text-brand-slate font-semibold">
               {Math.round(((isDone ? experiment.durationDays : 8) / experiment.durationDays) * 100)}% Berjalan
             </span>
           </div>
-          <div className="w-full bg-[#E2E8F0] h-2.5 rounded-full overflow-hidden">
+          <div className="w-full bg-brand-border h-2.5 rounded-full overflow-hidden">
             <div
               className={`h-full transition-all duration-500 rounded-full ${
-                isStopped ? 'bg-[#DC2626]' : 'bg-[#2272E8]'
+                isStopped ? 'bg-status-stopped' : 'bg-brand-blue'
               }`}
               style={{
                 width: `${Math.min(100, Math.round(((isDone ? experiment.durationDays : 8) / experiment.durationDays) * 100))}%`,
@@ -201,11 +204,11 @@ export const ExperimentDashboard: React.FC<ExperimentDashboardProps> = ({
         </div>
 
         {/* Pre-Agreed Decision Rule Banner */}
-        <div className="border-l-2 border-[#2FA882] pl-4 py-1">
-          <div className="text-[11px] font-bold text-[#2FA882] uppercase tracking-wider">
+        <div className="border-l-2 border-brand-green pl-4 py-1">
+          <div className="text-xs font-bold text-brand-green uppercase tracking-wider">
             Aturan Keputusan yang Disepakati di Muka (Pre-Agreed Rule)
           </div>
-          <div className="text-xs text-[#153A73] font-medium mt-0.5">
+          <div className="text-xs text-brand-navy font-medium mt-0.5">
             &ldquo;{experiment.decisionRule}&rdquo;
           </div>
         </div>
@@ -216,11 +219,11 @@ export const ExperimentDashboard: React.FC<ExperimentDashboardProps> = ({
         {/* Column 1 & 2: Real-Time Metrics & Charts */}
         <div className="lg:col-span-2 space-y-4">
           <div className="flex items-center justify-between">
-            <h3 className="text-base font-bold text-[#153A73] flex items-center gap-2">
-              <Activity className="w-4 h-4 text-[#2272E8]" />
+            <h3 className="text-base font-bold text-brand-navy flex items-center gap-2">
+              <Activity className="w-4 h-4 text-brand-blue" />
               Metrik Lapangan vs Garis Dasar (Baseline)
             </h3>
-            <span className="text-xs text-[#5B6780]">
+            <span className="text-xs text-brand-slate">
               {experiment.dataEntries.length} entri tercatat
             </span>
           </div>
@@ -241,17 +244,17 @@ export const ExperimentDashboard: React.FC<ExperimentDashboardProps> = ({
               return (
                 <div
                   key={met.id}
-                  className="bg-white rounded-2xl p-4 border border-[#E2E8F0] shadow-sm space-y-3"
+                  className="bg-white rounded-2xl p-4 border border-brand-border shadow-sm space-y-3"
                 >
-                  <div className="flex items-start justify-between">
+                  <div className="flex items-start justify-between gap-2">
                     <div>
-                      <h4 className="text-xs font-bold text-[#153A73] line-clamp-1">{met.name}</h4>
-                      <p className="text-[10px] text-[#5B6780]">{met.frequency}</p>
+                      <h4 className="text-xs font-bold text-brand-navy leading-snug">{met.name}</h4>
+                      <p className="text-xs text-brand-slate">{met.frequency}</p>
                     </div>
                     <span
-                      className={`text-[11px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1 ${
+                      className={`shrink-0 whitespace-nowrap text-xs font-bold px-2 py-0.5 rounded-full flex items-center gap-1 ${
                         isImproved
-                          ? 'bg-[#2FA882]/10 text-[#2FA882]'
+                          ? 'bg-brand-green/10 text-brand-green'
                           : 'bg-amber-50 text-amber-700'
                       }`}
                     >
@@ -260,37 +263,37 @@ export const ExperimentDashboard: React.FC<ExperimentDashboardProps> = ({
                   </div>
 
                   {/* Value comparison strip */}
-                  <div className="grid grid-cols-3 gap-2 text-center py-2 bg-[#F5F8FC] rounded-xl">
+                  <div className="grid grid-cols-3 gap-2 text-center py-2 bg-brand-surface rounded-xl">
                     <div>
-                      <div className="text-[10px] text-[#5B6780]">Garis Dasar</div>
-                      <div className="text-xs font-mono font-bold text-[#153A73]">
+                      <div className="text-xs text-brand-slate">Garis Dasar</div>
+                      <div className="text-xs font-mono font-bold text-brand-navy">
                         {met.baselineValue}
                       </div>
                     </div>
                     <div>
-                      <div className="text-[10px] text-[#5B6780]">Saat Ini</div>
+                      <div className="text-xs text-brand-slate">Saat Ini</div>
                       <div
                         className={`text-sm font-mono font-extrabold ${
-                          isImproved ? 'text-[#2FA882]' : 'text-amber-600'
+                          isImproved ? 'text-brand-green' : 'text-amber-600'
                         }`}
                       >
                         {currentVal}
                       </div>
                     </div>
                     <div>
-                      <div className="text-[10px] text-[#5B6780]">Ambang Target</div>
-                      <div className="text-xs font-mono font-bold text-[#2272E8]">
+                      <div className="text-xs text-brand-slate">Ambang Target</div>
+                      <div className="text-xs font-mono font-bold text-brand-blue">
                         {met.thresholdValue}
                       </div>
                     </div>
                   </div>
 
                   {/* Visual delta indicator */}
-                  <div className="flex items-center justify-between text-[11px]">
-                    <span className="text-[#5B6780]">Selisih vs Garis Dasar:</span>
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="text-brand-slate">Selisih vs Garis Dasar:</span>
                     <span
                       className={`font-mono font-bold flex items-center gap-0.5 ${
-                        isImproved ? 'text-[#2FA882]' : 'text-amber-700'
+                        isImproved ? 'text-brand-green' : 'text-amber-700'
                       }`}
                     >
                       {percentDiff > 0 ? `+${percentDiff}%` : `${percentDiff}%`}
@@ -307,18 +310,18 @@ export const ExperimentDashboard: React.FC<ExperimentDashboardProps> = ({
           </div>
 
           {/* Quick Data Logger Card (Mobile-First / Field Logger) */}
-          <div className="bg-white rounded-3xl p-5 border border-[#E2E8F0] shadow-sm space-y-4">
+          <div className="bg-white rounded-3xl p-5 border border-brand-border shadow-sm space-y-4">
             <div className="flex items-center justify-between">
               <div>
-                <h4 className="text-xs font-bold text-[#153A73] uppercase tracking-wider flex items-center gap-2">
-                  <Plus className="w-4 h-4 text-[#2272E8]" />
+                <h4 className="text-xs font-bold text-brand-navy uppercase tracking-wider flex items-center gap-2">
+                  <Plus className="w-4 h-4 text-brand-blue" />
                   Pencatatan Cepat Lapangan (Mobile Fast Entry)
                 </h4>
-                <p className="text-[11px] text-[#5B6780]">
+                <p className="text-xs text-brand-slate">
                   Siap digunakan petugas jaga, relawan RT, atau pemantau dari ponsel.
                 </p>
               </div>
-              <span className="text-[10px] text-[#2FA882] bg-emerald-50 px-2 py-0.5 rounded-full font-medium">
+              <span className="text-xs text-brand-green bg-emerald-50 px-2 py-0.5 rounded-full font-medium">
                 Sinkron Otomatis (Offline-Ready)
               </span>
             </div>
@@ -326,13 +329,13 @@ export const ExperimentDashboard: React.FC<ExperimentDashboardProps> = ({
             <form onSubmit={handleQuickSubmit} className="space-y-3">
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div className="sm:col-span-1">
-                  <label className="block text-[11px] font-semibold text-[#153A73] mb-1">
+                  <label className="block text-xs font-semibold text-brand-navy mb-1">
                     Pilih Metrik:
                   </label>
                   <select
                     value={selectedMetricId}
                     onChange={(e) => setSelectedMetricId(e.target.value)}
-                    className="w-full text-xs p-2.5 rounded-xl border border-[#E2E8F0] bg-[#F5F8FC] text-[#153A73] font-medium outline-none"
+                    className="w-full text-xs p-2.5 rounded-xl border border-brand-border bg-brand-surface text-brand-navy font-medium outline-none"
                   >
                     {experiment.metrics.map((m) => (
                       <option key={m.id} value={m.id}>
@@ -343,7 +346,7 @@ export const ExperimentDashboard: React.FC<ExperimentDashboardProps> = ({
                 </div>
 
                 <div className="sm:col-span-1">
-                  <label className="block text-[11px] font-semibold text-[#153A73] mb-1">
+                  <label className="block text-xs font-semibold text-brand-navy mb-1">
                     Nilai Terukur ({currentMetric.unit}):
                   </label>
                   <input
@@ -352,13 +355,13 @@ export const ExperimentDashboard: React.FC<ExperimentDashboardProps> = ({
                     placeholder={`Contoh: ${currentMetric.baselineValue}`}
                     value={entryValue}
                     onChange={(e) => setEntryValue(e.target.value === '' ? '' : Number(e.target.value))}
-                    className="w-full text-xs p-2.5 rounded-xl border border-[#E2E8F0] font-mono text-[#153A73] outline-none"
+                    className="w-full text-xs p-2.5 rounded-xl border border-brand-border font-mono text-brand-navy outline-none"
                     required
                   />
                 </div>
 
                 <div className="sm:col-span-1">
-                  <label className="block text-[11px] font-semibold text-[#153A73] mb-1">
+                  <label className="block text-xs font-semibold text-brand-navy mb-1">
                     Catatan Kondisi / Waktu:
                   </label>
                   <input
@@ -366,37 +369,105 @@ export const ExperimentDashboard: React.FC<ExperimentDashboardProps> = ({
                     placeholder="Contoh: Jam 07.15 cerah"
                     value={entryNotes}
                     onChange={(e) => setEntryNotes(e.target.value)}
-                    className="w-full text-xs p-2.5 rounded-xl border border-[#E2E8F0] text-[#153A73] outline-none"
+                    className="w-full text-xs p-2.5 rounded-xl border border-brand-border text-brand-navy outline-none"
                   />
                 </div>
               </div>
 
               <div className="flex items-center justify-between pt-1">
-                <div className="text-[11px] text-[#5B6780] flex items-center gap-1">
+                <div className="text-xs text-brand-slate flex items-center gap-1">
                   <Camera className="w-3.5 h-3.5 text-slate-400" />
                   <span>Foto bukti & cap waktu otomatis disematkan</span>
                 </div>
                 <button
                   type="submit"
                   disabled={entryValue === ''}
-                  className="px-5 py-2 bg-[#2272E8] hover:bg-[#1A58B8] disabled:bg-slate-300 text-white rounded-xl text-xs font-bold transition-all shadow-sm flex items-center gap-1.5"
+                  className="px-5 py-2 bg-brand-blue hover:bg-brand-blue-dark disabled:bg-slate-300 text-white rounded-xl text-xs font-bold transition-all shadow-sm flex items-center gap-1.5"
                 >
                   <Send className="w-3.5 h-3.5" /> Simpan Entri Data
                 </button>
               </div>
             </form>
           </div>
+
+          {/* Field entry history, newest first, with independent verification */}
+          <div className="bg-white rounded-3xl p-5 border border-brand-border shadow-sm space-y-3">
+            <div className="flex items-center justify-between gap-3">
+              <h4 className="text-xs font-bold text-brand-navy uppercase tracking-wider">
+                Riwayat Entri Data Lapangan
+              </h4>
+              <span className="text-xs text-brand-slate">
+                {experiment.dataEntries.filter((e) => !e.verifiedBy).length} menunggu verifikasi
+              </span>
+            </div>
+
+            {experiment.dataEntries.length === 0 ? (
+              <p className="py-6 text-center text-sm text-brand-slate">
+                Belum ada entri. Catat data pertama lewat formulir di atas.
+              </p>
+            ) : (
+              <>
+                <ul className="divide-y divide-brand-border">
+                  {[...experiment.dataEntries]
+                    .sort((x, y) => y.recordedAt.localeCompare(x.recordedAt))
+                    .slice(0, showAllEntries ? undefined : 6)
+                    .map((entry) => (
+                      <li key={entry.id} className="py-3 flex items-start justify-between gap-3">
+                        <div className="min-w-0 space-y-0.5">
+                          <div className="text-sm font-bold text-brand-navy">
+                            {entry.metricName}:{' '}
+                            <span className="font-mono">
+                              {entry.value} {entry.unit}
+                            </span>
+                            <span className="text-xs font-normal text-brand-slate"> · Hari ke-{entry.dayNumber}</span>
+                          </div>
+                          {entry.notes && <p className="text-xs text-brand-slate break-words">{entry.notes}</p>}
+                          <p className="text-xs text-brand-slate">
+                            Dicatat {entry.recordedBy} ·{' '}
+                            {new Date(entry.recordedAt).toLocaleString('id-ID', { dateStyle: 'short', timeStyle: 'short' })}
+                          </p>
+                        </div>
+                        {entry.verifiedBy ? (
+                          <span className="shrink-0 text-xs font-semibold text-brand-green bg-brand-mint px-2.5 py-1 rounded-full">
+                            Terverifikasi · {entry.verifiedBy}
+                          </span>
+                        ) : canVerify && entry.recordedBy !== currentUser.name ? (
+                          <button
+                            onClick={() => verifyDataEntry(experiment.id, entry.id)}
+                            className="shrink-0 px-3 py-1.5 bg-brand-blue hover:bg-brand-blue-dark text-white text-xs font-bold rounded-lg"
+                          >
+                            Verifikasi
+                          </button>
+                        ) : (
+                          <span className="shrink-0 text-xs text-brand-slate bg-brand-surface px-2.5 py-1 rounded-full">
+                            {canVerify ? 'Menunggu pihak lain' : 'Belum diverifikasi'}
+                          </span>
+                        )}
+                      </li>
+                    ))}
+                </ul>
+                {experiment.dataEntries.length > 6 && (
+                  <button
+                    onClick={() => setShowAllEntries((v) => !v)}
+                    className="text-xs font-bold text-brand-blue hover:text-brand-blue-dark"
+                  >
+                    {showAllEntries ? 'Tampilkan lebih sedikit' : `Tampilkan semua (${experiment.dataEntries.length})`}
+                  </button>
+                )}
+              </>
+            )}
+          </div>
         </div>
 
         {/* Column 3: Stop-Rule Guardrails & Verification Stream */}
         <div className="space-y-4">
-          <div className="bg-white rounded-3xl p-5 border border-[#E2E8F0] shadow-sm space-y-4">
+          <div className="bg-white rounded-3xl p-5 border border-brand-border shadow-sm space-y-4">
             <div className="flex items-center justify-between">
-              <h4 className="text-xs font-bold text-[#153A73] uppercase tracking-wider flex items-center gap-1.5">
-                <ShieldCheck className="w-4 h-4 text-[#2FA882]" />
+              <h4 className="text-xs font-bold text-brand-navy uppercase tracking-wider flex items-center gap-1.5">
+                <ShieldCheck className="w-4 h-4 text-brand-green" />
                 Status Aturan Berhenti (Guardrails)
               </h4>
-              <span className="text-[10px] font-bold text-[#2FA882] bg-emerald-50 px-2 py-0.5 rounded-full">
+              <span className="text-xs font-bold text-brand-green bg-emerald-50 px-2 py-0.5 rounded-full">
                 {experiment.stopRules.filter((s) => !s.triggered).length}/{experiment.stopRules.length} Aman
               </span>
             </div>
@@ -408,18 +479,18 @@ export const ExperimentDashboard: React.FC<ExperimentDashboardProps> = ({
                   className={`p-3 rounded-2xl border text-xs transition-all ${
                     sr.triggered
                       ? 'bg-red-50 border-red-300 text-red-900'
-                      : 'bg-[#F5F8FC] border-[#E2E8F0] text-[#153A73]'
+                      : 'bg-brand-surface border-brand-border text-brand-navy'
                   }`}
                 >
                   <div className="flex items-start gap-2">
                     <div
                       className={`w-2.5 h-2.5 rounded-full mt-1 shrink-0 ${
-                        sr.triggered ? 'bg-[#DC2626] animate-ping' : 'bg-[#2FA882]'
+                        sr.triggered ? 'bg-status-stopped animate-ping' : 'bg-brand-green'
                       }`}
                     />
                     <div>
                       <div className="font-semibold">{sr.conditionDescription}</div>
-                      <div className="text-[10px] text-[#5B6780] mt-0.5">
+                      <div className="text-xs text-brand-slate mt-0.5">
                         Status: {sr.triggered ? 'TERPICU - Percobaan Berhenti' : 'Aman (Belum pernah terpicu)'}
                       </div>
                     </div>
@@ -428,19 +499,19 @@ export const ExperimentDashboard: React.FC<ExperimentDashboardProps> = ({
               ))}
             </div>
 
-            <div className="p-3 bg-blue-50/50 rounded-2xl border border-blue-100 text-[11px] text-[#153A73] leading-relaxed">
+            <div className="p-3 bg-blue-50/50 rounded-2xl border border-blue-100 text-xs text-brand-navy leading-relaxed">
               <span className="font-bold">Komitmen Bersama:</span> Jika salah satu dari aturan berhenti di atas
               terpenuhi, setiap pihak berhak menekan tombol &ldquo;Hentikan Sekarang&rdquo; tanpa perlu voting ulang.
             </div>
           </div>
 
           {/* Quorum Approval Status */}
-          <div className="bg-white rounded-3xl p-5 border border-[#E2E8F0] shadow-sm space-y-3">
+          <div className="bg-white rounded-3xl p-5 border border-brand-border shadow-sm space-y-3">
             <div className="flex items-center justify-between">
-              <h4 className="text-xs font-bold text-[#153A73] uppercase tracking-wider">
+              <h4 className="text-xs font-bold text-brand-navy uppercase tracking-wider">
                 Kesepakatan Desain & Kuorum
               </h4>
-              <span className="text-[10px] font-bold text-[#2272E8]">
+              <span className="text-xs font-bold text-brand-blue">
                 {approvedCount} Disetujui
               </span>
             </div>
@@ -449,17 +520,17 @@ export const ExperimentDashboard: React.FC<ExperimentDashboardProps> = ({
               {experiment.approvals.map((app) => (
                 <div
                   key={app.id}
-                  className="p-2.5 bg-[#F5F8FC] rounded-xl border border-[#E2E8F0] text-[11px]"
+                  className="p-2.5 bg-brand-surface rounded-xl border border-brand-border text-xs"
                 >
-                  <div className="flex items-center justify-between font-semibold text-[#153A73]">
+                  <div className="flex items-center justify-between font-semibold text-brand-navy">
                     <span>{app.userName}</span>
                     <span
-                      className={`text-[10px] ${
+                      className={`text-xs ${
                         app.stance === 'setuju'
-                          ? 'text-[#2FA882]'
+                          ? 'text-brand-green'
                           : app.stance === 'setuju_dengan_catatan'
-                          ? 'text-[#F59E0B]'
-                          : 'text-[#DC2626]'
+                          ? 'text-status-warning'
+                          : 'text-status-stopped'
                       }`}
                     >
                       {app.stance === 'setuju'
@@ -469,7 +540,7 @@ export const ExperimentDashboard: React.FC<ExperimentDashboardProps> = ({
                         : 'Keberatan'}
                     </span>
                   </div>
-                  {app.note && <p className="text-[#5B6780] mt-0.5 text-[10px]">{app.note}</p>}
+                  {app.note && <p className="text-brand-slate mt-0.5 text-xs">{app.note}</p>}
                 </div>
               ))}
             </div>
@@ -477,7 +548,7 @@ export const ExperimentDashboard: React.FC<ExperimentDashboardProps> = ({
             {!userHasApproved && (
               <button
                 onClick={() => setShowApprovalModal(true)}
-                className="w-full py-2 bg-[#2272E8] hover:bg-[#1A58B8] text-white rounded-xl text-xs font-bold transition-all shadow-sm"
+                className="w-full py-2 bg-brand-blue hover:bg-brand-blue-dark text-white rounded-xl text-xs font-bold transition-all shadow-sm"
               >
                 Beri Suara Kesepakatan Desain
               </button>
@@ -490,7 +561,7 @@ export const ExperimentDashboard: React.FC<ExperimentDashboardProps> = ({
       {showStopModal && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-red-200 space-y-4">
-            <div className="w-12 h-12 rounded-2xl bg-red-100 text-[#DC2626] flex items-center justify-center">
+            <div className="w-12 h-12 rounded-2xl bg-red-100 text-status-stopped flex items-center justify-center">
               <ShieldAlert className="w-7 h-7" />
             </div>
             <div>
@@ -504,7 +575,7 @@ export const ExperimentDashboard: React.FC<ExperimentDashboardProps> = ({
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-[#153A73] mb-1">
+              <label className="block text-xs font-semibold text-brand-navy mb-1">
                 Alasan Penghentian (Wajib Diisi):
               </label>
               <textarea
@@ -512,7 +583,7 @@ export const ExperimentDashboard: React.FC<ExperimentDashboardProps> = ({
                 value={stopReason}
                 onChange={(e) => setStopReason(e.target.value)}
                 placeholder="Contoh: Terjadi 1 kali ambulans kesulitan bermanuver di tikungan B-08..."
-                className="w-full text-xs p-3 rounded-xl border border-red-200 focus:ring-2 focus:ring-[#DC2626] outline-none text-[#153A73]"
+                className="w-full text-xs p-3 rounded-xl border border-red-200 focus:ring-2 focus:ring-status-stopped outline-none text-brand-navy"
               />
             </div>
 
@@ -520,7 +591,7 @@ export const ExperimentDashboard: React.FC<ExperimentDashboardProps> = ({
               <button
                 type="button"
                 onClick={() => setShowStopModal(false)}
-                className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-[#153A73] text-xs font-semibold rounded-xl"
+                className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-brand-navy text-xs font-semibold rounded-xl"
               >
                 Batal
               </button>
@@ -528,7 +599,7 @@ export const ExperimentDashboard: React.FC<ExperimentDashboardProps> = ({
                 type="button"
                 disabled={!stopReason.trim()}
                 onClick={handleStopTrial}
-                className="px-5 py-2 bg-[#DC2626] hover:bg-red-700 disabled:bg-slate-300 text-white text-xs font-bold rounded-xl shadow-md"
+                className="px-5 py-2 bg-status-stopped hover:bg-red-700 disabled:bg-slate-300 text-white text-xs font-bold rounded-xl shadow-md"
               >
                 Hentikan Percobaan Sekarang
               </button>
@@ -540,26 +611,26 @@ export const ExperimentDashboard: React.FC<ExperimentDashboardProps> = ({
       {/* Quorum Approval Modal */}
       {showApprovalModal && (
         <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-[#E2E8F0] space-y-4">
-            <h3 className="text-base font-bold text-[#153A73]">
+          <div className="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-brand-border space-y-4">
+            <h3 className="text-base font-bold text-brand-navy">
               Beri Persetujuan Desain Percobaan
             </h3>
-            <p className="text-xs text-[#5B6780]">
+            <p className="text-xs text-brand-slate">
               Sebelum percobaan dimulai, setiap pihak menyepakati cara menilai dan berkomitmen menghormati hasil akhir.
             </p>
 
             <div className="space-y-2">
               {[
-                { val: 'setuju', label: 'Setuju Sepenuhnya', color: 'text-[#2FA882]' },
-                { val: 'setuju_dengan_catatan', label: 'Setuju dengan Catatan', color: 'text-[#F59E0B]' },
-                { val: 'keberatan', label: 'Keberatan (Wajib Usul Perubahan)', color: 'text-[#DC2626]' },
+                { val: 'setuju', label: 'Setuju Sepenuhnya', color: 'text-brand-green' },
+                { val: 'setuju_dengan_catatan', label: 'Setuju dengan Catatan', color: 'text-status-warning' },
+                { val: 'keberatan', label: 'Keberatan (Wajib Usul Perubahan)', color: 'text-status-stopped' },
               ].map((opt) => (
                 <label
                   key={opt.val}
                   className={`flex items-center gap-3 p-3 rounded-xl border text-xs font-semibold cursor-pointer ${
                     approvalStance === opt.val
-                      ? 'border-[#2272E8] bg-blue-50/50'
-                      : 'border-[#E2E8F0] bg-[#F5F8FC]'
+                      ? 'border-brand-blue bg-blue-50/50'
+                      : 'border-brand-border bg-brand-surface'
                   }`}
                 >
                   <input
@@ -567,7 +638,7 @@ export const ExperimentDashboard: React.FC<ExperimentDashboardProps> = ({
                     name="stance"
                     checked={approvalStance === opt.val}
                     onChange={() => setApprovalStance(opt.val as any)}
-                    className="text-[#2272E8]"
+                    className="text-brand-blue"
                   />
                   <span className={opt.color}>{opt.label}</span>
                 </label>
@@ -575,7 +646,7 @@ export const ExperimentDashboard: React.FC<ExperimentDashboardProps> = ({
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-[#153A73] mb-1">
+              <label className="block text-xs font-semibold text-brand-navy mb-1">
                 Catatan Tambahan (Opsional):
               </label>
               <textarea
@@ -583,11 +654,11 @@ export const ExperimentDashboard: React.FC<ExperimentDashboardProps> = ({
                 value={approvalNote}
                 onChange={(e) => setApprovalNote(e.target.value)}
                 placeholder="Tuliskan catatan khusus atau syarat pendukung..."
-                className="w-full text-xs p-2.5 rounded-xl border border-[#E2E8F0] outline-none"
+                className="w-full text-xs p-2.5 rounded-xl border border-brand-border outline-none"
               />
             </div>
 
-            <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-3 text-[11px] text-emerald-900">
+            <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-3 text-xs text-emerald-900">
               <span className="font-bold">Pernyataan Komitmen:</span> &ldquo;Saya berjanji akan menerima keputusan akhir yang dievaluasi sesuai kriteria yang disepakati bersama ini.&rdquo;
             </div>
 
@@ -602,7 +673,7 @@ export const ExperimentDashboard: React.FC<ExperimentDashboardProps> = ({
               <button
                 type="button"
                 onClick={handleVoteDesign}
-                className="px-5 py-2 bg-[#2FA882] hover:bg-[#258768] text-white text-xs font-bold rounded-xl shadow-md"
+                className="px-5 py-2 bg-brand-green hover:bg-[#258768] text-white text-xs font-bold rounded-xl shadow-md"
               >
                 Tandatangani & Kirim Suara
               </button>

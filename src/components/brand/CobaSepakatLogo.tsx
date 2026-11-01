@@ -20,7 +20,7 @@ export const CobaSepakatLogo: React.FC<CobaSepakatLogoProps> = ({
 }) => {
   // Dimension settings: larger, zoomed-in presence
   const sizeConfig = {
-    sm: { icon: 34, text: 'text-lg', subtext: 'text-[10px]' },
+    sm: { icon: 34, text: 'text-lg', subtext: 'text-xs' },
     md: { icon: 46, text: 'text-2xl', subtext: 'text-xs' },
     lg: { icon: 64, text: 'text-3xl', subtext: 'text-sm' },
     xl: { icon: 88, text: 'text-4xl', subtext: 'text-base' },
@@ -104,11 +104,11 @@ export const CobaSepakatLogo: React.FC<CobaSepakatLogoProps> = ({
 
         <div className="flex flex-col items-center leading-tight select-none">
           <span className={`font-extrabold tracking-tight ${sizeConfig.text}`}>
-            <span className="text-[#153A73]">Coba</span>
-            <span className="text-[#2FA882]">Sepakat</span>
+            <span className="text-brand-navy">Coba</span>
+            <span className="text-brand-green">Sepakat</span>
           </span>
           {showTagline && (
-            <span className={`font-medium ${sizeConfig.subtext} text-[#5B6780] mt-1`}>
+            <span className={`font-medium ${sizeConfig.subtext} text-brand-slate mt-1`}>
               Uji Dugaannya, Sepakati Buktinya
             </span>
           )}
@@ -175,11 +175,11 @@ export const CobaSepakatLogo: React.FC<CobaSepakatLogoProps> = ({
 
       <div className="flex flex-col leading-tight select-none">
         <span className={`font-extrabold tracking-tight ${sizeConfig.text}`}>
-          <span className="text-[#153A73]">Coba</span>
-          <span className="text-[#2FA882]">Sepakat</span>
+          <span className="text-brand-navy">Coba</span>
+          <span className="text-brand-green">Sepakat</span>
         </span>
         {showTagline && (
-          <span className={`font-medium ${sizeConfig.subtext} text-[#5B6780]`}>
+          <span className={`font-medium ${sizeConfig.subtext} text-brand-slate`}>
             Uji Dugaannya, Sepakati Buktinya
           </span>
         )}
