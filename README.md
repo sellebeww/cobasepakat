@@ -1,6 +1,28 @@
-# CobaSepakat
+<div align="center">
 
-**Resolusi perselisihan berbasis percobaan.** Platform musyawarah untuk komunitas, RT/RW, dan organisasi: alih-alih berdebat tanpa ujung soal fakta yang bisa diuji, warga menyepakati sebuah percobaan terukur, menjalankannya dalam waktu singkat, lalu memutuskan berdasarkan data.
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="public/brand/cobasepakat-horizontal-white-nobg.png">
+  <img src="public/brand/cobasepakat-horizontal-nobg.png" alt="CobaSepakat" width="300">
+</picture>
+
+<h1>CobaSepakat</h1>
+
+</div>
+
+<p align="center">
+  Platform musyawarah berbasis <b>percobaan terukur</b> dan <b>keputusan berbasis data</b> untuk komunitas, RT/RW, dan organisasi<br>
+  (perbedaan pendapat faktual, uji coba lapangan, aturan berhenti darurat).
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=white&labelColor=555" alt="React 19">
+  <img src="https://img.shields.io/badge/TypeScript-7-3178C6?logo=typescript&logoColor=white&labelColor=555" alt="TypeScript 7">
+  <img src="https://img.shields.io/badge/Vite-8-646CFF?logo=vite&logoColor=white&labelColor=555" alt="Vite 8">
+  <img src="https://img.shields.io/badge/Tailwind-4-06B6D4?logo=tailwindcss&logoColor=white&labelColor=555" alt="Tailwind 4">
+  <img src="https://img.shields.io/badge/Vercel-siap_deploy-000000?logo=vercel&logoColor=white&labelColor=555" alt="Vercel">
+</p>
+
+**Resolusi perselisihan berbasis percobaan.** Alih-alih berdebat tanpa ujung soal fakta yang bisa diuji, warga menyepakati sebuah percobaan terukur, menjalankannya dalam waktu singkat, lalu memutuskan berdasarkan data.
 
 ![Landing page CobaSepakat](docs/screenshots/01-landing.png)
 
