@@ -161,7 +161,7 @@ export const Navbar: React.FC = () => {
               </nav>
             ) : (
               /* Demo Mode Navigation Tabs */
-              <nav aria-label="Navigasi demo" className="hidden lg:flex items-center gap-0.5 text-xs font-medium text-brand-slate">
+              <nav aria-label="Navigasi demo" className="hidden xl:flex items-center gap-0.5 text-xs font-medium text-brand-slate">
                 <button
                   onClick={() => setActiveTab('beranda')}
                   className={`hover:text-brand-navy transition-colors whitespace-nowrap px-2.5 py-1.5 rounded-full ${
@@ -247,7 +247,7 @@ export const Navbar: React.FC = () => {
                   </button>
                   <button
                     onClick={() => enterDemo()}
-                    className="px-5 py-2 bg-brand-blue-dark hover:bg-brand-navy text-white rounded-full text-xs font-bold transition-colors shadow-card"
+                    className="px-3 sm:px-5 py-2.5 bg-brand-blue-dark hover:bg-brand-navy text-white rounded-full text-xs font-bold transition-colors shadow-card"
                   >
                     Mulai Sekarang
                   </button>
@@ -310,7 +310,7 @@ export const Navbar: React.FC = () => {
                       />
                       <div className="hidden sm:flex flex-col text-left leading-none">
                         <span className="text-xs font-semibold text-brand-navy truncate max-w-[100px]">
-                          {currentUser.displayName || currentUser.name}
+                          {(currentUser.displayName || currentUser.name).replace(/\s*\(.*\)$/, '')}
                         </span>
                         <span className="text-xs text-brand-green font-medium mt-0.5">
                           {getRoleBadge(currentUser.role)}
@@ -389,10 +389,11 @@ export const Navbar: React.FC = () => {
                     onClick={() => setAppMode('company_profile')}
                     aria-label="Kembali ke Company Profile"
                     title="Kembali ke Company Profile"
-                    className="px-3.5 py-2 bg-brand-surface-blue hover:bg-brand-sky text-brand-navy rounded-full text-xs font-semibold flex items-center gap-1 transition-colors"
+                    className="hidden 2xl:flex px-3.5 py-2 bg-brand-surface-blue hover:bg-brand-sky text-brand-navy rounded-full text-xs font-semibold items-center gap-1 transition-colors"
                   >
+                    {/* below 2xl the demo banner above already offers this exit, and the nav needs the room */}
                     <ArrowLeft className="w-3.5 h-3.5" />
-                    <span className="hidden 2xl:inline">Company Profile</span>
+                    <span>Company Profile</span>
                   </button>
                 </>
               )}
@@ -402,7 +403,7 @@ export const Navbar: React.FC = () => {
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                 aria-label={mobileMenuOpen ? 'Tutup menu' : 'Buka menu'}
                 aria-expanded={mobileMenuOpen}
-                className="lg:hidden p-2 rounded-lg text-brand-slate hover:text-brand-navy hover:bg-brand-surface"
+                className={`${appMode === 'demo' ? 'xl:hidden' : 'lg:hidden'} p-2 rounded-lg text-brand-slate hover:text-brand-navy hover:bg-brand-surface`}
               >
                 {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
               </button>
@@ -412,7 +413,7 @@ export const Navbar: React.FC = () => {
 
         {/* Mobile Navigation Drawer */}
         {mobileMenuOpen && (
-          <div className="lg:hidden border-t border-brand-border bg-white px-4 pt-2 pb-4 space-y-2">
+          <div className={`${appMode === 'demo' ? 'xl:hidden' : 'lg:hidden'} border-t border-brand-border bg-white px-4 pt-2 pb-4 space-y-2`}>
             <div className="flex items-center justify-between pb-2 border-b border-brand-border">
               <span className="text-xs font-bold text-brand-navy">Navigasi Aplikasi</span>
               <button

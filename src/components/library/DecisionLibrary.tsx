@@ -129,8 +129,8 @@ export const DecisionLibrary: React.FC = () => {
                       iss.decision?.outcome === 'adopsi'
                         ? 'bg-brand-green/10 text-brand-green'
                         : iss.decision?.outcome === 'ubah_coba_lagi'
-                        ? 'bg-blue-50 text-brand-blue'
-                        : 'bg-purple-50 text-purple-700'
+                        ? 'bg-amber-50 text-amber-700'
+                        : 'bg-blue-50 text-brand-blue'
                     }`}
                   >
                     {hasDecision ? iss.decision?.outcome.replace(/_/g, ' ') : iss.status.replace(/_/g, ' ')}
@@ -155,6 +155,17 @@ export const DecisionLibrary: React.FC = () => {
                     <div className="text-xs font-mono text-slate-500 pt-1">
                       Skor Penerimaan Warga: {iss.decision?.acceptanceAverageScore}/5.0 ({iss.decision?.acceptancePercentage}% Menerima)
                     </div>
+                  </div>
+                )}
+
+                {!hasDecision && (
+                  <div className="p-3.5 rounded-2xl border border-dashed border-brand-border space-y-1 text-xs">
+                    <div className="text-xs font-bold uppercase tracking-wider text-brand-blue">
+                      Keputusan Belum Tercatat
+                    </div>
+                    <p className="text-brand-slate">
+                      Percobaan masih berjalan. Hasil dan keputusan akan muncul di sini setelah rapat evaluasi.
+                    </p>
                   </div>
                 )}
               </div>

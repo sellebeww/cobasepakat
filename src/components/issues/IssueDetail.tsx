@@ -222,20 +222,24 @@ export const IssueDetail: React.FC<IssueDetailProps> = ({ issue, onBack }) => {
                 <p className="text-xs md:text-sm text-brand-slate leading-relaxed">
                   {issue.context}
                 </p>
-                <div className="flex flex-wrap items-center gap-2 pt-1 text-xs text-brand-navy">
-                  <span className="font-semibold">Lokasi:</span>
-                  <span className="bg-brand-surface px-2.5 py-1 rounded-lg border border-brand-border">
-                    {issue.location}
-                  </span>
-                  <span className="font-semibold ml-2">Pihak Terdampak:</span>
-                  {issue.affectedParties.map((p, i) => (
-                    <span
-                      key={i}
-                      className="bg-brand-surface px-2.5 py-1 rounded-lg border border-brand-border text-xs"
-                    >
-                      {p}
+                <div className="space-y-2 pt-1 text-xs text-brand-navy">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="font-semibold w-28 shrink-0">Lokasi:</span>
+                    <span className="bg-brand-surface px-2.5 py-1 rounded-lg border border-brand-border">
+                      {issue.location}
                     </span>
-                  ))}
+                  </div>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="font-semibold w-28 shrink-0">Pihak Terdampak:</span>
+                    {issue.affectedParties.map((p, i) => (
+                      <span
+                        key={i}
+                        className="bg-brand-surface px-2.5 py-1 rounded-lg border border-brand-border text-xs"
+                      >
+                        {p}
+                      </span>
+                    ))}
+                  </div>
                 </div>
               </div>
 

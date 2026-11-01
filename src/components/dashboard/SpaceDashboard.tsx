@@ -49,13 +49,13 @@ export const SpaceDashboard: React.FC<SpaceDashboardProps> = ({
       <div className="bg-white rounded-3xl p-6 md:p-8 border border-brand-border shadow-sm space-y-4">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="space-y-1">
-            <div className="flex items-center gap-2 text-xs text-brand-slate">
+            <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-brand-slate">
               <Building2 className="w-3.5 h-3.5 text-brand-blue" />
               <span className="font-semibold text-brand-navy">{currentSpace.name}</span>
               <span>·</span>
-              <span>{currentSpace.unitCount} Unit Hunian</span>
+              <span className="whitespace-nowrap">{currentSpace.unitCount} Unit Hunian</span>
               <span>·</span>
-              <span>{currentSpace.activeMemberCount} Warga Aktif</span>
+              <span className="whitespace-nowrap">{currentSpace.activeMemberCount} Warga Aktif</span>
             </div>
             <h1 className="text-3xl font-extrabold text-brand-navy">
               Musyawarah Berbasis Percobaan Terukur
@@ -107,37 +107,60 @@ export const SpaceDashboard: React.FC<SpaceDashboardProps> = ({
 
       {/* Spotlight: Active Experiment Running Right Now */}
       {activeTrialIssue && activeExp && (
-        <div className="bg-white rounded-3xl p-6 md:p-8 border-2 border-brand-blue/40 shadow-md space-y-4 relative overflow-hidden">
-          <div className="absolute top-0 right-0 bg-brand-blue text-white text-xs font-bold px-4 py-1 rounded-bl-2xl uppercase tracking-wider">
-            Sedang Berjalan di Lapangan
-          </div>
-
-          <div className="space-y-1">
-            <div className="text-xs font-bold text-brand-blue flex items-center gap-1.5">
-              <Activity className="w-4 h-4" /> Uji Coba Terjadwal 14 Hari
+        <div className="bg-white rounded-3xl p-6 md:p-8 border-2 border-brand-blue/40 shadow-md space-y-5">
+          <div className="space-y-2">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <div className="text-xs font-bold text-brand-blue flex items-center gap-1.5">
+                <Activity className="w-4 h-4" /> Uji Coba Terjadwal 14 Hari
+              </div>
+              <span className="inline-flex items-center gap-1.5 bg-brand-blue/10 text-brand-blue text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">
+                <span className="w-1.5 h-1.5 rounded-full bg-brand-blue animate-pulse" />
+                Sedang Berjalan di Lapangan
+              </span>
             </div>
             <h2 className="text-xl font-extrabold text-brand-navy leading-snug">
               {activeTrialIssue.title}
             </h2>
-            <p className="text-xs text-brand-slate">
+            <p className="text-xs text-brand-slate leading-relaxed">
               Perlakuan: <span className="text-brand-navy font-medium">{activeExp.treatment}</span>
             </p>
           </div>
 
-          {/* Quick Metrics Bar */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-brand-surface p-4 rounded-2xl border border-brand-border">
-            {activeExp.metrics.map((m) => (
-              <div key={m.id} className="text-center">
-                <span className="text-xs text-brand-slate block leading-snug">{m.name}</span>
-                <span className="text-sm font-mono font-bold text-brand-green">
-                  {m.currentValue ?? m.baselineValue} {m.unit}
-                </span>
-                <span className="text-xs text-brand-slate block">Garis Dasar: {m.baselineValue}</span>
-              </div>
-            ))}
+          {/* Quick Metrics: label on top, value pinned to the bottom so every tile lines up */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+            {activeExp.metrics.map((m) => {
+              const current = m.currentValue ?? m.baselineValue;
+              const lowerIsBetter = m.direction === 'turun_lebih_baik';
+              const onTarget = lowerIsBetter ? current <= m.thresholdValue : current >= m.thresholdValue;
+              return (
+                <div
+                  key={m.id}
+                  className="flex flex-col justify-between gap-3 p-4 bg-brand-surface rounded-2xl border border-brand-border"
+                >
+                  <span className="text-xs text-brand-slate leading-snug">{m.name}</span>
+                  <div className="space-y-1">
+                    <div className="flex items-baseline gap-1">
+                      <span className={`text-xl font-mono font-extrabold ${onTarget ? 'text-brand-green' : 'text-amber-600'}`}>
+                        {current}
+                      </span>
+                      <span className="text-xs text-brand-slate">{m.unit}</span>
+                    </div>
+                    <div className="text-xs text-brand-slate space-y-0.5">
+                      <div>
+                        Garis Dasar <span className="font-mono font-semibold text-brand-navy">{m.baselineValue}</span>
+                      </div>
+                      <div className="whitespace-nowrap">
+                        Target {lowerIsBetter ? '≤' : '≥'}{' '}
+                        <span className="font-mono font-semibold text-brand-navy">{m.thresholdValue}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
           </div>
 
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-1">
             <div className="text-xs text-brand-slate flex items-center gap-1.5">
               <Clock className="w-4 h-4 text-brand-blue" />
               <span>Hari ke-8 dari 14 Hari · Rapat Evaluasi: {activeExp.evaluationDate}</span>
@@ -176,12 +199,12 @@ export const SpaceDashboard: React.FC<SpaceDashboardProps> = ({
               className="bg-white rounded-3xl p-5 border border-brand-border hover:border-brand-blue transition-all cursor-pointer shadow-card flex flex-col md:flex-row md:items-center justify-between gap-4"
             >
               <div className="space-y-1.5 flex-1">
-                <div className="flex items-center gap-2 text-xs text-brand-slate">
+                <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-brand-slate">
                   <span className="font-semibold text-brand-navy">{iss.location}</span>
                   <span>·</span>
-                  <span>{iss.claims.length} Dugaan Terkumpul</span>
+                  <span className="whitespace-nowrap">{iss.claims.length} Dugaan Terkumpul</span>
                   <span>·</span>
-                  <span>{iss.comments.length} Komentar</span>
+                  <span className="whitespace-nowrap">{iss.comments.length} Komentar</span>
                 </div>
 
                 <h3 className="text-base font-bold text-brand-navy hover:text-brand-blue transition-colors">

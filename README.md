@@ -57,7 +57,7 @@ Pusat kendali percobaan yang sedang berjalan: progres hari ke-N, aturan keputusa
 ![Dasbor Percobaan](docs/screenshots/10-percobaan.png)
 
 ### ➕ Buka Isu Baru
-Warga dapat mengajukan pertanyaan keputusan baru langsung dari dasbor.
+Warga dapat mengajukan pertanyaan keputusan baru langsung dari dasbor. Pemeriksa kata otomatis memperingatkan bila rumusan bernada menyudutkan (pencocokan kata utuh, jadi "kesalahan" tidak ikut ditandai).
 
 ![Buka isu baru](docs/screenshots/09-isu-baru.png)
 
@@ -87,7 +87,7 @@ Jejak setiap perubahan penting agar proses tetap transparan dan bisa dipertanggu
 ![Log Audit](docs/screenshots/08-audit.png)
 
 ### 📱 Responsif
-Landing page dan demo tampil nyaman di layar ponsel.
+Landing page dan demo tampil nyaman di layar ponsel (diperiksa pada 375, 820, dan 1280 px tanpa overflow horizontal). Form dan dialog memakai label terhubung, nama aksesibel, dan dapat ditutup dengan Escape.
 
 <img src="docs/screenshots/11-mobile.png" alt="Tampilan mobile" width="280">
 

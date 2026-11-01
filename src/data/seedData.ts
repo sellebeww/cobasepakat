@@ -646,7 +646,7 @@ export const SEED_TEMPLATES: TemplateBlueprint[] = [
     recommendedDuration: 21,
     recommendedMetrics: [
       {
-        name: 'Tingkat kebisingan tengah malam (dBA)',
+        name: 'Tingkat kebisingan tengah malam',
         unit: 'dBA',
         method: 'Perekaman sound level meter pada pukul 23.00 - 01.00',
         frequency: 'Setiap malam',

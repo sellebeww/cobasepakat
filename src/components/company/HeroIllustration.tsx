@@ -134,7 +134,7 @@ export const HeroIllustration: React.FC<{ className?: string }> = ({ className =
       {/* ── Woman (left): long side-parted hair, pointing up at the screen ── */}
       <g>
         {/* back hair: falls behind the shoulders */}
-        <path d="M84 300C80 250 100 230 124 230c26 0 42 20 38 70-2 28 6 52 14 74H70c10-22 16-46 14-74Z" fill={NAVY} />
+        <path d="M84 300C80 256 100 244 124 244c26 0 42 18 38 56-2 28 6 52 14 74H70c10-22 16-46 14-74Z" fill={NAVY} />
         {/* neck, then the torso with a scooped neckline over it */}
         <path d="M110 322h26v50h-26Z" fill={SKIN_SHADE} />
         <path d="M30 440c0-46 32-76 74-82q19 24 38 0c46 6 76 36 76 82Z" fill="#2476E8" />
@@ -148,16 +148,28 @@ export const HeroIllustration: React.FC<{ className?: string }> = ({ className =
           <path d="M168 372c30-4 44-22 48-52l4-30c1-9 8-14 17-13 9 1 15 8 14 17l-6 40c-6 46-36 76-80 78Z" fill="#2476E8" />
           <path d="M218 300c8 4 24 4 32 0" fill="none" stroke="#1B5FC4" strokeWidth="4" strokeLinecap="round" opacity=".55" />
           {/* hand: palm, curled fingers, pointing index, thumb */}
-          <rect x="222" y="262" width="34" height="38" rx="15" fill={SKIN} transform="rotate(8 239 281)" />
-          <rect x="234" y="226" width="11" height="48" rx="5.5" fill={SKIN} transform="rotate(8 239 250)" />
-          <ellipse cx="223" cy="282" rx="6.5" ry="10" fill={SKIN} transform="rotate(-24 223 282)" />
-          <path d="M232 288h18M232 296h18" stroke={SKIN_SHADE} strokeWidth="2" strokeLinecap="round" opacity=".7" />
+          {/* hand scaled about the wrist so it stays attached to the cuff */}
+          <g transform="translate(236 300) scale(.82) translate(-236 -300)">
+          <g transform="rotate(8 239 281)">
+            <rect x="222" y="266" width="34" height="34" rx="14" fill={SKIN} />
+            {/* index sits on the thumb side, not centred, so it never reads as a middle finger */}
+            <rect x="223" y="226" width="10.5" height="48" rx="5.25" fill={SKIN} />
+            <ellipse cx="228.25" cy="231.5" rx="3.2" ry="3.6" fill="#FBE3D3" opacity=".8" />
+            <path d="M225 252h6" stroke={SKIN_SHADE} strokeWidth="1.6" strokeLinecap="round" opacity=".7" />
+            {/* middle, ring and pinky folded over the palm, knuckles showing */}
+            <rect x="234" y="259" width="8" height="15" rx="4" fill={SKIN} stroke={SKIN_SHADE} strokeWidth="1.4" />
+            <rect x="241.5" y="260" width="7.5" height="14" rx="3.75" fill={SKIN} stroke={SKIN_SHADE} strokeWidth="1.4" />
+            <rect x="248.5" y="262" width="7" height="12" rx="3.5" fill={SKIN} stroke={SKIN_SHADE} strokeWidth="1.4" />
+            <path d="M236 280h17" stroke={SKIN_SHADE} strokeWidth="1.6" strokeLinecap="round" opacity=".6" />
+          </g>
+          <ellipse cx="222" cy="285" rx="6.5" ry="10" fill={SKIN} stroke={SKIN_SHADE} strokeWidth="1.2" transform="rotate(-24 222 285)" />
+          </g>
         </motion.g>
         {/* head */}
         <ellipse cx="123" cy="300" rx="30" ry="34" fill={SKIN} />
         {/* front hair: smooth fringe swept from a side part, hair hugs both temples */}
-        <path d="M91 298C84 262 102 246 126 246c26 0 38 20 33 58-1-22-10-38-23-46C122 262 98 274 91 298Z" fill={NAVY} />
-        <path d="M110 254c8-5 18-6 26-2-8 0-18 2-26 2Z" fill="#2A5599" opacity=".6" />
+        <path d="M91 298C84 266 102 252 126 252c26 0 38 18 33 52-1-22-10-38-23-46C122 264 98 276 91 298Z" fill={NAVY} />
+        <path d="M110 259c8-5 18-6 26-2-8 0-18 2-26 2Z" fill="#2A5599" opacity=".6" />
         {/* face: brows, eyes, nose, smile, blush */}
         <path d="M104 291q6-4 12-1M130 290q6-4 12 0" fill="none" stroke={NAVY} strokeWidth="2.2" strokeLinecap="round" />
         <ellipse cx="111" cy="301" rx="3" ry="3.4" fill={NAVY} />

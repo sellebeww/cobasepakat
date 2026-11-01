@@ -22,8 +22,9 @@ export const NewIssueModal: React.FC<NewIssueModalProps> = ({ onClose }) => {
 
   // Neutral language checker
   const aggressiveWords = ['pasti', 'harus', 'salah', 'bodoh', 'maksa', 'egois', 'kriminal'];
+  // whole-word match so "kesalahan" or "dipastikan" is not flagged
   const detectedBiasedWords = aggressiveWords.filter((w) =>
-    title.toLowerCase().includes(w)
+    new RegExp(`(^|[^\\p{L}])${w}($|[^\\p{L}])`, 'u').test(title.toLowerCase())
   );
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -57,6 +58,7 @@ export const NewIssueModal: React.FC<NewIssueModalProps> = ({ onClose }) => {
           </div>
           <button
             onClick={onClose}
+            aria-label="Tutup"
             className="p-1.5 rounded-full text-slate-400 hover:text-slate-600 hover:bg-slate-100"
           >
             <X className="w-5 h-5" />
@@ -68,6 +70,7 @@ export const NewIssueModal: React.FC<NewIssueModalProps> = ({ onClose }) => {
           <button
             type="button"
             onClick={() => setMode('custom')}
+            aria-pressed={mode === 'custom'}
             className={`flex-1 py-1.5 text-xs font-semibold rounded-lg transition-all ${
               mode === 'custom' ? 'bg-white text-brand-navy shadow-sm' : 'text-brand-slate'
             }`}
@@ -77,6 +80,7 @@ export const NewIssueModal: React.FC<NewIssueModalProps> = ({ onClose }) => {
           <button
             type="button"
             onClick={() => setMode('template')}
+            aria-pressed={mode === 'template'}
             className={`flex-1 py-1.5 text-xs font-semibold rounded-lg transition-all flex items-center justify-center gap-1.5 ${
               mode === 'template' ? 'bg-white text-brand-blue shadow-sm' : 'text-brand-slate'
             }`}
@@ -88,13 +92,14 @@ export const NewIssueModal: React.FC<NewIssueModalProps> = ({ onClose }) => {
         {mode === 'custom' ? (
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-xs font-bold text-brand-navy mb-1">
+              <label htmlFor="issue-title" className="block text-xs font-bold text-brand-navy mb-1">
                 Pertanyaan Keputusan (Wajib Bernada Netral):
               </label>
               <p className="text-xs text-brand-slate mb-2">
                 Rumuskan dalam bentuk &ldquo;Apakah [tindakan] akan [akibat yang diuji]?&rdquo;. Hindari nada menyudutkan salah satu pihak.
               </p>
               <input
+                id="issue-title"
                 type="text"
                 placeholder="Contoh: Apakah mengubah parkir sejajar menjadi parkir miring di Lorong B akan memperlancar jalan?"
                 value={title}
@@ -114,10 +119,11 @@ export const NewIssueModal: React.FC<NewIssueModalProps> = ({ onClose }) => {
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-brand-navy mb-1">
+              <label htmlFor="issue-context" className="block text-xs font-bold text-brand-navy mb-1">
                 Latar Belakang & Konteks Perselisihan:
               </label>
               <textarea
+                id="issue-context"
                 rows={3}
                 placeholder="Jelaskan situasi saat ini dan mengapa ada dua pandangan berbeda..."
                 value={context}
@@ -129,10 +135,11 @@ export const NewIssueModal: React.FC<NewIssueModalProps> = ({ onClose }) => {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label className="block text-xs font-bold text-brand-navy mb-1">
+                <label htmlFor="issue-location" className="block text-xs font-bold text-brand-navy mb-1">
                   Lokasi / Objek yang Diperselisihkan:
                 </label>
                 <input
+                  id="issue-location"
                   type="text"
                   placeholder="Contoh: Lorong B RT 04"
                   value={location}
@@ -143,10 +150,11 @@ export const NewIssueModal: React.FC<NewIssueModalProps> = ({ onClose }) => {
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-brand-navy mb-1">
+                <label htmlFor="issue-parties" className="block text-xs font-bold text-brand-navy mb-1">
                   Pihak Terdampak (Pisahkan dengan Koma):
                 </label>
                 <input
+                  id="issue-parties"
                   type="text"
                   placeholder="Penghuni Lorong B, Mobil Ambulans, Pengemudi"
                   value={affectedPartiesInput}
