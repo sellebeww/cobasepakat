@@ -6,6 +6,7 @@
 import type React from 'react';
 import { useEffect, useRef, useState } from 'react';
 import { useApp } from '../../context/AppContext';
+import { useI18n } from '../../i18n';
 import { CobaSepakatLogo } from '../brand/CobaSepakatLogo';
 import { scrollToSection } from '../company/CompanyProfile';
 import {
@@ -31,6 +32,7 @@ export const Navbar: React.FC = () => {
     setAppMode,
     resetAllData,
   } = useApp();
+  const { t, locale, setLocale } = useI18n();
 
   const [showUserDropdown, setShowUserDropdown] = useState(false);
   const [showSpaceDropdown, setShowSpaceDropdown] = useState(false);
@@ -161,7 +163,7 @@ export const Navbar: React.FC = () => {
                       : 'hover:bg-brand-surface-blue/70'
                   }`}
                 >
-                  Dasbor Ruang
+                  {t('nav.dashboard')}
                 </button>
                 <button type="button"
                   onClick={() => setActiveTab('isu')}
@@ -171,7 +173,7 @@ export const Navbar: React.FC = () => {
                       : 'hover:bg-brand-surface-blue/70'
                   }`}
                 >
-                  Isu & Percobaan
+                  {t('nav.issues')}
                 </button>
                 <button type="button"
                   onClick={() => setActiveTab('pustaka')}
@@ -181,7 +183,7 @@ export const Navbar: React.FC = () => {
                       : 'hover:bg-brand-surface-blue/70'
                   }`}
                 >
-                  Pustaka Keputusan
+                  {t('nav.library')}
                 </button>
                 <button type="button"
                   onClick={() => setActiveTab('templat')}
@@ -191,7 +193,7 @@ export const Navbar: React.FC = () => {
                       : 'hover:bg-brand-surface-blue/70'
                   }`}
                 >
-                  Templat Uji Coba
+                  {t('nav.templates')}
                 </button>
                 <button type="button"
                   onClick={() => setActiveTab('analitik')}
@@ -201,7 +203,7 @@ export const Navbar: React.FC = () => {
                       : 'hover:bg-brand-surface-blue/70'
                   }`}
                 >
-                  Analitik Dampak
+                  {t('nav.analytics')}
                 </button>
                 <button type="button"
                   onClick={() => setActiveTab('fasilitator')}
@@ -211,7 +213,7 @@ export const Navbar: React.FC = () => {
                       : 'hover:bg-brand-surface-blue/70'
                   }`}
                 >
-                  Layanan Fasilitasi
+                  {t('nav.facilitators')}
                 </button>
                 <button type="button"
                   onClick={() => setActiveTab('audit')}
@@ -221,13 +223,25 @@ export const Navbar: React.FC = () => {
                       : 'hover:bg-brand-surface-blue/70'
                   }`}
                 >
-                  Log Audit
+                  {t('nav.audit')}
                 </button>
               </nav>
             )}
 
             {/* Zone 3: CTA & Personas */}
             <div className="flex items-center gap-3 shrink-0">
+              <label className="flex items-center gap-1 text-xs text-brand-slate">
+                <span className="sr-only">{t('lang.label')}</span>
+                <select
+                  value={locale}
+                  onChange={(e) => setLocale(e.target.value as 'id' | 'en')}
+                  className="rounded-lg border border-brand-border bg-white px-1.5 py-1.5 text-xs font-semibold text-brand-navy"
+                  data-testid="lang-select"
+                >
+                  <option value="id">ID</option>
+                  <option value="en">EN</option>
+                </select>
+              </label>
               {appMode === 'company_profile' ? (
                 <>
                   <button type="button"
@@ -453,7 +467,7 @@ export const Navbar: React.FC = () => {
                     activeTab === 'beranda' ? 'bg-brand-blue/10 text-brand-blue font-bold' : 'text-brand-navy'
                   }`}
                 >
-                  Dasbor Ruang Komunitas
+                  {t('nav.dashboard')}
                 </button>
                 <button type="button"
                   onClick={() => {
@@ -464,7 +478,7 @@ export const Navbar: React.FC = () => {
                     activeTab === 'isu' ? 'bg-brand-blue/10 text-brand-blue font-bold' : 'text-brand-navy'
                   }`}
                 >
-                  Isu & Percobaan
+                  {t('nav.issues')}
                 </button>
                 <button type="button"
                   onClick={() => {
@@ -475,7 +489,7 @@ export const Navbar: React.FC = () => {
                     activeTab === 'pustaka' ? 'bg-brand-blue/10 text-brand-blue font-bold' : 'text-brand-navy'
                   }`}
                 >
-                  Pustaka Keputusan
+                  {t('nav.library')}
                 </button>
                 <button type="button"
                   onClick={() => {
@@ -486,7 +500,7 @@ export const Navbar: React.FC = () => {
                     activeTab === 'templat' ? 'bg-brand-blue/10 text-brand-blue font-bold' : 'text-brand-navy'
                   }`}
                 >
-                  Templat Uji Coba
+                  {t('nav.templates')}
                 </button>
                 <button type="button"
                   onClick={() => {
@@ -497,7 +511,7 @@ export const Navbar: React.FC = () => {
                     activeTab === 'analitik' ? 'bg-brand-blue/10 text-brand-blue font-bold' : 'text-brand-navy'
                   }`}
                 >
-                  Analitik Dampak
+                  {t('nav.analytics')}
                 </button>
                 <button type="button"
                   onClick={() => {
@@ -508,7 +522,7 @@ export const Navbar: React.FC = () => {
                     activeTab === 'fasilitator' ? 'bg-brand-blue/10 text-brand-blue font-bold' : 'text-brand-navy'
                   }`}
                 >
-                  Layanan Fasilitasi
+                  {t('nav.facilitators')}
                 </button>
                 <button type="button"
                   onClick={() => {
@@ -519,7 +533,7 @@ export const Navbar: React.FC = () => {
                     activeTab === 'audit' ? 'bg-brand-blue/10 text-brand-blue font-bold' : 'text-brand-navy'
                   }`}
                 >
-                  Log Audit
+                  {t('nav.audit')}
                 </button>
               </div>
             )}

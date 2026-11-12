@@ -177,6 +177,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   // State -> URL
   useEffect(() => {
+    if (window.location.hash.startsWith('#/join/')) return; // halaman undangan mengatur hash sendiri
     const hash = buildHash(appMode, activeTab, activeIssueId);
     if (window.location.hash !== hash) window.location.hash = hash;
   }, [appMode, activeTab, activeIssueId]);
@@ -259,6 +260,29 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     const next = chain.map((e, k) => (k === i ? { ...e, payload: { ...(e.payload as object), details: 'DIUBAH DIAM-DIAM' } } : e));
     ledgerRef.current = next;
     setLedger(next);
+  }, []);
+
+  // Real-time antar tab (mode demo): perubahan di satu tab langsung muncul di tab lain lewat event `storage`.
+  // Batas: tanpa penggabungan. Bila dua tab menulis bersamaan, yang terakhir menang. Mode tim memakai Realtime Supabase.
+  useEffect(() => {
+    const onStorage = (e: StorageEvent) => {
+      if (!e.key?.startsWith(`${STORAGE_KEY}_`) || e.newValue === null) return;
+      const k = e.key.slice(STORAGE_KEY.length + 1);
+      try {
+        const v = JSON.parse(e.newValue);
+        if (k === 'issues' && Array.isArray(v)) setIssues(v);
+        else if (k === 'experiments' && isObject(v)) setExperiments(v);
+        else if (k === 'acceptance' && Array.isArray(v)) setAcceptance(v);
+        else if (k === 'ledger' && Array.isArray(v)) {
+          ledgerRef.current = v;
+          setLedger(v);
+        }
+      } catch {
+        /* abaikan data rusak */
+      }
+    };
+    window.addEventListener('storage', onStorage);
+    return () => window.removeEventListener('storage', onStorage);
   }, []);
 
   // Save changes to localStorage

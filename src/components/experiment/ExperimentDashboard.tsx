@@ -248,7 +248,7 @@ export const ExperimentDashboard: React.FC<ExperimentDashboardProps> = ({
                 </p>
               </div>
               <span className="text-xs text-brand-green bg-emerald-50 px-2 py-0.5 rounded-full font-medium">
-                Sinkron Otomatis (Offline-Ready)
+                Tersimpan di perangkat · sinkron antar tab
               </span>
             </div>
 

@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { type MessageKey, useI18n } from '../../i18n';
 import { estimateMetric } from '../../core';
 import { analyzeExperiment, entryToObservation, metricToCore } from '../../lib/coreAdapter';
 import type { Experiment } from '../../types';
@@ -8,25 +9,26 @@ import { describeMeasured, fmt, fmtPct, methodLabel } from './format';
 
 /** Hasil jujur satu percobaan: estimasi, interval, ukuran sampel, verdict kriteria, dan batasan metode. */
 export function ResultsPanel({ experiment, showCharts = true }: { experiment: Experiment; showCharts?: boolean }) {
+  const { t } = useI18n();
   const analysis = useMemo(() => analyzeExperiment(experiment), [experiment]);
   const estimates = useMemo(() => {
     const obs = experiment.dataEntries.map(entryToObservation);
     return experiment.metrics.map((m) => estimateMetric(metricToCore(m), obs));
   }, [experiment]);
   const { result, ruleDerived } = analysis;
-  const modeText = { all: 'semua kriteria', any: 'salah satu kriteria', k_of_n: `minimal ${analysis.rule.k ?? '?'} kriteria` }[analysis.rule.mode];
+  const modeText = t(`results.mode.${analysis.rule.mode}`, { k: analysis.rule.k ?? '?' });
 
   return (
     <div className="space-y-5">
       <div className="rounded-2xl border border-brand-border bg-white p-5">
         <div className="mb-2 flex flex-wrap items-center gap-2">
-          <h3 className="text-base font-bold text-brand-navy">Hasil terhadap kriteria yang disepakati</h3>
+          <h3 className="text-base font-bold text-brand-navy">{t('results.title')}</h3>
           <VerdictBadge verdict={result.verdict} />
         </div>
-        <p className="text-sm text-brand-navy">{result.summary}</p>
+        <p className="text-sm text-brand-navy">{t(`summary.${result.verdict}`)}</p>
         <p className="mt-1 text-xs text-brand-slate">
-          Aturan: {modeText} harus terpenuhi. {result.satisfied} terpenuhi, {result.failed} tidak terpenuhi, {result.undecided} belum dapat disimpulkan.
-          {ruleDerived && ' Kriteria diturunkan otomatis dari ambang tiap metrik karena percobaan ini belum memiliki kriteria terstruktur.'}
+          {t('results.rule', { mode: modeText, s: result.satisfied, f: result.failed, u: result.undecided })}
+          {ruleDerived && ` ${t('results.derived')}`}
         </p>
 
         <div className="mt-3 overflow-x-auto">
@@ -34,12 +36,12 @@ export function ResultsPanel({ experiment, showCharts = true }: { experiment: Ex
             <caption className="sr-only">Hasil per kriteria</caption>
             <thead>
               <tr className="border-b border-brand-border text-xs text-brand-slate">
-                <th scope="col" className="py-2 pr-3">Kriteria</th>
-                <th scope="col" className="py-2 pr-3">Taksiran</th>
-                <th scope="col" className="py-2 pr-3">Interval 95%</th>
-                <th scope="col" className="py-2 pr-3">Syarat</th>
-                <th scope="col" className="py-2 pr-3">Sampel</th>
-                <th scope="col" className="py-2">Status</th>
+                <th scope="col" className="py-2 pr-3">{t('results.col.criterion')}</th>
+                <th scope="col" className="py-2 pr-3">{t('results.col.estimate')}</th>
+                <th scope="col" className="py-2 pr-3">{t('results.col.interval')}</th>
+                <th scope="col" className="py-2 pr-3">{t('results.col.requirement')}</th>
+                <th scope="col" className="py-2 pr-3">{t('results.col.sample')}</th>
+                <th scope="col" className="py-2">{t('results.col.status')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-brand-border">
@@ -50,12 +52,12 @@ export function ResultsPanel({ experiment, showCharts = true }: { experiment: Ex
                   <tr key={c.criterion.id}>
                     <th scope="row" className="py-2 pr-3 font-semibold text-brand-navy">
                       {c.metricName}
-                      <span className="block text-xs font-normal text-brand-slate">{c.reason}</span>
+                      <span className="block text-xs font-normal text-brand-slate">{t(`reason.${c.reasonCode}`, { days: c.days, minDays: c.criterion.minDays ?? 3 })}</span>
                     </th>
                     <td className="py-2 pr-3 font-mono">{d.value}</td>
                     <td className="py-2 pr-3 font-mono text-xs">{d.interval}</td>
                     <td className="py-2 pr-3 font-mono text-xs">{d.target}</td>
-                    <td className="py-2 pr-3 font-mono text-xs">{c.days} hari / {c.observations} data</td>
+                    <td className="py-2 pr-3 font-mono text-xs">{t('results.sample', { days: c.days, n: c.observations })}</td>
                     <td className="py-2"><VerdictBadge verdict={c.verdict} /></td>
                   </tr>
                 );
@@ -65,10 +67,10 @@ export function ResultsPanel({ experiment, showCharts = true }: { experiment: Ex
         </div>
 
         <aside className="mt-4 rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs text-amber-950" aria-label="Batasan metode">
-          <p className="font-bold">Batasan metode (baca sebelum memutuskan)</p>
+          <p className="font-bold">{t('results.limitations')}</p>
           <ul className="mt-1 list-disc space-y-0.5 pl-5">
-            {result.limitations.map((l) => (
-              <li key={l}>{l}</li>
+            {result.limitations.map((l, i) => (
+              <li key={l}>{t(`limit.${i + 1}` as MessageKey)}</li>
             ))}
           </ul>
         </aside>
@@ -81,13 +83,13 @@ export function ResultsPanel({ experiment, showCharts = true }: { experiment: Ex
             <section key={m.id} className="space-y-2 rounded-2xl border border-brand-border bg-white p-4" aria-label={m.name}>
               <h4 className="text-sm font-bold text-brand-navy">{m.name}</h4>
               <dl className="grid grid-cols-2 gap-x-3 gap-y-1 text-xs sm:grid-cols-4">
-                <div><dt className="text-brand-slate">Garis dasar</dt><dd className="font-mono font-bold">{fmt(m.baselineValue)} {m.unit}</dd></div>
-                <div><dt className="text-brand-slate">Taksiran</dt><dd className="font-mono font-bold">{est.estimate === null ? 'belum ada data' : `${fmt(est.estimate)} ${m.unit}`}</dd></div>
-                <div><dt className="text-brand-slate">Ambang</dt><dd className="font-mono font-bold">{fmt(m.thresholdValue)} {m.unit}</dd></div>
-                <div><dt className="text-brand-slate">Selisih vs dasar</dt><dd className="font-mono font-bold">{fmtPct(est.changeVsBaseline, 1)}</dd></div>
+                <div><dt className="text-brand-slate">{t('results.baseline')}</dt><dd className="font-mono font-bold">{fmt(m.baselineValue)} {m.unit}</dd></div>
+                <div><dt className="text-brand-slate">{t('results.estimate')}</dt><dd className="font-mono font-bold">{est.estimate === null ? t('results.nodata') : `${fmt(est.estimate)} ${m.unit}`}</dd></div>
+                <div><dt className="text-brand-slate">{t('results.threshold')}</dt><dd className="font-mono font-bold">{fmt(m.thresholdValue)} {m.unit}</dd></div>
+                <div><dt className="text-brand-slate">{t('results.change')}</dt><dd className="font-mono font-bold">{fmtPct(est.changeVsBaseline, 1)}</dd></div>
               </dl>
               <p className="text-xs text-brand-slate">
-                Interval: {est.interval ? `${fmt(est.interval.lower)} sampai ${fmt(est.interval.upper)} ${m.unit}` : 'belum dapat dihitung (butuh minimal 2 hari data)'} · {methodLabel(est.method)}
+                {t('results.interval')}: {est.interval ? `${fmt(est.interval.lower)} - ${fmt(est.interval.upper)} ${m.unit}` : t('results.interval.none')} · {methodLabel(est.method)}
               </p>
               {showCharts && <MetricChart est={est} />}
             </section>

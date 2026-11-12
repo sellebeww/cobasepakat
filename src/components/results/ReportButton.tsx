@@ -1,6 +1,7 @@
 import { FileDown } from 'lucide-react';
 import { useState } from 'react';
 import { useApp } from '../../context/AppContext';
+import { useI18n } from '../../i18n';
 import { summarizeAcceptance } from '../../core';
 import { acceptanceToCore, analyzeExperiment } from '../../lib/coreAdapter';
 import { notify } from '../../lib/notify';
@@ -9,6 +10,7 @@ import type { Experiment, Issue } from '../../types';
 /** Ekspor laporan PDF (dibuat di peramban; pustaka PDF dimuat saat tombol ditekan). */
 export function ReportButton({ experiment, issue, className = '' }: { experiment: Experiment; issue: Issue; className?: string }) {
   const { acceptance, verifyLedger, spaces } = useApp();
+  const { t } = useI18n();
   const [busy, setBusy] = useState(false);
 
   const run = async () => {
@@ -46,7 +48,7 @@ export function ReportButton({ experiment, issue, className = '' }: { experiment
       className={`px-4 py-2.5 bg-white hover:bg-brand-surface text-brand-navy border border-brand-border rounded-full text-xs font-bold transition-all flex items-center gap-1.5 disabled:opacity-50 ${className}`}
     >
       <FileDown className="w-4 h-4" aria-hidden="true" />
-      {busy ? 'Membuat PDF...' : 'Ekspor Laporan PDF'}
+      {busy ? t('report.busy') : t('report.button')}
     </button>
   );
 }

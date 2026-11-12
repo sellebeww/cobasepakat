@@ -76,7 +76,19 @@ export interface CriterionResult {
   days: number;
   observations: number;
   reason: string;
+  /** Kode alasan stabil untuk terjemahan di UI. */
+  reasonCode: ReasonCode;
 }
+
+export type ReasonCode =
+  | 'no_metric'
+  | 'no_data'
+  | 'baseline_zero'
+  | 'min_days'
+  | 'no_interval'
+  | 'ci_met'
+  | 'ci_failed'
+  | 'ci_straddle';
 
 function passesPoint(c: Criterion, value: number): boolean {
   if (c.kind === 'within_band') return Math.abs(value) <= c.value;
@@ -123,6 +135,7 @@ export function evaluateCriterion(
       days: 0,
       observations: 0,
       reason: 'Metrik yang dirujuk kriteria tidak ditemukan.',
+      reasonCode: 'no_metric',
     };
   }
   const est = estimateMetric(metric, observations, level);
@@ -137,7 +150,7 @@ export function evaluateCriterion(
     observations: est.series.observations,
   };
   if (est.estimate === null) {
-    return { ...noData, verdict: 'belum_dapat_disimpulkan', reason: 'Belum ada data.' };
+    return { ...noData, verdict: 'belum_dapat_disimpulkan', reason: 'Belum ada data.', reasonCode: 'no_data' };
   }
 
   // Ubah rata-rata dan intervalnya ke skala kriteria.
@@ -152,6 +165,7 @@ export function evaluateCriterion(
       ...noData,
       verdict: 'belum_dapat_disimpulkan',
       reason: 'Perubahan relatif tidak terdefinisi karena garis dasar bernilai nol.',
+      reasonCode: 'baseline_zero',
     };
   }
   const pointEstimateMeets = passesPoint(criterion, measured);
@@ -168,6 +182,7 @@ export function evaluateCriterion(
       ...common,
       verdict: 'belum_dapat_disimpulkan',
       reason: `Baru ${days} hari berdata; kriteria ini baru dinilai setelah minimal ${minDays} hari.`,
+      reasonCode: 'min_days',
     };
   }
   if (!measuredInterval) {
@@ -175,6 +190,7 @@ export function evaluateCriterion(
       ...common,
       verdict: 'belum_dapat_disimpulkan',
       reason: 'Interval ketidakpastian tidak dapat dihitung dari data yang ada.',
+      reasonCode: 'no_interval',
     };
   }
   const verdict = intervalVerdict(criterion, measuredInterval.lower, measuredInterval.upper);
@@ -184,7 +200,8 @@ export function evaluateCriterion(
       : verdict === 'tidak_terpenuhi'
         ? 'Seluruh interval kepercayaan berada di sisi yang tidak memenuhi kriteria.'
         : 'Interval kepercayaan melintasi ambang, jadi data belum cukup untuk menyimpulkan.';
-  return { ...common, verdict, reason };
+  const reasonCode: ReasonCode = verdict === 'terpenuhi' ? 'ci_met' : verdict === 'tidak_terpenuhi' ? 'ci_failed' : 'ci_straddle';
+  return { ...common, verdict, reason, reasonCode };
 }
 
 export interface RuleResult {

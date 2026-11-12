@@ -4,11 +4,15 @@
  */
 
 import type React from 'react';
+import { useState } from 'react';
 import { useApp } from '../../context/AppContext';
+import { useI18n } from '../../i18n';
+import { InviteModal } from '../team/InviteModal';
 import { trialProgress } from '../../core';
 import { localUtcOffsetMinutes } from '../../lib/coreAdapter';
 import {
   Plus,
+  Link2,
   Clock,
   Building2,
   Activity,
@@ -30,6 +34,8 @@ export const SpaceDashboard: React.FC<SpaceDashboardProps> = ({
     experiments,
   } = useApp();
 
+  const { t } = useI18n();
+  const [showInvite, setShowInvite] = useState(false);
   const spaceIssues = issues.filter((i) => i.spaceId === currentSpace.id);
   const activeTrialIssue = spaceIssues.find((i) => i.status === 'percobaan_berjalan');
   const activeExp = activeTrialIssue?.activeExperimentId
@@ -59,7 +65,12 @@ export const SpaceDashboard: React.FC<SpaceDashboardProps> = ({
             </p>
           </div>
 
-          <div className="flex items-center gap-2 shrink-0">
+          <div className="flex flex-wrap items-center gap-2 shrink-0">
+            {(currentUser.role === 'pengurus' || currentUser.role === 'pengelola_kawasan') && (
+              <button type="button" onClick={() => setShowInvite(true)} className="px-4 py-2.5 bg-white hover:bg-brand-surface text-brand-navy border border-brand-border rounded-full text-xs font-bold flex items-center gap-1.5">
+                <Link2 className="w-4 h-4" aria-hidden="true" /> {t('invite.button')}
+              </button>
+            )}
             <button type="button"
               onClick={onOpenNewIssueModal}
               className="px-4 py-2.5 bg-brand-blue hover:bg-brand-blue-dark text-white rounded-full text-xs font-bold transition-all shadow-card flex items-center gap-1.5"
@@ -240,6 +251,7 @@ export const SpaceDashboard: React.FC<SpaceDashboardProps> = ({
           ))}
         </div>
       </div>
+      {showInvite && <InviteModal onClose={() => setShowInvite(false)} />}
     </div>
   );
 };

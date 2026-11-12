@@ -15,6 +15,9 @@ import { NewIssueModal } from './components/issues/NewIssueModal';
 import { CobaSepakatLogo } from './components/brand/CobaSepakatLogo';
 import { BrandKitModal } from './components/brand/BrandKitModal';
 import { Play, Palette } from 'lucide-react';
+import { useI18n, I18nProvider } from './i18n';
+import { JoinInvite } from './components/team/JoinInvite';
+import { parseInviteHash } from './core';
 
 // Workspace views load on demand; the landing page (CompanyProfile) stays in the main chunk.
 const SpaceDashboard = lazy(() => import('./components/dashboard/SpaceDashboard').then((m) => ({ default: m.SpaceDashboard })));
@@ -37,6 +40,14 @@ const MainAppContent: React.FC = () => {
   } = useApp();
 
   useDialogA11y();
+  const { t } = useI18n();
+
+  const [inviteToken, setInviteToken] = useState<string | null>(() => parseInviteHash(window.location.hash));
+  useEffect(() => {
+    const onHash = () => setInviteToken(parseInviteHash(window.location.hash));
+    window.addEventListener('hashchange', onHash);
+    return () => window.removeEventListener('hashchange', onHash);
+  }, []);
 
   const [showNewIssueModal, setShowNewIssueModal] = useState(false);
   const [showBrandKitModal, setShowBrandKitModal] = useState(false);
@@ -70,6 +81,9 @@ const MainAppContent: React.FC = () => {
             <img src="/assets/landing/blue-green-blob.svg" alt="" aria-hidden="true" className="pointer-events-none absolute top-[55%] -left-[18%] w-[50%] max-w-[700px] -rotate-6 opacity-40" />
           </>
         )}
+        {inviteToken ? (
+          <JoinInvite token={inviteToken} />
+        ) : (
         <AnimatePresence mode="wait">
           {appMode === 'company_profile' ? (
             <motion.div
@@ -103,7 +117,7 @@ const MainAppContent: React.FC = () => {
                   className="rounded-2xl border border-amber-300 bg-amber-50 px-4 py-2 text-xs text-amber-950"
                   data-testid="demo-banner"
                 >
-                  <strong>Mode demo.</strong> Semua nama, angka, dan kejadian di sini adalah data contoh fiktif yang disimpan di peramban Anda. Hasil bukan bukti pasti.
+                  <strong>{t('demo.banner.title')}</strong> {t('demo.banner.body')}
                 </div>
 
                 {activeTab === 'beranda' && (
@@ -131,6 +145,7 @@ const MainAppContent: React.FC = () => {
             </motion.div>
           )}
         </AnimatePresence>
+        )}
       </main>
 
       {/* Footer (the company profile renders its own) */}
@@ -204,9 +219,11 @@ const MainAppContent: React.FC = () => {
 export default function App() {
   return (
     <MotionConfig reducedMotion="user">
-      <AppProvider>
-        <MainAppContent />
-      </AppProvider>
+      <I18nProvider>
+        <AppProvider>
+          <MainAppContent />
+        </AppProvider>
+      </I18nProvider>
     </MotionConfig>
   );
 }
