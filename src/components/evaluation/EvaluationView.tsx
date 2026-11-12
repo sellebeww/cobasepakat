@@ -75,7 +75,7 @@ export const EvaluationView: React.FC<EvaluationViewProps> = ({
             {(currentUser.role === 'pengurus' || currentUser.role === 'pengelola_kawasan') && (
               <button type="button"
                 onClick={onProceedToDecision}
-                className="px-5 py-2.5 bg-brand-green hover:bg-[#258768] text-white text-xs font-bold rounded-full transition-all shadow-card flex items-center gap-1.5"
+                className="px-5 py-2.5 bg-brand-green hover:bg-[#0B5F4A] text-white text-xs font-bold rounded-full transition-all shadow-card flex items-center gap-1.5"
               >
                 <FileText className="w-4 h-4" /> Catat Keputusan Resmi &rarr;
               </button>

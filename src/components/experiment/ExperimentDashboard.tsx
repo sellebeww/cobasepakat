@@ -176,7 +176,7 @@ export const ExperimentDashboard: React.FC<ExperimentDashboardProps> = ({
             {(currentUser.role === 'pengurus' || currentUser.role === 'pengelola_kawasan') && (
               <button type="button"
                 onClick={onOpenDecision}
-                className="px-4 py-2.5 bg-brand-green hover:bg-[#258768] text-white rounded-full text-xs font-bold transition-all shadow-card flex items-center gap-1.5"
+                className="px-4 py-2.5 bg-brand-green hover:bg-[#0B5F4A] text-white rounded-full text-xs font-bold transition-all shadow-card flex items-center gap-1.5"
               >
                 <FileText className="w-4 h-4" />
                 Catat Keputusan
@@ -255,10 +255,11 @@ export const ExperimentDashboard: React.FC<ExperimentDashboardProps> = ({
             <form onSubmit={handleQuickSubmit} className="space-y-3">
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div className="sm:col-span-1">
-                  <label className="block text-xs font-semibold text-brand-navy mb-1">
+                  <label htmlFor="quick-metric" className="block text-xs font-semibold text-brand-navy mb-1">
                     Pilih Metrik:
                   </label>
                   <select
+                    id="quick-metric"
                     value={selectedMetricId}
                     onChange={(e) => setSelectedMetricId(e.target.value)}
                     className="w-full text-xs p-2.5 rounded-xl border border-brand-border bg-brand-surface text-brand-navy font-medium outline-none"
@@ -272,10 +273,11 @@ export const ExperimentDashboard: React.FC<ExperimentDashboardProps> = ({
                 </div>
 
                 <div className="sm:col-span-1">
-                  <label className="block text-xs font-semibold text-brand-navy mb-1">
+                  <label htmlFor="quick-value" className="block text-xs font-semibold text-brand-navy mb-1">
                     Nilai Terukur ({currentMetric.unit}):
                   </label>
                   <input
+                    id="quick-value"
                     type="number"
                     step="0.1"
                     placeholder={`Contoh: ${currentMetric.baselineValue}`}
@@ -287,10 +289,11 @@ export const ExperimentDashboard: React.FC<ExperimentDashboardProps> = ({
                 </div>
 
                 <div className="sm:col-span-1">
-                  <label className="block text-xs font-semibold text-brand-navy mb-1">
+                  <label htmlFor="quick-notes" className="block text-xs font-semibold text-brand-navy mb-1">
                     Catatan Kondisi / Waktu:
                   </label>
                   <input
+                    id="quick-notes"
                     type="text"
                     placeholder="Contoh: Jam 07.15 cerah"
                     value={entryNotes}
@@ -302,7 +305,7 @@ export const ExperimentDashboard: React.FC<ExperimentDashboardProps> = ({
 
               <div className="flex items-center justify-between pt-1">
                 <div className="text-xs text-brand-slate flex items-center gap-1">
-                  <Camera className="w-3.5 h-3.5 text-slate-400" />
+                  <Camera className="w-3.5 h-3.5 text-slate-600" />
                   <span>Foto bukti & cap waktu otomatis disematkan</span>
                 </div>
                 <button
@@ -447,7 +450,7 @@ export const ExperimentDashboard: React.FC<ExperimentDashboardProps> = ({
               </span>
             </div>
 
-            <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
+            <div className="space-y-2 max-h-48 overflow-y-auto pr-1" role="region" aria-label="Daftar suara kesepakatan" tabIndex={0}>
               {experiment.approvals.map((app) => (
                 <div
                   key={app.id}
@@ -604,7 +607,7 @@ export const ExperimentDashboard: React.FC<ExperimentDashboardProps> = ({
               <button
                 type="button"
                 onClick={handleVoteDesign}
-                className="px-5 py-2 bg-brand-green hover:bg-[#258768] text-white text-xs font-bold rounded-full shadow-card"
+                className="px-5 py-2 bg-brand-green hover:bg-[#0B5F4A] text-white text-xs font-bold rounded-full shadow-card"
               >
                 Tandatangani & Kirim Suara
               </button>

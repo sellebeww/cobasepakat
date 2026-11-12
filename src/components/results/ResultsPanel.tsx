@@ -31,7 +31,7 @@ export function ResultsPanel({ experiment, showCharts = true }: { experiment: Ex
           {ruleDerived && ` ${t('results.derived')}`}
         </p>
 
-        <div className="mt-3 overflow-x-auto">
+        <div className="mt-3 overflow-x-auto" role="region" aria-label="Tabel hasil per kriteria" tabIndex={0}>
           <table className="w-full min-w-[560px] text-left text-sm">
             <caption className="sr-only">Hasil per kriteria</caption>
             <thead>

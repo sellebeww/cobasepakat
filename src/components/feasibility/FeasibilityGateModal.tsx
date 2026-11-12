@@ -125,7 +125,7 @@ export const FeasibilityGateModal: React.FC<FeasibilityGateModalProps> = ({
           </div>
           <button type="button"
             onClick={onClose}
-            className="p-1.5 rounded-full text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors"
+            className="p-1.5 rounded-full text-slate-600 hover:text-slate-600 hover:bg-slate-100 transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -150,7 +150,7 @@ export const FeasibilityGateModal: React.FC<FeasibilityGateModalProps> = ({
                 {item.isAbsoluteBlocker && <span className="text-amber-400 font-bold">*</span>}
                 {currentAns === 'ya' && <CheckCircle2 className="w-3.5 h-3.5 text-brand-green" />}
                 {currentAns === 'tidak' && <XCircle className="w-3.5 h-3.5 text-status-stopped" />}
-                {currentAns === 'belum_tahu' && <HelpCircle className="w-3.5 h-3.5 text-slate-400" />}
+                {currentAns === 'belum_tahu' && <HelpCircle className="w-3.5 h-3.5 text-slate-600" />}
               </button>
             );
           })}

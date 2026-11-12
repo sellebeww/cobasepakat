@@ -126,7 +126,7 @@ export const DecisionModal: React.FC<DecisionModalProps> = ({
           </div>
           <button type="button"
             onClick={onClose}
-            className="p-1.5 rounded-full text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors"
+            className="p-1.5 rounded-full text-slate-600 hover:text-slate-600 hover:bg-slate-100 transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -446,7 +446,7 @@ export const DecisionModal: React.FC<DecisionModalProps> = ({
                 type="button"
                 onClick={handleSaveDecision}
                 disabled={!title.trim() || !reason.trim() || !statement.trim()}
-                className="px-6 py-2.5 bg-brand-green hover:bg-[#258768] disabled:bg-slate-300 text-white text-xs font-bold rounded-full shadow-card transition-all flex items-center gap-1.5"
+                className="px-6 py-2.5 bg-brand-green hover:bg-[#0B5F4A] disabled:bg-slate-300 text-white text-xs font-bold rounded-full shadow-card transition-all flex items-center gap-1.5"
               >
                 <CheckCircle2 className="w-4 h-4" /> Simpan & Kunci Catatan Keputusan
               </button>

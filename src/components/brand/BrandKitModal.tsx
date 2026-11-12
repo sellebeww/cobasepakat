@@ -57,7 +57,7 @@ export const BrandKitModal: React.FC<BrandKitModalProps> = ({ onClose }) => {
           </div>
           <button type="button"
             onClick={onClose}
-            className="p-1.5 rounded-full text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors"
+            className="p-1.5 rounded-full text-slate-600 hover:text-slate-600 hover:bg-slate-100 transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -159,7 +159,7 @@ export const BrandKitModal: React.FC<BrandKitModalProps> = ({ onClose }) => {
                       {copiedHex === c.hex ? (
                         <Check className="w-3.5 h-3.5 text-brand-green" />
                       ) : (
-                        <Copy className="w-3 h-3 text-slate-400 group-hover:text-brand-navy" />
+                        <Copy className="w-3 h-3 text-slate-600 group-hover:text-brand-navy" />
                       )}
                     </div>
                     <div className="text-xs font-mono font-semibold text-slate-500">{c.hex}</div>

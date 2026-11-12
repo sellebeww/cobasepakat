@@ -201,7 +201,7 @@ export const LandingMarketing: React.FC = () => {
         </p>
         <button type="button"
           onClick={() => setActiveTab('beranda')}
-          className="px-8 py-3 bg-brand-green hover:bg-[#258768] text-white text-xs font-bold rounded-2xl shadow-lg transition-all"
+          className="px-8 py-3 bg-brand-green hover:bg-[#0B5F4A] text-white text-xs font-bold rounded-2xl shadow-lg transition-all"
         >
           Buka Ruang Komunitas Kluster Melati &rarr;
         </button>

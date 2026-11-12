@@ -53,7 +53,7 @@ export const AuditLogView: React.FC = () => {
 
           <div className="flex w-full sm:w-auto items-center gap-2">
           <div className="relative w-full sm:w-64">
-            <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+            <Search className="w-4 h-4 text-slate-600 absolute left-3 top-1/2 -translate-y-1/2" />
             <input
               type="search"
               aria-label="Cari log audit"
@@ -101,7 +101,7 @@ export const AuditLogView: React.FC = () => {
       </section>
 
       <div className="bg-white rounded-3xl p-6 border border-brand-border shadow-sm">
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto" role="region" aria-label="Tabel log audit" tabIndex={0}>
           <table className="w-full text-left text-xs">
             <thead>
               <tr className="border-b border-brand-border text-brand-slate">

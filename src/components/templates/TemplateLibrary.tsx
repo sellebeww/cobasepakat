@@ -47,7 +47,7 @@ export const TemplateLibrary: React.FC = () => {
                   {tpl.category.replace(/_/g, ' ')}
                 </span>
                 <span className="text-xs text-brand-slate flex items-center gap-1 font-mono">
-                  <Clock className="w-3.5 h-3.5 text-slate-400" />
+                  <Clock className="w-3.5 h-3.5 text-slate-600" />
                   Rekomendasi {tpl.recommendedDuration} Hari
                 </span>
               </div>

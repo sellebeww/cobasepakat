@@ -166,7 +166,7 @@ export const FacilitatorDirectory: React.FC = () => {
                   </button>
                   <button
                     type="submit"
-                    className="px-5 py-2 bg-brand-green hover:bg-[#258768] text-white text-xs font-bold rounded-full shadow-card"
+                    className="px-5 py-2 bg-brand-green hover:bg-[#0B5F4A] text-white text-xs font-bold rounded-full shadow-card"
                   >
                     Kirim Permintaan
                   </button>

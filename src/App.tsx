@@ -195,7 +195,7 @@ const MainAppContent: React.FC = () => {
             <div>
               &copy; 2026 Vassel Goleyu. Hak cipta dilindungi. Mode demo menyimpan data hanya di peramban Anda.
             </div>
-            <div className="font-mono text-slate-400">
+            <div className="font-mono text-slate-600">
               Versi demo · data contoh fiktif
             </div>
           </div>

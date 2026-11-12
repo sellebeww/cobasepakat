@@ -66,7 +66,7 @@ export const DecisionLibrary: React.FC = () => {
         {/* Search and Filter bar */}
         <div className="flex flex-col sm:flex-row items-center gap-3 pt-2">
           <div className="relative flex-1 w-full">
-            <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+            <Search className="w-4 h-4 text-slate-600 absolute left-3.5 top-1/2 -translate-y-1/2" />
             <input
               type="text"
               placeholder="Cari berdasarkan topik (parkir, jam malam, gerbang, sampah, kebisingan)..."
@@ -76,7 +76,7 @@ export const DecisionLibrary: React.FC = () => {
             />
           </div>
 
-          <div className="flex items-center gap-1.5 overflow-x-auto w-full sm:w-auto">
+          <div className="flex items-center gap-1.5 overflow-x-auto w-full sm:w-auto" role="region" aria-label="Filter kategori" tabIndex={0}>
             {[
               { id: 'all', label: 'Semua Status' },
               { id: 'adopsi', label: 'Adopsi Tetap' },

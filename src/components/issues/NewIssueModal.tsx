@@ -60,7 +60,7 @@ export const NewIssueModal: React.FC<NewIssueModalProps> = ({ onClose }) => {
           <button type="button"
             onClick={onClose}
             aria-label="Tutup"
-            className="p-1.5 rounded-full text-slate-400 hover:text-slate-600 hover:bg-slate-100"
+            className="p-1.5 rounded-full text-slate-600 hover:text-slate-600 hover:bg-slate-100"
           >
             <X className="w-5 h-5" />
           </button>

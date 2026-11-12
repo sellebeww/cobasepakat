@@ -229,8 +229,8 @@ export const Navbar: React.FC = () => {
             )}
 
             {/* Zone 3: CTA & Personas */}
-            <div className="flex items-center gap-3 shrink-0">
-              <label className="flex items-center gap-1 text-xs text-brand-slate">
+            <div className="flex items-center gap-1 sm:gap-3 shrink-0">
+              <label className="hidden sm:flex items-center gap-1 text-xs text-brand-slate">
                 <span className="sr-only">{t('lang.label')}</span>
                 <select
                   value={locale}
@@ -384,7 +384,7 @@ export const Navbar: React.FC = () => {
                             <RotateCcw className="w-3 h-3" />
                             {confirmReset ? 'Klik lagi untuk konfirmasi' : 'Reset Data Demo'}
                           </button>
-                          <span className="text-xs text-slate-400 font-mono">v1.0-MVP</span>
+                          <span className="text-xs text-slate-600 font-mono">v1.0-MVP</span>
                         </div>
                       </div>
                     )}
@@ -431,6 +431,19 @@ export const Navbar: React.FC = () => {
                 {appMode === 'company_profile' ? 'Buka Demo →' : '← Company Profile'}
               </button>
             </div>
+
+            <label className="flex items-center justify-between gap-2 py-1 text-xs font-semibold text-brand-navy sm:hidden">
+              {t('lang.label')}
+              <select
+                value={locale}
+                onChange={(e) => setLocale(e.target.value as 'id' | 'en')}
+                className="rounded-lg border border-brand-border bg-white px-2 py-1.5 text-xs font-semibold"
+                data-testid="lang-select-mobile"
+              >
+                <option value="id">{t('lang.id')}</option>
+                <option value="en">{t('lang.en')}</option>
+              </select>
+            </label>
 
             {appMode === 'company_profile' ? (
               <div className="space-y-1">
