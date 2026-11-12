@@ -13,6 +13,21 @@ test.describe('tampilan 360px tanpa gulir horizontal', () => {
       expect(sw, `scrollWidth ${sw} > clientWidth ${cw}`).toBeLessThanOrEqual(cw);
     });
   }
+  test('header tetap muat di 360px walau font jauh lebih lebar (font web di CI)', async ({ page }) => {
+    await page.addInitScript(() => {
+      document.addEventListener('DOMContentLoaded', () => {
+        const s = document.createElement('style');
+        s.textContent = "*{font-family:'DejaVu Sans',monospace !important}";
+        document.head.appendChild(s);
+      });
+    });
+    for (const url of ['/#/', '/#/demo/beranda']) {
+      await startAs(page, null, url);
+      await page.waitForTimeout(500);
+      const { sw, cw } = await page.evaluate(() => ({ sw: document.documentElement.scrollWidth, cw: document.documentElement.clientWidth }));
+      expect(sw, `${url}: scrollWidth ${sw} > ${cw}`).toBeLessThanOrEqual(cw);
+    }
+  });
   test('dasbor percobaan (grafik dan tabel) muat di 360px', async ({ page }) => {
     await startAs(page, null);
     await openTrialDashboard(page);

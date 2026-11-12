@@ -122,7 +122,7 @@ export const Navbar: React.FC = () => {
 
       <header ref={headerRef} className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-brand-border">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16 gap-4">
+          <div className="flex items-center justify-between h-16 gap-2 sm:gap-4">
             {/* Zone 1: Brand Wordmark */}
             <div className="flex items-center gap-3 shrink-0">
               <button type="button"
@@ -254,7 +254,8 @@ export const Navbar: React.FC = () => {
                     onClick={() => enterDemo()}
                     className="px-3 sm:px-5 py-2.5 bg-brand-blue-dark hover:bg-brand-navy text-white rounded-full text-xs font-bold transition-colors shadow-card"
                   >
-                    Mulai Sekarang
+                    <span className="sm:hidden">Mulai</span>
+                    <span className="hidden sm:inline">Mulai Sekarang</span>
                   </button>
                 </>
               ) : (
