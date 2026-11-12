@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React from 'react';
+import type React from 'react';
 import { motion } from 'motion/react';
 
 // Vector redraw of the hero visual from the asset pack (the pack only ships a 470px JPG crop).

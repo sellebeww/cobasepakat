@@ -3,25 +3,19 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState } from 'react';
+import type React from 'react';
+import { useState } from 'react';
 import { useApp } from '../../context/AppContext';
-import { Issue } from '../../types';
+import { acceptanceToCore } from '../../lib/coreAdapter';
+import { summarizeAcceptance } from '../../core';
 import {
-  BookOpen,
   Search,
-  Filter,
-  CheckCircle2,
-  RotateCcw,
-  Scale,
-  Calendar,
   Building2,
-  FileText,
-  Share2,
   Sparkles,
 } from 'lucide-react';
 
 export const DecisionLibrary: React.FC = () => {
-  const { issues, setActiveIssueId, setActiveTab } = useApp();
+  const { issues, acceptance, setActiveIssueId, setActiveTab } = useApp();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedOutcomeFilter, setSelectedOutcomeFilter] = useState<string>('all');
@@ -72,7 +66,7 @@ export const DecisionLibrary: React.FC = () => {
         {/* Search and Filter bar */}
         <div className="flex flex-col sm:flex-row items-center gap-3 pt-2">
           <div className="relative flex-1 w-full">
-            <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+            <Search className="w-4 h-4 text-slate-600 absolute left-3.5 top-1/2 -translate-y-1/2" />
             <input
               type="text"
               placeholder="Cari berdasarkan topik (parkir, jam malam, gerbang, sampah, kebisingan)..."
@@ -82,14 +76,14 @@ export const DecisionLibrary: React.FC = () => {
             />
           </div>
 
-          <div className="flex items-center gap-1.5 overflow-x-auto w-full sm:w-auto">
+          <div className="flex items-center gap-1.5 overflow-x-auto w-full sm:w-auto" role="region" aria-label="Filter kategori" tabIndex={0}>
             {[
               { id: 'all', label: 'Semua Status' },
               { id: 'adopsi', label: 'Adopsi Tetap' },
               { id: 'ubah', label: 'Ubah & Coba Lagi' },
               { id: 'berjalan', label: 'Sedang Berjalan' },
             ].map((f) => (
-              <button
+              <button type="button"
                 key={f.id}
                 onClick={() => setSelectedOutcomeFilter(f.id)}
                 className={`px-3 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
@@ -153,7 +147,12 @@ export const DecisionLibrary: React.FC = () => {
                     <div className="font-bold text-brand-navy">{iss.decision?.title}</div>
                     <p className="text-brand-slate line-clamp-2 text-xs">{iss.decision?.reason}</p>
                     <div className="text-xs font-mono text-slate-500 pt-1">
-                      Skor Penerimaan Warga: {iss.decision?.acceptanceAverageScore}/5.0 ({iss.decision?.acceptancePercentage}% Menerima)
+                      {(() => {
+                        const a = summarizeAcceptance(acceptanceToCore(acceptance.filter((r) => r.decisionId === iss.decision?.id)));
+                        return a.n === 0
+                          ? 'Penerimaan warga: belum ada jawaban survei'
+                          : `Penerimaan warga: skor rata-rata ${a.meanScore?.toFixed(1)}/5, ${Math.round((a.acceptShare ?? 0) * 100)}% menerima (n = ${a.n}, interval 95% ${Math.round((a.acceptInterval?.lower ?? 0) * 100)}-${Math.round((a.acceptInterval?.upper ?? 0) * 100)}%, sukarela)`;
+                      })()}
                     </div>
                   </div>
                 )}
@@ -175,7 +174,7 @@ export const DecisionLibrary: React.FC = () => {
                 <div className="text-xs text-brand-slate">
                   Lokasi: <span className="font-medium text-brand-navy">{iss.location}</span>
                 </div>
-                <button
+                <button type="button"
                   onClick={() => {
                     setActiveIssueId(iss.id);
                     setActiveTab('isu');

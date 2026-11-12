@@ -3,18 +3,14 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState } from 'react';
+import type React from 'react';
+import { useState } from 'react';
 import { useApp } from '../../context/AppContext';
-import { Facilitator } from '../../types';
+import type { Facilitator } from '../../types';
 import {
-  Users,
   Star,
-  Award,
   CheckCircle2,
-  Calendar,
-  MessageSquare,
   ShieldCheck,
-  Building2,
 } from 'lucide-react';
 
 export const FacilitatorDirectory: React.FC = () => {
@@ -95,7 +91,7 @@ export const FacilitatorDirectory: React.FC = () => {
                 <div className="text-xs text-brand-slate">Tarif Pendampingan:</div>
                 <div className="font-mono font-bold text-xs text-brand-navy">{fac.hourlyRate}</div>
               </div>
-              <button
+              <button type="button"
                 onClick={() => handleBook(fac)}
                 className="px-4 py-2 bg-brand-blue hover:bg-brand-blue-dark text-white rounded-full text-xs font-bold transition-all shadow-card"
               >
@@ -170,7 +166,7 @@ export const FacilitatorDirectory: React.FC = () => {
                   </button>
                   <button
                     type="submit"
-                    className="px-5 py-2 bg-brand-green hover:bg-[#258768] text-white text-xs font-bold rounded-full shadow-card"
+                    className="px-5 py-2 bg-brand-green hover:bg-[#0B5F4A] text-white text-xs font-bold rounded-full shadow-card"
                   >
                     Kirim Permintaan
                   </button>
@@ -189,7 +185,7 @@ export const FacilitatorDirectory: React.FC = () => {
                     {selectedFacilitator.name} akan menghubungi pengurus ruang melalui email dan nomor WhatsApp terdaftar dalam 1x24 jam.
                   </p>
                 </div>
-                <button
+                <button type="button"
                   onClick={() => setSelectedFacilitator(null)}
                   className="px-5 py-2 bg-brand-navy text-white text-xs font-semibold rounded-full"
                 >

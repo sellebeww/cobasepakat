@@ -3,29 +3,25 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState } from 'react';
+import type React from 'react';
+import { useState } from 'react';
 import { useApp } from '../../context/AppContext';
-import { Issue, CommentKind } from '../../types';
+import type { Issue, CommentKind } from '../../types';
 import { FeasibilityGateModal } from '../feasibility/FeasibilityGateModal';
 import { ExperimentWizardModal } from '../wizard/ExperimentWizardModal';
 import { ExperimentDashboard } from '../experiment/ExperimentDashboard';
 import { EvaluationView } from '../evaluation/EvaluationView';
 import { DecisionModal } from '../decision/DecisionModal';
 import {
-  HelpCircle,
   ShieldCheck,
   Sparkles,
   Play,
   CheckCircle2,
-  AlertTriangle,
   MessageSquare,
   Send,
   Plus,
-  Users,
   Compass,
-  ArrowRight,
   Sliders,
-  Scale,
   FileCheck2,
 } from 'lucide-react';
 
@@ -120,7 +116,7 @@ export const IssueDetail: React.FC<IssueDetailProps> = ({ issue, onBack }) => {
   return (
     <div className="space-y-6">
       {/* 9-Stage Progress Stepper Bar */}
-      <div className="bg-white rounded-3xl p-4 md:p-6 border border-brand-border shadow-sm overflow-x-auto">
+      <div className="bg-white rounded-3xl p-4 md:p-6 border border-brand-border shadow-sm overflow-x-auto" role="region" aria-label="Tahapan isu" tabIndex={0}>
         <div className="flex items-center min-w-[960px] justify-between relative">
           <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-brand-border -translate-y-1/2 z-0" />
           {STAGES.map((stg, idx) => {
@@ -156,7 +152,7 @@ export const IssueDetail: React.FC<IssueDetailProps> = ({ issue, onBack }) => {
       {/* View Switcher Tabs (Detail Isu vs Percobaan Berjalan vs Evaluasi) */}
       {currentExperiment && (
         <div className="flex items-center gap-2 p-1 bg-brand-border/50 rounded-2xl w-fit">
-          <button
+          <button type="button"
             onClick={() => setViewMode('isu')}
             className={`px-4 py-2 text-xs font-semibold rounded-xl transition-all ${
               viewMode === 'isu' ? 'bg-white text-brand-navy shadow-sm' : 'text-brand-slate hover:text-brand-navy'
@@ -164,7 +160,7 @@ export const IssueDetail: React.FC<IssueDetailProps> = ({ issue, onBack }) => {
           >
             Pertanyaan & Dugaan
           </button>
-          <button
+          <button type="button"
             onClick={() => setViewMode('percobaan')}
             className={`px-4 py-2 text-xs font-semibold rounded-xl transition-all ${
               viewMode === 'percobaan'
@@ -174,7 +170,7 @@ export const IssueDetail: React.FC<IssueDetailProps> = ({ issue, onBack }) => {
           >
             Dasbor Percobaan ({currentExperiment.status.replace('_', ' ')})
           </button>
-          <button
+          <button type="button"
             onClick={() => setViewMode('evaluasi')}
             className={`px-4 py-2 text-xs font-semibold rounded-xl transition-all ${
               viewMode === 'evaluasi'
@@ -245,7 +241,7 @@ export const IssueDetail: React.FC<IssueDetailProps> = ({ issue, onBack }) => {
 
               {/* Action Buttons for Next Stages */}
               <div className="flex flex-col sm:flex-row md:flex-col gap-2 shrink-0">
-                <button
+                <button type="button"
                   onClick={() => setShowFeasibilityModal(true)}
                   className="px-4 py-2.5 bg-white hover:bg-brand-surface text-brand-blue border border-brand-blue rounded-full text-xs font-bold transition-all shadow-card flex items-center justify-center gap-2"
                 >
@@ -254,7 +250,7 @@ export const IssueDetail: React.FC<IssueDetailProps> = ({ issue, onBack }) => {
                 </button>
 
                 {issue.feasibilityOutcome?.status !== 'tidak_layak' && (
-                  <button
+                  <button type="button"
                     onClick={() => {
                       if (currentExperiment) {
                         setViewMode('percobaan');
@@ -277,9 +273,9 @@ export const IssueDetail: React.FC<IssueDetailProps> = ({ issue, onBack }) => {
                 )}
 
                 {issue.decision && (
-                  <button
+                  <button type="button"
                     onClick={() => setShowDecisionModal(true)}
-                    className="px-4 py-2.5 bg-brand-green hover:bg-[#258768] text-white rounded-full text-xs font-bold transition-all shadow-card flex items-center justify-center gap-2"
+                    className="px-4 py-2.5 bg-brand-green hover:bg-[#0B5F4A] text-white rounded-full text-xs font-bold transition-all shadow-card flex items-center justify-center gap-2"
                   >
                     <FileCheck2 className="w-4 h-4" /> Catatan Keputusan
                   </button>
@@ -328,7 +324,7 @@ export const IssueDetail: React.FC<IssueDetailProps> = ({ issue, onBack }) => {
                 </p>
               </div>
 
-              <button
+              <button type="button"
                 onClick={() => setShowClaimForm(!showClaimForm)}
                 className="px-3.5 py-2 bg-brand-surface hover:bg-slate-200 text-brand-navy text-xs font-semibold rounded-xl transition-colors flex items-center gap-1.5 self-start sm:self-auto"
               >
@@ -526,7 +522,7 @@ export const IssueDetail: React.FC<IssueDetailProps> = ({ issue, onBack }) => {
                         {cm.kind}
                       </span>
                     </div>
-                    <span className="text-xs text-slate-400 font-mono">
+                    <span className="text-xs text-slate-600 font-mono">
                       {new Date(cm.createdAt).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}
                     </span>
                   </div>
@@ -537,7 +533,7 @@ export const IssueDetail: React.FC<IssueDetailProps> = ({ issue, onBack }) => {
 
             {/* Add Comment Input */}
             <form onSubmit={handleAddComment} className="pt-2 space-y-3">
-              <div className="flex items-center gap-2 overflow-x-auto pb-1 text-xs">
+              <div className="flex items-center gap-2 overflow-x-auto pb-1 text-xs" role="region" aria-label="Jenis komentar" tabIndex={0}>
                 <span className="text-xs font-semibold text-brand-slate">Jenis Komentar:</span>
                 {(['fakta', 'dugaan', 'nilai', 'pertanyaan'] as CommentKind[]).map((k) => (
                   <button

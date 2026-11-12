@@ -3,27 +3,24 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState } from 'react';
+import type React from 'react';
+import { useMemo, useState } from 'react';
 import { useApp } from '../../context/AppContext';
-import { Experiment, Issue, Metric } from '../../types';
+import { ResultsPanel } from '../results/ResultsPanel';
+import { ReportButton } from '../results/ReportButton';
+import { trialProgress } from '../../core';
+import { analyzeExperiment, localUtcOffsetMinutes } from '../../lib/coreAdapter';
+import type { Experiment, Issue, } from '../../types';
 import {
-  Calendar,
   Clock,
   AlertTriangle,
   ShieldAlert,
   ShieldCheck,
-  CheckCircle2,
-  XCircle,
   Plus,
   Camera,
   Activity,
-  TrendingDown,
-  TrendingUp,
   FileText,
-  UserCheck,
   Send,
-  Flag,
-  Info,
 } from 'lucide-react';
 
 interface ExperimentDashboardProps {
@@ -45,6 +42,7 @@ export const ExperimentDashboard: React.FC<ExperimentDashboardProps> = ({
     verifyDataEntry,
     triggerEmergencyStop,
     submitApproval,
+    quorumFor,
   } = useApp();
   const [showAllEntries, setShowAllEntries] = useState(false);
   // Recorders cannot verify their own entries, so switching persona is part of the demo flow.
@@ -66,7 +64,7 @@ export const ExperimentDashboard: React.FC<ExperimentDashboardProps> = ({
 
   const handleQuickSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (entryValue === '' || isNaN(Number(entryValue))) return;
+    if (entryValue === '' || Number.isNaN(Number(entryValue))) return;
     addDataEntry(experiment.id, selectedMetricId, Number(entryValue), entryNotes);
     setEntryValue('');
     setEntryNotes('');
@@ -89,10 +87,15 @@ export const ExperimentDashboard: React.FC<ExperimentDashboardProps> = ({
   ).length;
   const userHasApproved = experiment.approvals.some((a) => a.userId === currentUser.id);
 
+  const isDone = experiment.status === 'selesai';
+  const progress = trialProgress(experiment.startDate, experiment.durationDays, new Date().toISOString(), localUtcOffsetMinutes());
+  const shownDay = isDone ? experiment.durationDays : (progress?.day ?? 0);
+  const analysis = useMemo(() => analyzeExperiment(experiment), [experiment]);
+  const quorum = quorumFor(experiment.id);
+
   // Status badge styling
   const isStopped = experiment.status === 'dihentikan';
-  const isDone = experiment.status === 'selesai';
-  const isPendingApproval = experiment.status === 'menunggu_persetujuan';
+  const _isPendingApproval = experiment.status === 'menunggu_persetujuan';
 
   return (
     <div className="space-y-6">
@@ -113,7 +116,7 @@ export const ExperimentDashboard: React.FC<ExperimentDashboardProps> = ({
               Waktu Penghentian: {experiment.stoppedAt ? new Date(experiment.stoppedAt).toLocaleString('id-ID') : 'Baru saja'}
             </div>
             <div className="pt-2">
-              <button
+              <button type="button"
                 onClick={onOpenEvaluation}
                 className="px-4 py-1.5 bg-status-stopped text-white rounded-xl text-xs font-semibold hover:bg-red-700 transition-colors"
               >
@@ -149,7 +152,7 @@ export const ExperimentDashboard: React.FC<ExperimentDashboardProps> = ({
           <div className="flex flex-wrap items-center gap-2 md:shrink-0">
             {/* Panic Stop Button */}
             {!isStopped && !isDone && (
-              <button
+              <button type="button"
                 onClick={() => setShowStopModal(true)}
                 className="px-4 py-2.5 bg-red-50 hover:bg-red-100 text-status-stopped border border-red-200 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shadow-sm active:scale-95"
                 title="Hentikan percobaan detik ini juga jika keselamatan terancam"
@@ -159,8 +162,10 @@ export const ExperimentDashboard: React.FC<ExperimentDashboardProps> = ({
               </button>
             )}
 
+            <ReportButton experiment={experiment} issue={issue} />
+
             {/* Quick Link to Evaluation or Decision */}
-            <button
+            <button type="button"
               onClick={onOpenEvaluation}
               className="px-4 py-2.5 bg-brand-navy hover:bg-brand-blue-dark text-white rounded-full text-xs font-bold transition-all shadow-card flex items-center gap-1.5"
             >
@@ -169,9 +174,9 @@ export const ExperimentDashboard: React.FC<ExperimentDashboardProps> = ({
             </button>
 
             {(currentUser.role === 'pengurus' || currentUser.role === 'pengelola_kawasan') && (
-              <button
+              <button type="button"
                 onClick={onOpenDecision}
-                className="px-4 py-2.5 bg-brand-green hover:bg-[#258768] text-white rounded-full text-xs font-bold transition-all shadow-card flex items-center gap-1.5"
+                className="px-4 py-2.5 bg-brand-green hover:bg-[#0B5F4A] text-white rounded-full text-xs font-bold transition-all shadow-card flex items-center gap-1.5"
               >
                 <FileText className="w-4 h-4" />
                 Catat Keputusan
@@ -185,10 +190,10 @@ export const ExperimentDashboard: React.FC<ExperimentDashboardProps> = ({
           <div className="flex items-center justify-between text-xs mb-2">
             <span className="font-bold text-brand-navy flex items-center gap-1.5">
               <Clock className="w-4 h-4 text-brand-blue" />
-              Progres Percobaan: Hari ke-{isDone ? experiment.durationDays : 8} dari {experiment.durationDays} Hari
+              Progres Percobaan: Hari ke-{shownDay} dari {experiment.durationDays} Hari
             </span>
             <span className="font-mono text-brand-slate font-semibold">
-              {Math.round(((isDone ? experiment.durationDays : 8) / experiment.durationDays) * 100)}% Berjalan
+              {Math.round(((shownDay) / experiment.durationDays) * 100)}% Berjalan
             </span>
           </div>
           <div className="w-full bg-brand-border h-2.5 rounded-full overflow-hidden">
@@ -197,7 +202,7 @@ export const ExperimentDashboard: React.FC<ExperimentDashboardProps> = ({
                 isStopped ? 'bg-status-stopped' : 'bg-brand-blue'
               }`}
               style={{
-                width: `${Math.min(100, Math.round(((isDone ? experiment.durationDays : 8) / experiment.durationDays) * 100))}%`,
+                width: `${Math.min(100, Math.round(((shownDay) / experiment.durationDays) * 100))}%`,
               }}
             />
           </div>
@@ -228,86 +233,7 @@ export const ExperimentDashboard: React.FC<ExperimentDashboardProps> = ({
             </span>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {experiment.metrics.map((met) => {
-              const currentVal = met.currentValue ?? met.baselineValue;
-              const isImproved =
-                met.direction === 'turun_lebih_baik'
-                  ? currentVal <= met.thresholdValue
-                  : currentVal >= met.thresholdValue;
-
-              const percentDiff =
-                met.baselineValue !== 0
-                  ? Math.round(((currentVal - met.baselineValue) / met.baselineValue) * 100)
-                  : 0;
-
-              return (
-                <div
-                  key={met.id}
-                  className="bg-white rounded-3xl p-4 border border-brand-border shadow-card space-y-3"
-                >
-                  <div className="flex items-start justify-between gap-2">
-                    <div>
-                      <h4 className="text-xs font-bold text-brand-navy leading-snug">{met.name}</h4>
-                      <p className="text-xs text-brand-slate">{met.frequency}</p>
-                    </div>
-                    <span
-                      className={`shrink-0 whitespace-nowrap text-xs font-bold px-2 py-0.5 rounded-full flex items-center gap-1 ${
-                        isImproved
-                          ? 'bg-brand-green/10 text-brand-green'
-                          : 'bg-amber-50 text-amber-700'
-                      }`}
-                    >
-                      {isImproved ? 'Target Tercapai' : 'Di Bawah Target'}
-                    </span>
-                  </div>
-
-                  {/* Value comparison strip */}
-                  <div className="grid grid-cols-3 gap-2 text-center py-2 bg-brand-surface rounded-xl">
-                    <div>
-                      <div className="text-xs text-brand-slate">Garis Dasar</div>
-                      <div className="text-xs font-mono font-bold text-brand-navy">
-                        {met.baselineValue}
-                      </div>
-                    </div>
-                    <div>
-                      <div className="text-xs text-brand-slate">Saat Ini</div>
-                      <div
-                        className={`text-sm font-mono font-extrabold ${
-                          isImproved ? 'text-brand-green' : 'text-amber-600'
-                        }`}
-                      >
-                        {currentVal}
-                      </div>
-                    </div>
-                    <div>
-                      <div className="text-xs text-brand-slate">Ambang Target</div>
-                      <div className="text-xs font-mono font-bold text-brand-blue">
-                        {met.thresholdValue}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Visual delta indicator */}
-                  <div className="flex items-center justify-between text-xs">
-                    <span className="text-brand-slate">Selisih vs Garis Dasar:</span>
-                    <span
-                      className={`font-mono font-bold flex items-center gap-0.5 ${
-                        isImproved ? 'text-brand-green' : 'text-amber-700'
-                      }`}
-                    >
-                      {percentDiff > 0 ? `+${percentDiff}%` : `${percentDiff}%`}
-                      {percentDiff <= 0 ? (
-                        <TrendingDown className="w-3.5 h-3.5" />
-                      ) : (
-                        <TrendingUp className="w-3.5 h-3.5" />
-                      )}
-                    </span>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
+          <ResultsPanel experiment={experiment} />
 
           {/* Quick Data Logger Card (Mobile-First / Field Logger) */}
           <div className="bg-white rounded-3xl p-5 border border-brand-border shadow-sm space-y-4">
@@ -322,17 +248,18 @@ export const ExperimentDashboard: React.FC<ExperimentDashboardProps> = ({
                 </p>
               </div>
               <span className="text-xs text-brand-green bg-emerald-50 px-2 py-0.5 rounded-full font-medium">
-                Sinkron Otomatis (Offline-Ready)
+                Tersimpan di perangkat · sinkron antar tab
               </span>
             </div>
 
             <form onSubmit={handleQuickSubmit} className="space-y-3">
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div className="sm:col-span-1">
-                  <label className="block text-xs font-semibold text-brand-navy mb-1">
+                  <label htmlFor="quick-metric" className="block text-xs font-semibold text-brand-navy mb-1">
                     Pilih Metrik:
                   </label>
                   <select
+                    id="quick-metric"
                     value={selectedMetricId}
                     onChange={(e) => setSelectedMetricId(e.target.value)}
                     className="w-full text-xs p-2.5 rounded-xl border border-brand-border bg-brand-surface text-brand-navy font-medium outline-none"
@@ -346,10 +273,11 @@ export const ExperimentDashboard: React.FC<ExperimentDashboardProps> = ({
                 </div>
 
                 <div className="sm:col-span-1">
-                  <label className="block text-xs font-semibold text-brand-navy mb-1">
+                  <label htmlFor="quick-value" className="block text-xs font-semibold text-brand-navy mb-1">
                     Nilai Terukur ({currentMetric.unit}):
                   </label>
                   <input
+                    id="quick-value"
                     type="number"
                     step="0.1"
                     placeholder={`Contoh: ${currentMetric.baselineValue}`}
@@ -361,10 +289,11 @@ export const ExperimentDashboard: React.FC<ExperimentDashboardProps> = ({
                 </div>
 
                 <div className="sm:col-span-1">
-                  <label className="block text-xs font-semibold text-brand-navy mb-1">
+                  <label htmlFor="quick-notes" className="block text-xs font-semibold text-brand-navy mb-1">
                     Catatan Kondisi / Waktu:
                   </label>
                   <input
+                    id="quick-notes"
                     type="text"
                     placeholder="Contoh: Jam 07.15 cerah"
                     value={entryNotes}
@@ -376,7 +305,7 @@ export const ExperimentDashboard: React.FC<ExperimentDashboardProps> = ({
 
               <div className="flex items-center justify-between pt-1">
                 <div className="text-xs text-brand-slate flex items-center gap-1">
-                  <Camera className="w-3.5 h-3.5 text-slate-400" />
+                  <Camera className="w-3.5 h-3.5 text-slate-600" />
                   <span>Foto bukti & cap waktu otomatis disematkan</span>
                 </div>
                 <button
@@ -432,7 +361,7 @@ export const ExperimentDashboard: React.FC<ExperimentDashboardProps> = ({
                             Terverifikasi · {entry.verifiedBy}
                           </span>
                         ) : canVerify && entry.recordedBy !== currentUser.name ? (
-                          <button
+                          <button type="button"
                             onClick={() => verifyDataEntry(experiment.id, entry.id)}
                             className="shrink-0 px-3 py-1.5 bg-brand-blue hover:bg-brand-blue-dark text-white text-xs font-bold rounded-lg"
                           >
@@ -447,7 +376,7 @@ export const ExperimentDashboard: React.FC<ExperimentDashboardProps> = ({
                     ))}
                 </ul>
                 {experiment.dataEntries.length > 6 && (
-                  <button
+                  <button type="button"
                     onClick={() => setShowAllEntries((v) => !v)}
                     className="text-xs font-bold text-brand-blue hover:text-brand-blue-dark"
                   >
@@ -491,7 +420,12 @@ export const ExperimentDashboard: React.FC<ExperimentDashboardProps> = ({
                     <div>
                       <div className="font-semibold">{sr.conditionDescription}</div>
                       <div className="text-xs text-brand-slate mt-0.5">
-                        Status: {sr.triggered ? 'TERPICU - Percobaan Berhenti' : 'Aman (Belum pernah terpicu)'}
+                        {(() => {
+                          const st = analysis.stop.find((x) => x.ruleId === sr.id);
+                          if (sr.triggered) return `TERPICU${sr.triggerReason ? `: ${sr.triggerReason}` : ''}`;
+                          if (!sr.trigger) return 'Aturan manual: dinilai orang, tidak dipantau otomatis';
+                          return `Dipantau otomatis · rentetan pelanggaran ${st?.currentStreak ?? 0}/${st?.required ?? 1}`;
+                        })()}
                       </div>
                     </div>
                   </div>
@@ -512,11 +446,11 @@ export const ExperimentDashboard: React.FC<ExperimentDashboardProps> = ({
                 Kesepakatan Desain & Kuorum
               </h4>
               <span className="text-xs font-bold text-brand-blue">
-                {approvedCount} Disetujui
+                {quorum ? `${quorum.agree} dari ${quorum.required} suara setuju dibutuhkan` : `${approvedCount} Disetujui`}
               </span>
             </div>
 
-            <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
+            <div className="space-y-2 max-h-48 overflow-y-auto pr-1" role="region" aria-label="Daftar suara kesepakatan" tabIndex={0}>
               {experiment.approvals.map((app) => (
                 <div
                   key={app.id}
@@ -546,7 +480,7 @@ export const ExperimentDashboard: React.FC<ExperimentDashboardProps> = ({
             </div>
 
             {!userHasApproved && (
-              <button
+              <button type="button"
                 onClick={() => setShowApprovalModal(true)}
                 className="w-full py-2 bg-brand-blue hover:bg-brand-blue-dark text-white rounded-xl text-xs font-bold transition-all shadow-sm"
               >
@@ -673,7 +607,7 @@ export const ExperimentDashboard: React.FC<ExperimentDashboardProps> = ({
               <button
                 type="button"
                 onClick={handleVoteDesign}
-                className="px-5 py-2 bg-brand-green hover:bg-[#258768] text-white text-xs font-bold rounded-full shadow-card"
+                className="px-5 py-2 bg-brand-green hover:bg-[#0B5F4A] text-white text-xs font-bold rounded-full shadow-card"
               >
                 Tandatangani & Kirim Suara
               </button>

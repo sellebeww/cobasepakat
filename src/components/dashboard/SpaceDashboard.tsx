@@ -3,22 +3,19 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState } from 'react';
+import type React from 'react';
+import { useState } from 'react';
 import { useApp } from '../../context/AppContext';
+import { useI18n } from '../../i18n';
+import { InviteModal } from '../team/InviteModal';
+import { trialProgress } from '../../core';
+import { localUtcOffsetMinutes } from '../../lib/coreAdapter';
 import {
   Plus,
-  Play,
+  Link2,
   Clock,
-  CheckCircle2,
-  AlertTriangle,
   Building2,
-  Users,
-  Compass,
-  ArrowRight,
-  ShieldCheck,
-  FileText,
   Activity,
-  Layers,
 } from 'lucide-react';
 
 interface SpaceDashboardProps {
@@ -37,6 +34,8 @@ export const SpaceDashboard: React.FC<SpaceDashboardProps> = ({
     experiments,
   } = useApp();
 
+  const { t } = useI18n();
+  const [showInvite, setShowInvite] = useState(false);
   const spaceIssues = issues.filter((i) => i.spaceId === currentSpace.id);
   const activeTrialIssue = spaceIssues.find((i) => i.status === 'percobaan_berjalan');
   const activeExp = activeTrialIssue?.activeExperimentId
@@ -66,8 +65,13 @@ export const SpaceDashboard: React.FC<SpaceDashboardProps> = ({
             </p>
           </div>
 
-          <div className="flex items-center gap-2 shrink-0">
-            <button
+          <div className="flex flex-wrap items-center gap-2 shrink-0">
+            {(currentUser.role === 'pengurus' || currentUser.role === 'pengelola_kawasan') && (
+              <button type="button" onClick={() => setShowInvite(true)} className="px-4 py-2.5 bg-white hover:bg-brand-surface text-brand-navy border border-brand-border rounded-full text-xs font-bold flex items-center gap-1.5">
+                <Link2 className="w-4 h-4" aria-hidden="true" /> {t('invite.button')}
+              </button>
+            )}
+            <button type="button"
               onClick={onOpenNewIssueModal}
               className="px-4 py-2.5 bg-brand-blue hover:bg-brand-blue-dark text-white rounded-full text-xs font-bold transition-all shadow-card flex items-center gap-1.5"
             >
@@ -163,10 +167,14 @@ export const SpaceDashboard: React.FC<SpaceDashboardProps> = ({
           <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-1">
             <div className="text-xs text-brand-slate flex items-center gap-1.5">
               <Clock className="w-4 h-4 text-brand-blue" />
-              <span>Hari ke-8 dari 14 Hari · Rapat Evaluasi: {activeExp.evaluationDate}</span>
+              <span>{(() => {
+                const pr = trialProgress(activeExp.startDate, activeExp.durationDays, new Date().toISOString(), localUtcOffsetMinutes());
+                const label = !pr ? '-' : pr.phase === 'belum_mulai' ? 'Belum mulai' : `Hari ke-${pr.day}`;
+                return `${label} dari ${activeExp.durationDays} Hari · Rapat Evaluasi: ${activeExp.evaluationDate}`;
+              })()}</span>
             </div>
 
-            <button
+            <button type="button"
               onClick={() => {
                 setActiveIssueId(activeTrialIssue.id);
                 setActiveTab('isu');
@@ -192,9 +200,18 @@ export const SpaceDashboard: React.FC<SpaceDashboardProps> = ({
           {spaceIssues.map((iss) => (
             <div
               key={iss.id}
+              role="button"
+              tabIndex={0}
               onClick={() => {
                 setActiveIssueId(iss.id);
                 setActiveTab('isu');
+              }}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  setActiveIssueId(iss.id);
+                  setActiveTab('isu');
+                }
               }}
               className="bg-white rounded-3xl p-5 border border-brand-border hover:border-brand-blue transition-all cursor-pointer shadow-card flex flex-col md:flex-row md:items-center justify-between gap-4"
             >
@@ -234,6 +251,7 @@ export const SpaceDashboard: React.FC<SpaceDashboardProps> = ({
           ))}
         </div>
       </div>
+      {showInvite && <InviteModal onClose={() => setShowInvite(false)} />}
     </div>
   );
 };

@@ -9,10 +9,10 @@
   --text-xs--line-height: 1.3rem;
 
   /* Palette from CobaSepakat_UI_UX_Assets. Green text/buttons use the darker
-     #159A78 for contrast; #27B58D is kept for fills and decoration. */
-  --color-brand-blue: #2476E8;
-  --color-brand-blue-dark: #1555A8;
-  --color-brand-green: #159A78;
+     #0F7A5F for AA contrast (4.5:1) on light backgrounds; #27B58D is kept for fills and decoration. */
+  --color-brand-blue: #1D63CC;
+  --color-brand-blue-dark: #134A93;
+  --color-brand-green: #0F7A5F;
   --color-brand-green-light: #27B58D;
   --color-brand-navy: #173B73;
   --color-brand-slate: #5B6780;
@@ -25,10 +25,10 @@
 
   --shadow-card: 0 12px 32px rgba(23, 59, 115, 0.08);
 
-  --color-status-running: #2476E8;
-  --color-status-agreed: #159A78;
-  --color-status-warning: #F59E0B;
-  --color-status-stopped: #DC2626;
+  --color-status-running: #1D63CC;
+  --color-status-agreed: #0F7A5F;
+  --color-status-warning: #B45309;
+  --color-status-stopped: #B91C1C;
 }
 
 body {

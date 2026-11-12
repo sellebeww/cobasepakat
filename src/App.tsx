@@ -3,7 +3,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { Suspense, lazy, useEffect, useState } from 'react';
+import type React from 'react';
+import { Suspense, lazy, useEffect, useState } from 'react';
 import { motion, AnimatePresence, MotionConfig } from 'motion/react';
 import { AppProvider, useApp } from './context/AppContext';
 import { Navbar } from './components/layout/Navbar';
@@ -14,6 +15,9 @@ import { NewIssueModal } from './components/issues/NewIssueModal';
 import { CobaSepakatLogo } from './components/brand/CobaSepakatLogo';
 import { BrandKitModal } from './components/brand/BrandKitModal';
 import { Play, Palette } from 'lucide-react';
+import { useI18n, I18nProvider } from './i18n';
+import { JoinInvite } from './components/team/JoinInvite';
+import { parseInviteHash } from './core';
 
 // Workspace views load on demand; the landing page (CompanyProfile) stays in the main chunk.
 const SpaceDashboard = lazy(() => import('./components/dashboard/SpaceDashboard').then((m) => ({ default: m.SpaceDashboard })));
@@ -36,6 +40,14 @@ const MainAppContent: React.FC = () => {
   } = useApp();
 
   useDialogA11y();
+  const { t } = useI18n();
+
+  const [inviteToken, setInviteToken] = useState<string | null>(() => parseInviteHash(window.location.hash));
+  useEffect(() => {
+    const onHash = () => setInviteToken(parseInviteHash(window.location.hash));
+    window.addEventListener('hashchange', onHash);
+    return () => window.removeEventListener('hashchange', onHash);
+  }, []);
 
   const [showNewIssueModal, setShowNewIssueModal] = useState(false);
   const [showBrandKitModal, setShowBrandKitModal] = useState(false);
@@ -69,6 +81,9 @@ const MainAppContent: React.FC = () => {
             <img src="/assets/landing/blue-green-blob.svg" alt="" aria-hidden="true" className="pointer-events-none absolute top-[55%] -left-[18%] w-[50%] max-w-[700px] -rotate-6 opacity-40" />
           </>
         )}
+        {inviteToken ? (
+          <JoinInvite token={inviteToken} />
+        ) : (
         <AnimatePresence mode="wait">
           {appMode === 'company_profile' ? (
             <motion.div
@@ -97,6 +112,14 @@ const MainAppContent: React.FC = () => {
                   transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
                   className="space-y-6"
                 >
+                <div
+                  role="note"
+                  className="rounded-2xl border border-amber-300 bg-amber-50 px-4 py-2 text-xs text-amber-950"
+                  data-testid="demo-banner"
+                >
+                  <strong>{t('demo.banner.title')}</strong> {t('demo.banner.body')}
+                </div>
+
                 {activeTab === 'beranda' && (
                   <SpaceDashboard onOpenNewIssueModal={() => setShowNewIssueModal(true)} />
                 )}
@@ -122,6 +145,7 @@ const MainAppContent: React.FC = () => {
             </motion.div>
           )}
         </AnimatePresence>
+        )}
       </main>
 
       {/* Footer (the company profile renders its own) */}
@@ -134,7 +158,7 @@ const MainAppContent: React.FC = () => {
             </div>
 
             <div className="flex flex-wrap items-center gap-6 text-xs text-brand-slate">
-              <button
+              <button type="button"
                 onClick={() => {
                   setAppMode('company_profile');
                   window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -143,19 +167,19 @@ const MainAppContent: React.FC = () => {
               >
                 Company Profile
               </button>
-              <button
+              <button type="button"
                 onClick={() => handleEnterDemo()}
                 className="hover:text-brand-blue font-semibold transition-colors flex items-center gap-1"
               >
                 <Play className="w-3 h-3 fill-brand-blue" /> Demo Interaktif
               </button>
-              <button
+              <button type="button"
                 onClick={() => setShowBrandKitModal(true)}
                 className="hover:text-brand-green font-semibold transition-colors flex items-center gap-1"
               >
                 <Palette className="w-3 h-3" /> Logo & Brand Kit (No-BG)
               </button>
-              <button
+              <button type="button"
                 onClick={() => {
                   setAppMode('demo');
                   setActiveTab('audit');
@@ -169,10 +193,10 @@ const MainAppContent: React.FC = () => {
 
           <div className="pt-4 border-t border-brand-border flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-brand-slate">
             <div>
-              &copy; 2026 CobaSepakat Platform · Hak cipta dilindungi. Sesuai Undang-Undang Pelindungan Data Pribadi (UU PDP).
+              &copy; 2026 Vassel Goleyu. Hak cipta dilindungi. Mode demo menyimpan data hanya di peramban Anda.
             </div>
-            <div className="font-mono text-slate-400">
-              Versi 1.0.0-PROD · Kluster Melati RT 04 Harmoni Asri
+            <div className="font-mono text-slate-600">
+              Versi demo · data contoh fiktif
             </div>
           </div>
         </div>
@@ -195,9 +219,11 @@ const MainAppContent: React.FC = () => {
 export default function App() {
   return (
     <MotionConfig reducedMotion="user">
-      <AppProvider>
-        <MainAppContent />
-      </AppProvider>
+      <I18nProvider>
+        <AppProvider>
+          <MainAppContent />
+        </AppProvider>
+      </I18nProvider>
     </MotionConfig>
   );
 }

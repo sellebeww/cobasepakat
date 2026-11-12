@@ -3,13 +3,15 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import {
+import type React from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import type {
   User,
   Organization,
   Space,
   Issue,
   Experiment,
+  Decision,
   Claim,
   Comment,
   DataEntry,
@@ -18,6 +20,7 @@ import {
   TemplateBlueprint,
   Facilitator,
   AuditLog,
+  AcceptanceResponse,
 } from '../types';
 import {
   SEED_ORGANIZATION,
@@ -28,8 +31,22 @@ import {
   SEED_TEMPLATES,
   SEED_FACILITATORS,
   INITIAL_AUDIT_LOGS,
+  INITIAL_ACCEPTANCE,
 } from '../data/seedData';
-import { notify, ToastTone } from '../lib/notify';
+import { notify, type ToastTone } from '../lib/notify';
+import {
+  appendEntry,
+  computeQuorum,
+  dayIndex,
+  markManualStop,
+  shouldHalt,
+  latchTriggered,
+  verifyChain,
+  type ChainVerification,
+  type LedgerEntry,
+  type QuorumResult,
+} from '../core';
+import { analyzeExperiment, localUtcOffsetMinutes, stopRuleToCore } from '../lib/coreAdapter';
 
 export type NavigationTab =
   | 'beranda'
@@ -58,6 +75,13 @@ interface AppContextType {
   templates: TemplateBlueprint[];
   facilitators: Facilitator[];
   auditLogs: AuditLog[];
+  ledger: LedgerEntry[];
+  verifyLedger: () => Promise<ChainVerification>;
+  /** Hanya untuk demo: mengubah satu entri tanpa menghitung ulang hash, untuk memperlihatkan deteksi. */
+  tamperLedgerForDemo: () => void;
+  acceptance: AcceptanceResponse[];
+  quorumFor: (experimentId: string) => QuorumResult | null;
+  flagDataEntry: (experimentId: string, entryId: string, flagged: boolean) => void;
   activeTab: NavigationTab;
   setActiveTab: (tab: NavigationTab) => void;
   appMode: 'company_profile' | 'demo';
@@ -153,6 +177,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   // State -> URL
   useEffect(() => {
+    if (window.location.hash.startsWith('#/join/')) return; // halaman undangan mengatur hash sendiri
     const hash = buildHash(appMode, activeTab, activeIssueId);
     if (window.location.hash !== hash) window.location.hash = hash;
   }, [appMode, activeTab, activeIssueId]);
@@ -171,14 +196,100 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [showMobileMenu, setShowMobileMenu] = useState<boolean>(false);
   const [templates] = useState<TemplateBlueprint[]>(SEED_TEMPLATES);
   const [facilitators] = useState<Facilitator[]>(SEED_FACILITATORS);
-  const [auditLogs, setAuditLogs] = useState<AuditLog[]>(() =>
-    load('audit', INITIAL_AUDIT_LOGS, Array.isArray),
+  const [acceptance, setAcceptance] = useState<AcceptanceResponse[]>(() =>
+    load('acceptance', INITIAL_ACCEPTANCE, Array.isArray),
   );
+  // Riwayat audit dan keputusan = buku besar berantai hash (lihat src/core/ledger.ts).
+  const [ledger, setLedger] = useState<LedgerEntry[]>(() => load('ledger', [] as LedgerEntry[], Array.isArray));
+  const ledgerRef = useRef<LedgerEntry[]>(ledger);
+  const queueRef = useRef<Promise<unknown>>(Promise.resolve());
+
+  const enqueue = useCallback(
+    (inputs: { timestamp: string; actor: string; type: string; payload: unknown }[], after?: (added: LedgerEntry[]) => void) => {
+      queueRef.current = queueRef.current
+        .then(async () => {
+          let chain = ledgerRef.current;
+          for (const input of inputs) chain = await appendEntry(chain, input);
+          ledgerRef.current = chain;
+          setLedger(chain);
+          after?.(chain.slice(chain.length - inputs.length));
+        })
+        .catch(() => notify('Gagal menulis ke riwayat berantai.', 'warning'));
+    },
+    [],
+  );
+
+  // Bibit awal: log audit contoh dimasukkan ke rantai sekali, urut dari yang terlama.
+  useEffect(() => {
+    if (ledgerRef.current.length > 0) return;
+    enqueue(
+      [...INITIAL_AUDIT_LOGS].reverse().map((l) => ({
+        timestamp: l.timestamp,
+        actor: l.userName,
+        type: 'audit',
+        payload: { action: l.action, target: l.target, details: l.details, userRole: l.userRole },
+      })),
+    );
+  }, [enqueue]);
+
+  const auditLogs = useMemo<AuditLog[]>(
+    () =>
+      [...ledger].reverse().map((e) => {
+        const p = (e.payload ?? {}) as Record<string, string>;
+        return {
+          id: `led-${e.index}`,
+          index: e.index,
+          hash: e.hash,
+          prevHash: e.prevHash,
+          timestamp: e.timestamp,
+          userName: e.actor,
+          userRole: (p.userRole as AuditLog['userRole']) ?? 'anggota',
+          action: e.type === 'keputusan' ? 'Mencatat Keputusan Akhir' : (p.action ?? e.type),
+          target: p.target ?? '',
+          details: p.details ?? '',
+        };
+      }),
+    [ledger],
+  );
+
+  const verifyLedger = useCallback(() => verifyChain(ledgerRef.current), []);
+  const tamperLedgerForDemo = useCallback(() => {
+    const chain = ledgerRef.current;
+    if (chain.length < 2) return;
+    const i = Math.floor(chain.length / 2);
+    const next = chain.map((e, k) => (k === i ? { ...e, payload: { ...(e.payload as object), details: 'DIUBAH DIAM-DIAM' } } : e));
+    ledgerRef.current = next;
+    setLedger(next);
+  }, []);
+
+  // Real-time antar tab (mode demo): perubahan di satu tab langsung muncul di tab lain lewat event `storage`.
+  // Batas: tanpa penggabungan. Bila dua tab menulis bersamaan, yang terakhir menang. Mode tim memakai Realtime Supabase.
+  useEffect(() => {
+    const onStorage = (e: StorageEvent) => {
+      if (!e.key?.startsWith(`${STORAGE_KEY}_`) || e.newValue === null) return;
+      const k = e.key.slice(STORAGE_KEY.length + 1);
+      try {
+        const v = JSON.parse(e.newValue);
+        if (k === 'issues' && Array.isArray(v)) setIssues(v);
+        else if (k === 'experiments' && isObject(v)) setExperiments(v);
+        else if (k === 'acceptance' && Array.isArray(v)) setAcceptance(v);
+        else if (k === 'ledger' && Array.isArray(v)) {
+          ledgerRef.current = v;
+          setLedger(v);
+        }
+      } catch {
+        /* abaikan data rusak */
+      }
+    };
+    window.addEventListener('storage', onStorage);
+    return () => window.removeEventListener('storage', onStorage);
+  }, []);
 
   // Save changes to localStorage
   useEffect(() => save('issues', issues), [issues]);
   useEffect(() => save('experiments', experiments), [experiments]);
-  useEffect(() => save('audit', auditLogs), [auditLogs]);
+  useEffect(() => save('ledger', ledger), [ledger]);
+  useEffect(() => save('acceptance', acceptance), [acceptance]);
   useEffect(() => save('user', currentUser), [currentUser]);
 
   const currentSpace = spaces.find((s) => s.id === currentSpaceId) || spaces[0];
@@ -188,16 +299,14 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     : null;
 
   const logAudit = (action: string, target: string, details: string) => {
-    const newLog: AuditLog = {
-      id: `aud-${Date.now()}`,
-      timestamp: new Date().toISOString(),
-      userName: currentUser.name,
-      userRole: currentUser.role,
-      action,
-      target,
-      details,
-    };
-    setAuditLogs((prev) => [newLog, ...prev]);
+    enqueue([
+      {
+        timestamp: new Date().toISOString(),
+        actor: currentUser.name,
+        type: 'audit',
+        payload: { action, target, details, userRole: currentUser.role },
+      },
+    ]);
   };
 
   const addIssue = (issueData: Partial<Issue>): Issue => {
@@ -442,6 +551,20 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     return expId;
   };
 
+  const eligibleVoters = users.filter((u) => u.role !== 'pemantau_independen').length;
+
+  const quorumFor = (experimentId: string): QuorumResult | null => {
+    const exp = experiments[experimentId];
+    if (!exp) return null;
+    const issue = issues.find((i) => i.id === exp.issueId);
+    const space = spaces.find((sp) => sp.id === issue?.spaceId) ?? currentSpace;
+    return computeQuorum({
+      eligibleVoters,
+      quorumPercentage: space.rules.quorumPercentage,
+      votes: exp.approvals.map((a) => ({ userId: a.userId, stance: a.stance })),
+    });
+  };
+
   const submitApproval = (
     experimentId: string,
     stance: 'setuju' | 'setuju_dengan_catatan' | 'keberatan',
@@ -449,6 +572,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   ) => {
     const exp = experiments[experimentId];
     if (!exp) return;
+    if (exp.status !== 'menunggu_persetujuan' && exp.status !== 'draf') {
+      notify('Desain sudah dikunci; suara tidak dapat diubah.', 'warning');
+      return;
+    }
 
     const newApproval = {
       id: `app-${Date.now()}`,
@@ -460,44 +587,93 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       commitmentSigned: true,
       signedAt: new Date().toISOString(),
     };
+    const updatedApprovals = [...exp.approvals.filter((a) => a.userId !== currentUser.id), newApproval];
 
-    const existingFiltered = exp.approvals.filter((a) => a.userId !== currentUser.id);
-    const updatedApprovals = [...existingFiltered, newApproval];
-
-    // Check quorum: e.g. 70% of active members
-    const quorumTarget = Math.ceil(currentSpace.activeMemberCount * 0.7);
-    const agreeCount = updatedApprovals.filter(
-      (a) => a.stance === 'setuju' || a.stance === 'setuju_dengan_catatan'
-    ).length;
-
-    // Check if auto-locks and starts
-    const hasEnoughApprovals = agreeCount >= 4; // minimum 4 stakeholders in prototype
-    const newStatus = hasEnoughApprovals ? 'berjalan' : exp.status;
+    const issue = issues.find((i) => i.id === exp.issueId);
+    const space = spaces.find((sp) => sp.id === issue?.spaceId) ?? currentSpace;
+    const quorum = computeQuorum({
+      eligibleVoters,
+      quorumPercentage: space.rules.quorumPercentage,
+      votes: updatedApprovals.map((a) => ({ userId: a.userId, stance: a.stance })),
+    });
+    const starts = quorum.reached && exp.status === 'menunggu_persetujuan';
 
     setExperiments((prev) => ({
       ...prev,
-      [experimentId]: {
-        ...exp,
-        approvals: updatedApprovals,
-        status: newStatus,
-      },
+      [experimentId]: { ...exp, approvals: updatedApprovals, status: starts ? 'berjalan' : exp.status },
     }));
 
-    if (hasEnoughApprovals && exp.status !== 'berjalan') {
-      setIssues((prev) =>
-        prev.map((i) =>
-          i.id === exp.issueId ? { ...i, status: 'percobaan_berjalan' } : i
-        )
-      );
-      logAudit('Persetujuan Desain & Memulai Percobaan', `Percobaan #${experimentId}`, `Kuorum tercapai (${agreeCount} persetujuan). Percobaan resmi dimulai.`);
+    if (starts) {
+      setIssues((prev) => prev.map((i) => (i.id === exp.issueId ? { ...i, status: 'percobaan_berjalan' } : i)));
+      logAudit('Persetujuan Desain & Memulai Percobaan', `Percobaan #${experimentId}`, `Kuorum tercapai (${quorum.agree} dari ${quorum.required} suara setuju yang dibutuhkan). Desain dikunci dan percobaan dimulai.`);
     } else {
-      logAudit('Memberikan Suara Desain', `Percobaan #${experimentId}`, `Sikap: ${stance.toUpperCase()} oleh ${currentUser.name}`);
+      logAudit('Memberikan Suara Desain', `Percobaan #${experimentId}`, `Sikap: ${stance.toUpperCase()} oleh ${currentUser.name} (${quorum.agree}/${quorum.required} setuju)`);
     }
+  };
+
+  /** Terapkan evaluasi aturan berhenti (core) ke percobaan: kunci yang terpicu, hentikan bila ada yang kritis. */
+  const applyStopEvaluation = (exp: Experiment): { exp: Experiment; halted: boolean; reason?: string } => {
+    const { stop } = analyzeExperiment(exp);
+    const latched = latchTriggered(exp.stopRules.map(stopRuleToCore), stop);
+    const byId = new Map(latched.map((r) => [r.id, r.triggeredAt]));
+    let next: Experiment = {
+      ...exp,
+      stopRules: exp.stopRules.map((r) => {
+        const t = byId.get(r.id);
+        if (!t || r.triggered) return r;
+        const res = stop.find((x) => x.ruleId === r.id);
+        return { ...r, triggered: true, triggeredAt: t, triggerReason: res?.reason ?? r.triggerReason };
+      }),
+    };
+    const halted = shouldHalt(stop) && exp.status === 'berjalan';
+    let reason: string | undefined;
+    if (halted) {
+      const first = stop.find((r) => r.status === 'terpicu' && r.severity === 'kritis_henti');
+      reason = first?.reason ?? 'Aturan berhenti kritis terpicu.';
+      const now = new Date().toISOString();
+      next = {
+        ...next,
+        status: 'dihentikan',
+        stoppedReason: reason,
+        stoppedAt: now,
+        events: [
+          {
+            id: `ev-stop-${Date.now()}`,
+            experimentId: exp.id,
+            type: 'dihentikan',
+            title: 'Percobaan Dihentikan Otomatis (Aturan Berhenti Terpicu)',
+            description: reason,
+            occurredAt: now,
+            authorName: 'Sistem (aturan berhenti)',
+          },
+          ...next.events,
+        ],
+      };
+    }
+    return { exp: next, halted, reason };
   };
 
   const addDataEntry = (experimentId: string, metricId: string, value: number, notes?: string) => {
     const exp = experiments[experimentId];
     if (!exp) return;
+    if (exp.status !== 'berjalan') {
+      notify('Data hanya dapat dicatat saat percobaan berjalan.', 'warning');
+      return;
+    }
+    if (!Number.isFinite(value)) {
+      notify('Nilai harus berupa angka.', 'warning');
+      return;
+    }
+    const nowIso = new Date().toISOString();
+    const day = dayIndex(exp.startDate, nowIso, localUtcOffsetMinutes());
+    if (day === null || day < 1) {
+      notify('Percobaan belum dimulai menurut tanggal.', 'warning');
+      return;
+    }
+    if (day > exp.durationDays) {
+      notify('Masa percobaan yang disepakati sudah lewat; data baru tidak diterima.', 'warning');
+      return;
+    }
 
     const metric = exp.metrics.find((m) => m.id === metricId);
     const newEntry: DataEntry = {
@@ -508,87 +684,72 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       unit: metric ? metric.unit : '',
       value,
       recordedBy: currentUser.displayName || currentUser.name,
-      recordedAt: new Date().toISOString(),
-      dayNumber: Math.min(exp.durationDays, (exp.dataEntries.length % exp.durationDays) + 1),
+      recordedAt: nowIso,
+      dayNumber: day,
       notes,
       verifiedBy: currentUser.role === 'pemantau_independen' ? currentUser.name : undefined,
     };
 
-    // Update current metric value with latest
-    const updatedMetrics = exp.metrics.map((m) =>
-      m.id === metricId ? { ...m, currentValue: value } : m
-    );
-
-    setExperiments((prev) => ({
-      ...prev,
-      [experimentId]: {
-        ...exp,
-        metrics: updatedMetrics,
-        dataEntries: [...exp.dataEntries, newEntry],
-      },
-    }));
-
-    logAudit('Pencatatan Data Lapangan', `Metrik: ${metric?.name}`, `Nilai: ${value} ${metric?.unit} dicatat oleh ${currentUser.name}`);
+    const withEntry: Experiment = { ...exp, dataEntries: [...exp.dataEntries, newEntry] };
+    const { exp: finalExp, halted, reason } = applyStopEvaluation(withEntry);
+    setExperiments((prev) => ({ ...prev, [experimentId]: finalExp }));
+    if (halted) {
+      setIssues((prev) => prev.map((i) => (i.id === exp.issueId ? { ...i, status: 'evaluasi_hasil' } : i)));
+      logAudit('Penghentian Otomatis (Aturan Berhenti)', `Percobaan #${experimentId}`, `PENGHENTIAN OTOMATIS: ${reason}`);
+      notify('Aturan berhenti kritis terpicu. Percobaan dihentikan otomatis.', 'warning');
+    }
+    logAudit('Pencatatan Data Lapangan', `Metrik: ${metric?.name}`, `Nilai: ${value} ${metric?.unit} (hari ke-${day}) dicatat oleh ${currentUser.name}`);
   };
 
   const verifyDataEntry = (experimentId: string, entryId: string) => {
     const exp = experiments[experimentId];
     if (!exp) return;
-
-    const updated = exp.dataEntries.map((e) =>
-      e.id === entryId
-        ? { ...e, verifiedBy: currentUser.name, flagged: false }
-        : e
-    );
-
-    setExperiments((prev) => ({
-      ...prev,
-      [experimentId]: { ...exp, dataEntries: updated },
-    }));
-
+    const entry = exp.dataEntries.find((e) => e.id === entryId);
+    if (!entry) return;
+    if (entry.recordedBy === (currentUser.displayName || currentUser.name) || entry.recordedBy === currentUser.name) {
+      notify('Pencatat tidak dapat memverifikasi entrinya sendiri.', 'warning');
+      return;
+    }
+    const updated = exp.dataEntries.map((e) => (e.id === entryId ? { ...e, verifiedBy: currentUser.name, flagged: false } : e));
+    setExperiments((prev) => ({ ...prev, [experimentId]: { ...exp, dataEntries: updated } }));
     logAudit('Verifikasi Data Independen', `Entri #${entryId}`, `Diverifikasi sah oleh ${currentUser.name}`);
+  };
+
+  const flagDataEntry = (experimentId: string, entryId: string, flagged: boolean) => {
+    const exp = experiments[experimentId];
+    if (!exp) return;
+    const updated = exp.dataEntries.map((e) => (e.id === entryId ? { ...e, flagged, verifiedBy: flagged ? undefined : e.verifiedBy } : e));
+    setExperiments((prev) => ({ ...prev, [experimentId]: { ...exp, dataEntries: updated } }));
+    logAudit(flagged ? 'Menandai Data Bermasalah' : 'Menghapus Tanda Data', `Entri #${entryId}`, `${flagged ? 'Dikeluarkan dari analisis' : 'Kembali dipakai dalam analisis'} oleh ${currentUser.name}`);
   };
 
   const triggerEmergencyStop = (experimentId: string, reason: string) => {
     const exp = experiments[experimentId];
     if (!exp) return;
-
-    const updatedStopRules = exp.stopRules.map((sr) => ({
-      ...sr,
-      triggered: true,
-      triggerReason: reason,
-      triggeredAt: new Date().toISOString(),
-    }));
+    const now = new Date().toISOString();
+    // Hanya aturan manual yang dikunci; aturan otomatis dinilai dari data, bukan dari tombol.
+    const marked = markManualStop(exp.stopRules.map(stopRuleToCore), now);
+    const markedIds = new Map(marked.map((r) => [r.id, r.triggeredAt]));
+    const updatedStopRules = exp.stopRules.map((sr) =>
+      !sr.triggered && markedIds.get(sr.id) ? { ...sr, triggered: true, triggerReason: reason, triggeredAt: now } : sr,
+    );
 
     const stopEvent = {
       id: `ev-stop-${Date.now()}`,
       experimentId,
       type: 'dihentikan' as const,
-      title: 'Percobaan Dihentikan Segera (Aturan Berhenti Terpicu)',
+      title: 'Percobaan Dihentikan Segera (Hentikan Sekarang)',
       description: `Alasan penghentian darurat: "${reason}". Dilakukan oleh ${currentUser.name} (${currentUser.role}).`,
-      occurredAt: new Date().toISOString(),
+      occurredAt: now,
       authorName: currentUser.name,
     };
 
     setExperiments((prev) => ({
       ...prev,
-      [experimentId]: {
-        ...exp,
-        status: 'dihentikan',
-        stoppedReason: reason,
-        stoppedAt: new Date().toISOString(),
-        stopRules: updatedStopRules,
-        events: [stopEvent, ...exp.events],
-      },
+      [experimentId]: { ...exp, status: 'dihentikan', stoppedReason: reason, stoppedAt: now, stopRules: updatedStopRules, events: [stopEvent, ...exp.events] },
     }));
-
-    setIssues((prev) =>
-      prev.map((i) =>
-        i.id === exp.issueId ? { ...i, status: 'evaluasi_hasil' } : i
-      )
-    );
-
-    logAudit('Hentikan Sekarang (Aturan Berhenti)', `Percobaan #${experimentId}`, `PENGHENTIAN DARURAT: ${reason}`);
+    setIssues((prev) => prev.map((i) => (i.id === exp.issueId ? { ...i, status: 'evaluasi_hasil' } : i)));
+    logAudit('Hentikan Sekarang (Manual)', `Percobaan #${experimentId}`, `PENGHENTIAN DARURAT: ${reason}`);
   };
 
   const recordDecision = (
@@ -600,8 +761,14 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   ) => {
     const exp = experiments[experimentId];
     if (!exp) return;
-
-    const decision = {
+    const existing = issues.find((i) => i.id === exp.issueId);
+    if (existing?.decision) {
+      notify('Keputusan sudah dicatat dan tidak dapat diubah. Buat catatan tinjauan baru bila perlu.', 'warning');
+      return;
+    }
+    const { result } = analyzeExperiment(exp);
+    const now = new Date().toISOString();
+    const decision: Decision = {
       id: `dec-${Date.now()}`,
       experimentId,
       outcome,
@@ -609,27 +776,19 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       reason,
       officialStatement: statement,
       decidedBy: `${currentUser.name} (${currentUser.role})`,
-      decidedAt: new Date().toISOString(),
+      decidedAt: now,
       reviewDate1Month: new Date(Date.now() + 30 * 86400000).toISOString().split('T')[0],
       reviewDate3Month: new Date(Date.now() + 90 * 86400000).toISOString().split('T')[0],
-      acceptanceAverageScore: 4.5,
-      acceptancePercentage: 90,
+      ruleVerdictAtDecision: result.verdict,
     };
 
-    setExperiments((prev) => ({
-      ...prev,
-      [experimentId]: { ...exp, status: 'selesai' },
-    }));
+    setExperiments((prev) => ({ ...prev, [experimentId]: { ...exp, status: 'selesai' } }));
+    setIssues((prev) => prev.map((iss) => (iss.id === exp.issueId ? { ...iss, status: 'keputusan_tercatat', decision } : iss)));
 
-    setIssues((prev) =>
-      prev.map((iss) =>
-        iss.id === exp.issueId
-          ? { ...iss, status: 'keputusan_tercatat', decision }
-          : iss
-      )
-    );
-
-    logAudit('Mencatat Keputusan Akhir', `Isu #${exp.issueId}`, `Hasil: ${outcome.toUpperCase()} - "${title}"`);
+    // Catat keputusan ke buku besar berantai, lalu simpan hash entrinya pada keputusan.
+    enqueue([{ timestamp: now, actor: currentUser.name, type: 'keputusan', payload: { decision, issueId: exp.issueId } }], ([entry]) => {
+      setIssues((prev) => prev.map((iss) => (iss.decision?.id === decision.id ? { ...iss, decision: { ...iss.decision, ledgerHash: entry.hash } } : iss)));
+    });
   };
 
   const submitAcceptanceRating = (
@@ -638,6 +797,24 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     accepts: boolean,
     comment?: string
   ) => {
+    const issue = issues.find((i) => i.decision?.id === decisionId);
+    if (!issue) {
+      notify('Keputusan belum tercatat; survei penerimaan belum dapat diisi.', 'warning');
+      return;
+    }
+    const claim = issue.claims.find((c) => c.userId === currentUser.id);
+    const response: AcceptanceResponse = {
+      id: `acc-${Date.now()}`,
+      decisionId,
+      userId: currentUser.id,
+      userName: currentUser.displayName || currentUser.name,
+      stanceInitial: claim?.stance ?? 'netral',
+      score,
+      acceptsOutcome: accepts,
+      comment,
+      createdAt: new Date().toISOString(),
+    };
+    setAcceptance((prev) => [...prev.filter((r) => !(r.decisionId === decisionId && r.userId === currentUser.id)), response]);
     logAudit('Survei Penerimaan Pasca-Keputusan', `Keputusan #${decisionId}`, `Skor: ${score}/5, Menerima: ${accepts ? 'Ya' : 'Tidak'}`);
   };
 
@@ -706,11 +883,22 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const resetAllData = () => {
     localStorage.removeItem(`${STORAGE_KEY}_issues`);
     localStorage.removeItem(`${STORAGE_KEY}_experiments`);
-    localStorage.removeItem(`${STORAGE_KEY}_audit`);
+    localStorage.removeItem(`${STORAGE_KEY}_ledger`);
+    localStorage.removeItem(`${STORAGE_KEY}_acceptance`);
     localStorage.removeItem(`${STORAGE_KEY}_user`);
     setIssues(INITIAL_ISSUES);
     setExperiments(INITIAL_EXPERIMENTS);
-    setAuditLogs(INITIAL_AUDIT_LOGS);
+    setAcceptance(INITIAL_ACCEPTANCE);
+    ledgerRef.current = [];
+    setLedger([]);
+    enqueue(
+      [...INITIAL_AUDIT_LOGS].reverse().map((l) => ({
+        timestamp: l.timestamp,
+        actor: l.userName,
+        type: 'audit',
+        payload: { action: l.action, target: l.target, details: l.details, userRole: l.userRole },
+      })),
+    );
     setCurrentUser(SEED_USERS[3]);
     setActiveIssueId('issue-parkir-lorong-b');
     setActiveTab('beranda');
@@ -748,6 +936,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         templates,
         facilitators,
         auditLogs,
+        ledger,
+        verifyLedger,
+        tamperLedgerForDemo,
+        acceptance,
+        quorumFor,
+        flagDataEntry: withToast(flagDataEntry, 'Tanda data diperbarui.'),
         activeTab,
         setActiveTab,
         appMode,

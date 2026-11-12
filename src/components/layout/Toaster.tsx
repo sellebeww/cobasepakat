@@ -3,10 +3,11 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useEffect, useState } from 'react';
+import type React from 'react';
+import { useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import { AlertTriangle, CheckCircle2, Info, X } from 'lucide-react';
-import { TOAST_EVENT, ToastDetail } from '../../lib/notify';
+import { TOAST_EVENT, type ToastDetail } from '../../lib/notify';
 
 interface Toast extends ToastDetail {
   id: number;
@@ -55,7 +56,7 @@ export const Toaster: React.FC = () => {
             >
               <tone.icon className={`w-5 h-5 shrink-0 mt-0.5 ${tone.color}`} aria-hidden="true" />
               <p className="flex-1 text-sm font-medium text-brand-navy leading-snug">{t.message}</p>
-              <button
+              <button type="button"
                 onClick={() => setToasts((all) => all.filter((x) => x.id !== t.id))}
                 aria-label="Tutup notifikasi"
                 className="text-brand-slate hover:text-brand-navy"

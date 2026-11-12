@@ -3,7 +3,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState } from 'react';
+import type React from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { CobaSepakatLogo } from '../brand/CobaSepakatLogo';
 import { HeroIllustration } from './HeroIllustration';
@@ -169,14 +170,14 @@ export const CompanyProfile: React.FC<CompanyProfileProps> = ({ onEnterDemo }) =
               </motion.p>
 
               <motion.div variants={heroItem} className="flex flex-wrap items-center gap-5 pt-1">
-                <button
+                <button type="button"
                   onClick={() => onEnterDemo()}
                   className="px-7 py-3.5 bg-brand-navy hover:bg-brand-blue-dark text-white text-sm font-bold rounded-full shadow-card transition-colors flex items-center gap-2 group"
                 >
                   Mulai Sekarang
                   <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </button>
-                <button
+                <button type="button"
                   onClick={() => scrollToSection('cara-kerja')}
                   className="text-sm font-bold text-brand-blue hover:text-brand-blue-dark transition-colors flex items-center gap-2"
                 >
@@ -290,7 +291,7 @@ export const CompanyProfile: React.FC<CompanyProfileProps> = ({ onEnterDemo }) =
                 <p className="text-base text-brand-navy/80 leading-relaxed max-w-sm">
                   Dari masalah lingkungan hingga aturan bersama, semua bisa diselesaikan lewat percobaan yang terukur.
                 </p>
-                <button
+                <button type="button"
                   onClick={() => onEnterDemo()}
                   className="px-6 py-3 bg-brand-navy hover:bg-brand-blue-dark text-white text-sm font-bold rounded-full shadow-card transition-colors flex items-center gap-2 group"
                 >
@@ -351,7 +352,7 @@ export const CompanyProfile: React.FC<CompanyProfileProps> = ({ onEnterDemo }) =
                   <div className="flex items-center gap-3 flex-1">
                     <Clock className="w-7 h-7 text-brand-blue shrink-0" aria-hidden="true" />
                     <div>
-                      <div className="text-xs text-brand-slate">Sisa Waktu</div>
+                      <div className="text-xs text-brand-slate">Sisa Waktu (contoh ilustrasi)</div>
                       <div className="text-base font-bold text-brand-navy">2 hari</div>
                     </div>
                   </div>
@@ -475,7 +476,7 @@ export const CompanyProfile: React.FC<CompanyProfileProps> = ({ onEnterDemo }) =
                 <p className="text-base text-white/90">Mulai perjalanan komunitas Anda di CobaSepakat sekarang!</p>
               </div>
             </div>
-            <button
+            <button type="button"
               onClick={() => onEnterDemo()}
               className="relative shrink-0 self-start md:self-auto px-7 py-3.5 bg-white hover:bg-brand-surface-blue text-brand-navy text-sm font-bold rounded-full shadow-card transition-colors flex items-center gap-2"
             >
@@ -494,7 +495,7 @@ export const CompanyProfile: React.FC<CompanyProfileProps> = ({ onEnterDemo }) =
               <span className="text-sm text-brand-navy">Uji. Sepakat. Maju Bersama.</span>
             </div>
             <div className="flex items-center gap-5 text-brand-navy">
-              <button
+              <button type="button"
                 onClick={() => setShowBrandKit(true)}
                 className="text-xs font-semibold text-brand-slate hover:text-brand-navy transition-colors"
               >

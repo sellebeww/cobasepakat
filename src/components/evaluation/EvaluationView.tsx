@@ -3,21 +3,14 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState } from 'react';
+import type React from 'react';
+import { useState } from 'react';
 import { useApp } from '../../context/AppContext';
-import { Experiment, Issue, Claim } from '../../types';
+import { ResultsPanel } from '../results/ResultsPanel';
+import type { Experiment, Issue, } from '../../types';
 import {
-  CheckCircle2,
-  XCircle,
-  TrendingDown,
-  TrendingUp,
-  Scale,
-  Award,
   Users,
-  AlertCircle,
   FileText,
-  ArrowRight,
-  ShieldCheck,
 } from 'lucide-react';
 
 interface EvaluationViewProps {
@@ -55,30 +48,6 @@ export const EvaluationView: React.FC<EvaluationViewProps> = ({
     setIsSavedMap((prev) => ({ ...prev, [claimId]: true }));
   };
 
-  // Evaluation math
-  const metricEvaluations = experiment.metrics.map((m) => {
-    const currentVal = m.currentValue ?? m.baselineValue;
-    const diff = currentVal - m.baselineValue;
-    const percentDiff =
-      m.baselineValue !== 0 ? Math.round((diff / m.baselineValue) * 100) : 0;
-
-    const thresholdMet =
-      m.direction === 'turun_lebih_baik'
-        ? currentVal <= m.thresholdValue
-        : currentVal >= m.thresholdValue;
-
-    return {
-      metric: m,
-      currentVal,
-      diff,
-      percentDiff,
-      thresholdMet,
-    };
-  });
-
-  const metCount = metricEvaluations.filter((me) => me.thresholdMet).length;
-  const isOverallCriteriaMet = metCount >= 3; // e.g. 3 of 4 met
-
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -97,16 +66,16 @@ export const EvaluationView: React.FC<EvaluationViewProps> = ({
           </div>
 
           <div className="flex items-center gap-2">
-            <button
+            <button type="button"
               onClick={onBackToDashboard}
               className="px-4 py-2 bg-brand-surface hover:bg-slate-200 text-brand-navy text-xs font-semibold rounded-xl transition-colors"
             >
               &larr; Kembali ke Dasbor
             </button>
             {(currentUser.role === 'pengurus' || currentUser.role === 'pengelola_kawasan') && (
-              <button
+              <button type="button"
                 onClick={onProceedToDecision}
-                className="px-5 py-2.5 bg-brand-green hover:bg-[#258768] text-white text-xs font-bold rounded-full transition-all shadow-card flex items-center gap-1.5"
+                className="px-5 py-2.5 bg-brand-green hover:bg-[#0B5F4A] text-white text-xs font-bold rounded-full transition-all shadow-card flex items-center gap-1.5"
               >
                 <FileText className="w-4 h-4" /> Catat Keputusan Resmi &rarr;
               </button>
@@ -114,104 +83,9 @@ export const EvaluationView: React.FC<EvaluationViewProps> = ({
           </div>
         </div>
 
-        {/* Algorithmic Criteria Evaluation Verdict */}
-        <div
-          className={`p-5 rounded-2xl border flex items-start gap-4 ${
-            isOverallCriteriaMet
-              ? 'bg-brand-green/10 border-brand-green text-brand-navy'
-              : 'bg-amber-50 border-amber-300 text-amber-900'
-          }`}
-        >
-          <div
-            className={`w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 ${
-              isOverallCriteriaMet ? 'bg-brand-green text-white' : 'bg-amber-500 text-white'
-            }`}
-          >
-            <Scale className="w-6 h-6" />
-          </div>
-          <div className="space-y-1">
-            <div className="text-xs font-bold uppercase tracking-wider text-brand-green">
-              Hasil Pengujian Terhadap Kriteria Keputusan
-            </div>
-            <div className="text-base font-bold">
-              {isOverallCriteriaMet
-                ? 'Kriteria Adopsi Terpenuhi Secara Signifikan'
-                : 'Sebagian Kriteria Belum Terpenuhi'}
-            </div>
-            <p className="text-xs leading-relaxed text-brand-slate">
-              Aturan Awal: &ldquo;{experiment.decisionRule}&rdquo;.
-              Dari {experiment.metrics.length} metrik yang diukur, {metCount} metrik mencapai ambang batas keberhasilan yang disepakati.
-            </p>
-          </div>
-        </div>
       </div>
 
-      {/* Metrics Baseline Comparison Table */}
-      <div className="bg-white rounded-3xl p-6 border border-brand-border shadow-sm space-y-4">
-        <h3 className="text-base font-bold text-brand-navy">
-          Perbandingan Rinci Tiap Metrik vs Garis Dasar
-        </h3>
-
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs">
-            <thead>
-              <tr className="border-b border-brand-border text-brand-slate">
-                <th className="py-3 px-3 font-semibold">Ukuran Hasil (Metrik)</th>
-                <th className="py-3 px-3 font-semibold">Garis Dasar</th>
-                <th className="py-3 px-3 font-semibold">Hasil Percobaan</th>
-                <th className="py-3 px-3 font-semibold">Perubahan</th>
-                <th className="py-3 px-3 font-semibold">Ambang Sepakat</th>
-                <th className="py-3 px-3 font-semibold text-center">Status Kriteria</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-brand-border">
-              {metricEvaluations.map((me) => (
-                <tr key={me.metric.id} className="hover:bg-brand-surface">
-                  <td className="py-3.5 px-3">
-                    <div className="font-bold text-brand-navy">{me.metric.name}</div>
-                    <div className="text-xs text-brand-slate">{me.metric.method}</div>
-                  </td>
-                  <td className="py-3.5 px-3 font-mono text-brand-navy">
-                    {me.metric.baselineValue} {me.metric.unit}
-                  </td>
-                  <td className="py-3.5 px-3 font-mono font-bold text-brand-navy">
-                    {me.currentVal} {me.metric.unit}
-                  </td>
-                  <td className="py-3.5 px-3 font-mono">
-                    <span
-                      className={`font-bold flex items-center gap-1 ${
-                        me.thresholdMet ? 'text-brand-green' : 'text-amber-700'
-                      }`}
-                    >
-                      {me.percentDiff > 0 ? `+${me.percentDiff}%` : `${me.percentDiff}%`}
-                      {me.percentDiff <= 0 ? (
-                        <TrendingDown className="w-3.5 h-3.5" />
-                      ) : (
-                        <TrendingUp className="w-3.5 h-3.5" />
-                      )}
-                    </span>
-                  </td>
-                  <td className="py-3.5 px-3 font-mono text-brand-blue">
-                    {me.metric.direction === 'turun_lebih_baik' ? '≤ ' : '≥ '}
-                    {me.metric.thresholdValue} {me.metric.unit}
-                  </td>
-                  <td className="py-3.5 px-3 text-center">
-                    {me.thresholdMet ? (
-                      <span className="inline-flex items-center gap-1 text-xs font-bold text-brand-green bg-brand-green/10 px-2.5 py-1 rounded-full">
-                        <CheckCircle2 className="w-3.5 h-3.5" /> Terpenuhi
-                      </span>
-                    ) : (
-                      <span className="inline-flex items-center gap-1 text-xs font-bold text-amber-700 bg-amber-50 px-2.5 py-1 rounded-full">
-                        <AlertCircle className="w-3.5 h-3.5" /> Belum Terpenuhi
-                      </span>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
+      <ResultsPanel experiment={experiment} />
 
       {/* Mind-Shifting Section (Pergeseran Pikiran & Keyakinan Warga) */}
       <div className="bg-white rounded-3xl p-6 border border-brand-border shadow-sm space-y-4">
@@ -289,7 +163,7 @@ export const EvaluationView: React.FC<EvaluationViewProps> = ({
                   />
                   <div className="flex justify-between items-center pt-1">
                     <span className="text-xs text-brand-slate">0% (Sangat Ragu)</span>
-                    <button
+                    <button type="button"
                       onClick={() => handleSaveConfidence(claim.id)}
                       className="px-3 py-1 bg-white hover:bg-slate-100 text-brand-navy text-xs font-semibold border border-brand-border rounded-lg transition-colors"
                     >

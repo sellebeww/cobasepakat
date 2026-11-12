@@ -3,27 +3,19 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useEffect, useRef, useState } from 'react';
+import type React from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useApp } from '../../context/AppContext';
+import { useI18n } from '../../i18n';
 import { CobaSepakatLogo } from '../brand/CobaSepakatLogo';
 import { scrollToSection } from '../company/CompanyProfile';
 import {
-  Users,
   ChevronDown,
   Building2,
   RotateCcw,
   Menu,
   X,
-  Sparkles,
-  ArrowRight,
   ArrowLeft,
-  ShieldCheck,
-  Sliders,
-  Layers,
-  Palette,
-  Play,
-  FileCheck2,
-  Clock,
 } from 'lucide-react';
 
 export const Navbar: React.FC = () => {
@@ -40,6 +32,7 @@ export const Navbar: React.FC = () => {
     setAppMode,
     resetAllData,
   } = useApp();
+  const { t, locale, setLocale } = useI18n();
 
   const [showUserDropdown, setShowUserDropdown] = useState(false);
   const [showSpaceDropdown, setShowSpaceDropdown] = useState(false);
@@ -114,10 +107,10 @@ export const Navbar: React.FC = () => {
             <span className="flex items-center gap-1.5 text-brand-navy font-medium">
               <span className="w-2 h-2 rounded-full bg-brand-green" />
               <span className="sm:hidden">Mode Demo Interaktif</span>
-              <span className="hidden sm:inline">Mode Demo Interaktif Aktif: Kluster Melati RT 04 (Hari ke-8 Uji Coba)</span>
+              <span className="hidden sm:inline">Mode Demo Interaktif Aktif: Kluster Melati RT 04 (data contoh fiktif)</span>
             </span>
 
-            <button
+            <button type="button"
               onClick={() => setAppMode('company_profile')}
               className="px-3.5 py-1 bg-white hover:bg-brand-surface-blue text-brand-blue border border-brand-border rounded-full text-xs font-bold flex items-center gap-1.5 transition-colors"
             >
@@ -129,10 +122,10 @@ export const Navbar: React.FC = () => {
 
       <header ref={headerRef} className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-brand-border">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16 gap-4">
+          <div className="flex items-center justify-between h-16 gap-2 sm:gap-4">
             {/* Zone 1: Brand Wordmark */}
             <div className="flex items-center gap-3 shrink-0">
-              <button
+              <button type="button"
                 onClick={() => setAppMode('company_profile')}
                 className="text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-blue rounded-lg"
               >
@@ -150,7 +143,7 @@ export const Navbar: React.FC = () => {
             {appMode === 'company_profile' ? (
               <nav aria-label="Navigasi utama" className="hidden lg:flex items-center gap-10 text-sm font-semibold text-brand-navy">
                 {companyLinks.map((l) => (
-                  <button
+                  <button type="button"
                     key={l.id}
                     onClick={() => scrollToSection(l.id)}
                     className="hover:text-brand-blue transition-colors"
@@ -162,7 +155,7 @@ export const Navbar: React.FC = () => {
             ) : (
               /* Demo Mode Navigation Tabs */
               <nav aria-label="Navigasi demo" className="hidden xl:flex items-center gap-0.5 text-xs font-medium text-brand-slate">
-                <button
+                <button type="button"
                   onClick={() => setActiveTab('beranda')}
                   className={`hover:text-brand-navy transition-colors whitespace-nowrap px-2.5 py-1.5 rounded-full ${
                     activeTab === 'beranda'
@@ -170,9 +163,9 @@ export const Navbar: React.FC = () => {
                       : 'hover:bg-brand-surface-blue/70'
                   }`}
                 >
-                  Dasbor Ruang
+                  {t('nav.dashboard')}
                 </button>
-                <button
+                <button type="button"
                   onClick={() => setActiveTab('isu')}
                   className={`hover:text-brand-navy transition-colors whitespace-nowrap px-2.5 py-1.5 rounded-full ${
                     activeTab === 'isu' || activeTab === 'percobaan'
@@ -180,9 +173,9 @@ export const Navbar: React.FC = () => {
                       : 'hover:bg-brand-surface-blue/70'
                   }`}
                 >
-                  Isu & Percobaan
+                  {t('nav.issues')}
                 </button>
-                <button
+                <button type="button"
                   onClick={() => setActiveTab('pustaka')}
                   className={`hover:text-brand-navy transition-colors whitespace-nowrap px-2.5 py-1.5 rounded-full ${
                     activeTab === 'pustaka'
@@ -190,9 +183,9 @@ export const Navbar: React.FC = () => {
                       : 'hover:bg-brand-surface-blue/70'
                   }`}
                 >
-                  Pustaka Keputusan
+                  {t('nav.library')}
                 </button>
-                <button
+                <button type="button"
                   onClick={() => setActiveTab('templat')}
                   className={`hover:text-brand-navy transition-colors whitespace-nowrap px-2.5 py-1.5 rounded-full ${
                     activeTab === 'templat'
@@ -200,9 +193,9 @@ export const Navbar: React.FC = () => {
                       : 'hover:bg-brand-surface-blue/70'
                   }`}
                 >
-                  Templat Uji Coba
+                  {t('nav.templates')}
                 </button>
-                <button
+                <button type="button"
                   onClick={() => setActiveTab('analitik')}
                   className={`hover:text-brand-navy transition-colors whitespace-nowrap px-2.5 py-1.5 rounded-full ${
                     activeTab === 'analitik'
@@ -210,9 +203,9 @@ export const Navbar: React.FC = () => {
                       : 'hover:bg-brand-surface-blue/70'
                   }`}
                 >
-                  Analitik Dampak
+                  {t('nav.analytics')}
                 </button>
-                <button
+                <button type="button"
                   onClick={() => setActiveTab('fasilitator')}
                   className={`hover:text-brand-navy transition-colors whitespace-nowrap px-2.5 py-1.5 rounded-full ${
                     activeTab === 'fasilitator'
@@ -220,9 +213,9 @@ export const Navbar: React.FC = () => {
                       : 'hover:bg-brand-surface-blue/70'
                   }`}
                 >
-                  Layanan Fasilitasi
+                  {t('nav.facilitators')}
                 </button>
-                <button
+                <button type="button"
                   onClick={() => setActiveTab('audit')}
                   className={`hover:text-brand-navy transition-colors whitespace-nowrap px-2.5 py-1.5 rounded-full ${
                     activeTab === 'audit'
@@ -230,26 +223,39 @@ export const Navbar: React.FC = () => {
                       : 'hover:bg-brand-surface-blue/70'
                   }`}
                 >
-                  Log Audit
+                  {t('nav.audit')}
                 </button>
               </nav>
             )}
 
             {/* Zone 3: CTA & Personas */}
-            <div className="flex items-center gap-3 shrink-0">
+            <div className="flex items-center gap-1 sm:gap-3 shrink-0">
+              <label className="hidden sm:flex items-center gap-1 text-xs text-brand-slate">
+                <span className="sr-only">{t('lang.label')}</span>
+                <select
+                  value={locale}
+                  onChange={(e) => setLocale(e.target.value as 'id' | 'en')}
+                  className="rounded-lg border border-brand-border bg-white px-1.5 py-1.5 text-xs font-semibold text-brand-navy"
+                  data-testid="lang-select"
+                >
+                  <option value="id">ID</option>
+                  <option value="en">EN</option>
+                </select>
+              </label>
               {appMode === 'company_profile' ? (
                 <>
-                  <button
+                  <button type="button"
                     onClick={() => enterDemo()}
                     className="hidden sm:block px-5 py-2 rounded-full border border-brand-blue text-brand-blue hover:bg-brand-surface-blue text-xs font-bold transition-colors"
                   >
                     Masuk
                   </button>
-                  <button
+                  <button type="button"
                     onClick={() => enterDemo()}
                     className="px-3 sm:px-5 py-2.5 bg-brand-blue-dark hover:bg-brand-navy text-white rounded-full text-xs font-bold transition-colors shadow-card"
                   >
-                    Mulai Sekarang
+                    <span className="sm:hidden">Mulai</span>
+                    <span className="hidden sm:inline">Mulai Sekarang</span>
                   </button>
                 </>
               ) : (
@@ -257,7 +263,7 @@ export const Navbar: React.FC = () => {
                 <>
                   {/* Space selector */}
                   <div className="relative hidden 2xl:block">
-                    <button
+                    <button type="button"
                       onClick={() => setShowSpaceDropdown(!showSpaceDropdown)}
                       className="flex items-center gap-1.5 text-xs text-brand-slate hover:text-brand-navy font-medium py-1.5 px-2.5 rounded-xl border border-brand-border hover:bg-brand-surface transition-colors"
                     >
@@ -272,7 +278,7 @@ export const Navbar: React.FC = () => {
                           Pilih Ruang Komunitas
                         </div>
                         {spaces.map((sp) => (
-                          <button
+                          <button type="button"
                             key={sp.id}
                             onClick={() => {
                               setCurrentSpaceId(sp.id);
@@ -296,7 +302,7 @@ export const Navbar: React.FC = () => {
 
                   {/* Role Persona Switcher */}
                   <div className="relative">
-                    <button
+                    <button type="button"
                       onClick={() => setShowUserDropdown(!showUserDropdown)}
                       className="flex items-center gap-2 px-2.5 py-1.5 rounded-xl border border-brand-border hover:border-brand-blue bg-brand-surface hover:bg-white transition-all text-left"
                       title="Ganti Persona untuk Menguji Hak Akses (RBAC)"
@@ -329,7 +335,7 @@ export const Navbar: React.FC = () => {
                         </div>
                         <div className="max-h-72 overflow-y-auto py-1">
                           {users.map((u) => (
-                            <button
+                            <button type="button"
                               key={u.id}
                               onClick={() => {
                                 setCurrentUser(u);
@@ -362,7 +368,7 @@ export const Navbar: React.FC = () => {
                           ))}
                         </div>
                         <div className="px-4 pt-2 border-t border-brand-border flex justify-between items-center">
-                          <button
+                          <button type="button"
                             onClick={() => {
                               if (!confirmReset) {
                                 setConfirmReset(true);
@@ -379,13 +385,13 @@ export const Navbar: React.FC = () => {
                             <RotateCcw className="w-3 h-3" />
                             {confirmReset ? 'Klik lagi untuk konfirmasi' : 'Reset Data Demo'}
                           </button>
-                          <span className="text-xs text-slate-400 font-mono">v1.0-MVP</span>
+                          <span className="text-xs text-slate-600 font-mono">v1.0-MVP</span>
                         </div>
                       </div>
                     )}
                   </div>
 
-                  <button
+                  <button type="button"
                     onClick={() => setAppMode('company_profile')}
                     aria-label="Kembali ke Company Profile"
                     title="Kembali ke Company Profile"
@@ -399,7 +405,7 @@ export const Navbar: React.FC = () => {
               )}
 
               {/* Mobile Hamburger */}
-              <button
+              <button type="button"
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                 aria-label={mobileMenuOpen ? 'Tutup menu' : 'Buka menu'}
                 aria-expanded={mobileMenuOpen}
@@ -416,7 +422,7 @@ export const Navbar: React.FC = () => {
           <div className={`${appMode === 'demo' ? 'xl:hidden' : 'lg:hidden'} border-t border-brand-border bg-white px-4 pt-2 pb-4 space-y-2`}>
             <div className="flex items-center justify-between pb-2 border-b border-brand-border">
               <span className="text-xs font-bold text-brand-navy">Navigasi Aplikasi</span>
-              <button
+              <button type="button"
                 onClick={() => {
                   setAppMode(appMode === 'company_profile' ? 'demo' : 'company_profile');
                   setMobileMenuOpen(false);
@@ -427,10 +433,23 @@ export const Navbar: React.FC = () => {
               </button>
             </div>
 
+            <label className="flex items-center justify-between gap-2 py-1 text-xs font-semibold text-brand-navy sm:hidden">
+              {t('lang.label')}
+              <select
+                value={locale}
+                onChange={(e) => setLocale(e.target.value as 'id' | 'en')}
+                className="rounded-lg border border-brand-border bg-white px-2 py-1.5 text-xs font-semibold"
+                data-testid="lang-select-mobile"
+              >
+                <option value="id">{t('lang.id')}</option>
+                <option value="en">{t('lang.en')}</option>
+              </select>
+            </label>
+
             {appMode === 'company_profile' ? (
               <div className="space-y-1">
                 {companyLinks.map((l) => (
-                  <button
+                  <button type="button"
                     key={l.id}
                     onClick={() => {
                       scrollToSection(l.id);
@@ -441,7 +460,7 @@ export const Navbar: React.FC = () => {
                     {l.label}
                   </button>
                 ))}
-                <button
+                <button type="button"
                   onClick={() => {
                     enterDemo();
                     setMobileMenuOpen(false);
@@ -453,7 +472,7 @@ export const Navbar: React.FC = () => {
               </div>
             ) : (
               <div className="space-y-1">
-                <button
+                <button type="button"
                   onClick={() => {
                     setActiveTab('beranda');
                     setMobileMenuOpen(false);
@@ -462,9 +481,9 @@ export const Navbar: React.FC = () => {
                     activeTab === 'beranda' ? 'bg-brand-blue/10 text-brand-blue font-bold' : 'text-brand-navy'
                   }`}
                 >
-                  Dasbor Ruang Komunitas
+                  {t('nav.dashboard')}
                 </button>
-                <button
+                <button type="button"
                   onClick={() => {
                     setActiveTab('isu');
                     setMobileMenuOpen(false);
@@ -473,9 +492,9 @@ export const Navbar: React.FC = () => {
                     activeTab === 'isu' ? 'bg-brand-blue/10 text-brand-blue font-bold' : 'text-brand-navy'
                   }`}
                 >
-                  Isu & Percobaan
+                  {t('nav.issues')}
                 </button>
-                <button
+                <button type="button"
                   onClick={() => {
                     setActiveTab('pustaka');
                     setMobileMenuOpen(false);
@@ -484,9 +503,9 @@ export const Navbar: React.FC = () => {
                     activeTab === 'pustaka' ? 'bg-brand-blue/10 text-brand-blue font-bold' : 'text-brand-navy'
                   }`}
                 >
-                  Pustaka Keputusan
+                  {t('nav.library')}
                 </button>
-                <button
+                <button type="button"
                   onClick={() => {
                     setActiveTab('templat');
                     setMobileMenuOpen(false);
@@ -495,9 +514,9 @@ export const Navbar: React.FC = () => {
                     activeTab === 'templat' ? 'bg-brand-blue/10 text-brand-blue font-bold' : 'text-brand-navy'
                   }`}
                 >
-                  Templat Uji Coba
+                  {t('nav.templates')}
                 </button>
-                <button
+                <button type="button"
                   onClick={() => {
                     setActiveTab('analitik');
                     setMobileMenuOpen(false);
@@ -506,9 +525,9 @@ export const Navbar: React.FC = () => {
                     activeTab === 'analitik' ? 'bg-brand-blue/10 text-brand-blue font-bold' : 'text-brand-navy'
                   }`}
                 >
-                  Analitik Dampak
+                  {t('nav.analytics')}
                 </button>
-                <button
+                <button type="button"
                   onClick={() => {
                     setActiveTab('fasilitator');
                     setMobileMenuOpen(false);
@@ -517,9 +536,9 @@ export const Navbar: React.FC = () => {
                     activeTab === 'fasilitator' ? 'bg-brand-blue/10 text-brand-blue font-bold' : 'text-brand-navy'
                   }`}
                 >
-                  Layanan Fasilitasi
+                  {t('nav.facilitators')}
                 </button>
-                <button
+                <button type="button"
                   onClick={() => {
                     setActiveTab('audit');
                     setMobileMenuOpen(false);
@@ -528,7 +547,7 @@ export const Navbar: React.FC = () => {
                     activeTab === 'audit' ? 'bg-brand-blue/10 text-brand-blue font-bold' : 'text-brand-navy'
                   }`}
                 >
-                  Log Audit
+                  {t('nav.audit')}
                 </button>
               </div>
             )}

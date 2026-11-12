@@ -3,9 +3,10 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState } from 'react';
+import type React from 'react';
+import { useState } from 'react';
 import { useApp } from '../../context/AppContext';
-import { HelpCircle, X, ShieldAlert, Sparkles, Plus } from 'lucide-react';
+import { X, ShieldAlert, Sparkles, } from 'lucide-react';
 
 interface NewIssueModalProps {
   onClose: () => void;
@@ -56,10 +57,10 @@ export const NewIssueModal: React.FC<NewIssueModalProps> = ({ onClose }) => {
               Ruang: <span className="font-semibold text-brand-navy">{currentSpace.name}</span>
             </p>
           </div>
-          <button
+          <button type="button"
             onClick={onClose}
             aria-label="Tutup"
-            className="p-1.5 rounded-full text-slate-400 hover:text-slate-600 hover:bg-slate-100"
+            className="p-1.5 rounded-full text-slate-600 hover:text-slate-600 hover:bg-slate-100"
           >
             <X className="w-5 h-5" />
           </button>
