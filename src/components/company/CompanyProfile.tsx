@@ -352,7 +352,7 @@ export const CompanyProfile: React.FC<CompanyProfileProps> = ({ onEnterDemo }) =
                   <div className="flex items-center gap-3 flex-1">
                     <Clock className="w-7 h-7 text-brand-blue shrink-0" aria-hidden="true" />
                     <div>
-                      <div className="text-xs text-brand-slate">Sisa Waktu</div>
+                      <div className="text-xs text-brand-slate">Sisa Waktu (contoh ilustrasi)</div>
                       <div className="text-base font-bold text-brand-navy">2 hari</div>
                     </div>
                   </div>

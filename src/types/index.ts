@@ -3,6 +3,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import type { DecisionRule, StopTrigger } from '../core/types';
+
 export type UserRole =
   | 'anggota'
   | 'pengusul'
@@ -135,6 +137,11 @@ export interface StopRule {
   conditionDescription: string;
   metricTriggerId?: string;
   thresholdLimit?: number;
+  /**
+   * Pemicu otomatis dari data lapangan (dievaluasi oleh src/core/stopRules).
+   * Tanpa trigger, aturan bersifat manual: dinilai orang lewat tombol "Hentikan Sekarang".
+   */
+  trigger?: StopTrigger;
   severity: 'waspada' | 'kritis_henti';
   notifyRoles: UserRole[];
   triggered: boolean;
@@ -196,8 +203,13 @@ export interface Decision {
   decidedAt: string;
   reviewDate1Month: string;
   reviewDate3Month: string;
-  acceptanceAverageScore?: number; // 1.0 - 5.0
-  acceptancePercentage?: number; // % who accept
+  /**
+   * Hasil evaluasi kriteria pada saat keputusan dicatat (dari src/core/results).
+   * Dipakai untuk menilai keselarasan keputusan dengan data. Kosong untuk keputusan lama.
+   */
+  ruleVerdictAtDecision?: 'terpenuhi' | 'tidak_terpenuhi' | 'belum_dapat_disimpulkan';
+  /** Hash entri buku besar yang mencatat keputusan ini (rantai tak bisa diubah diam-diam). */
+  ledgerHash?: string;
 }
 
 export interface AcceptanceResponse {
@@ -209,6 +221,7 @@ export interface AcceptanceResponse {
   score: number; // 1 - 5
   acceptsOutcome: boolean;
   comment?: string;
+  createdAt?: string;
 }
 
 export interface Experiment {
@@ -228,7 +241,9 @@ export interface Experiment {
   startDate: string;
   endDate: string;
   durationDays: number;
-  decisionRule: string; // Pre-agreed criteria for decision
+  decisionRule: string; // Pre-agreed criteria for decision (teks untuk manusia)
+  /** Kriteria terstruktur yang dievaluasi mesin. Bila kosong, diturunkan dari ambang metrik. */
+  criteria?: DecisionRule;
   evaluationDate: string;
   metrics: Metric[];
   budget: BudgetItem[];
@@ -288,6 +303,10 @@ export interface Facilitator {
 
 export interface AuditLog {
   id: string;
+  /** Posisi dalam rantai hash (buku besar). */
+  index?: number;
+  hash?: string;
+  prevHash?: string;
   timestamp: string;
   userName: string;
   userRole: UserRole;

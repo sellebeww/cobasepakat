@@ -98,6 +98,14 @@ const MainAppContent: React.FC = () => {
                   transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
                   className="space-y-6"
                 >
+                <div
+                  role="note"
+                  className="rounded-2xl border border-amber-300 bg-amber-50 px-4 py-2 text-xs text-amber-950"
+                  data-testid="demo-banner"
+                >
+                  <strong>Mode demo.</strong> Semua nama, angka, dan kejadian di sini adalah data contoh fiktif yang disimpan di peramban Anda. Hasil bukan bukti pasti.
+                </div>
+
                 {activeTab === 'beranda' && (
                   <SpaceDashboard onOpenNewIssueModal={() => setShowNewIssueModal(true)} />
                 )}
@@ -170,10 +178,10 @@ const MainAppContent: React.FC = () => {
 
           <div className="pt-4 border-t border-brand-border flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-brand-slate">
             <div>
-              &copy; 2026 CobaSepakat Platform · Hak cipta dilindungi. Sesuai Undang-Undang Pelindungan Data Pribadi (UU PDP).
+              &copy; 2026 Vassel Goleyu. Hak cipta dilindungi. Mode demo menyimpan data hanya di peramban Anda.
             </div>
             <div className="font-mono text-slate-400">
-              Versi 1.0.0-PROD · Kluster Melati RT 04 Harmoni Asri
+              Versi demo · data contoh fiktif
             </div>
           </div>
         </div>

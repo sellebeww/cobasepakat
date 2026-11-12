@@ -6,7 +6,7 @@
 import type React from 'react';
 import { useState } from 'react';
 import { useApp } from '../../context/AppContext';
-import { type Issue, } from '../../types';
+import type { Issue, } from '../../types';
 import {
   ShieldAlert,
   ShieldCheck,

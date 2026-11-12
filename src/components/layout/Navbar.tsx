@@ -105,7 +105,7 @@ export const Navbar: React.FC = () => {
             <span className="flex items-center gap-1.5 text-brand-navy font-medium">
               <span className="w-2 h-2 rounded-full bg-brand-green" />
               <span className="sm:hidden">Mode Demo Interaktif</span>
-              <span className="hidden sm:inline">Mode Demo Interaktif Aktif: Kluster Melati RT 04 (Hari ke-8 Uji Coba)</span>
+              <span className="hidden sm:inline">Mode Demo Interaktif Aktif: Kluster Melati RT 04 (data contoh fiktif)</span>
             </span>
 
             <button type="button"

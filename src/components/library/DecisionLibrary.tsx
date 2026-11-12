@@ -6,6 +6,8 @@
 import type React from 'react';
 import { useState } from 'react';
 import { useApp } from '../../context/AppContext';
+import { acceptanceToCore } from '../../lib/coreAdapter';
+import { summarizeAcceptance } from '../../core';
 import {
   Search,
   Building2,
@@ -13,7 +15,7 @@ import {
 } from 'lucide-react';
 
 export const DecisionLibrary: React.FC = () => {
-  const { issues, setActiveIssueId, setActiveTab } = useApp();
+  const { issues, acceptance, setActiveIssueId, setActiveTab } = useApp();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedOutcomeFilter, setSelectedOutcomeFilter] = useState<string>('all');
@@ -145,7 +147,12 @@ export const DecisionLibrary: React.FC = () => {
                     <div className="font-bold text-brand-navy">{iss.decision?.title}</div>
                     <p className="text-brand-slate line-clamp-2 text-xs">{iss.decision?.reason}</p>
                     <div className="text-xs font-mono text-slate-500 pt-1">
-                      Skor Penerimaan Warga: {iss.decision?.acceptanceAverageScore}/5.0 ({iss.decision?.acceptancePercentage}% Menerima)
+                      {(() => {
+                        const a = summarizeAcceptance(acceptanceToCore(acceptance.filter((r) => r.decisionId === iss.decision?.id)));
+                        return a.n === 0
+                          ? 'Penerimaan warga: belum ada jawaban survei'
+                          : `Penerimaan warga: skor rata-rata ${a.meanScore?.toFixed(1)}/5, ${Math.round((a.acceptShare ?? 0) * 100)}% menerima (n = ${a.n}, interval 95% ${Math.round((a.acceptInterval?.lower ?? 0) * 100)}-${Math.round((a.acceptInterval?.upper ?? 0) * 100)}%, sukarela)`;
+                      })()}
                     </div>
                   </div>
                 )}

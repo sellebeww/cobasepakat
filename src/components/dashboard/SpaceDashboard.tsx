@@ -5,6 +5,8 @@
 
 import type React from 'react';
 import { useApp } from '../../context/AppContext';
+import { trialProgress } from '../../core';
+import { localUtcOffsetMinutes } from '../../lib/coreAdapter';
 import {
   Plus,
   Clock,
@@ -154,7 +156,11 @@ export const SpaceDashboard: React.FC<SpaceDashboardProps> = ({
           <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-1">
             <div className="text-xs text-brand-slate flex items-center gap-1.5">
               <Clock className="w-4 h-4 text-brand-blue" />
-              <span>Hari ke-8 dari 14 Hari · Rapat Evaluasi: {activeExp.evaluationDate}</span>
+              <span>{(() => {
+                const pr = trialProgress(activeExp.startDate, activeExp.durationDays, new Date().toISOString(), localUtcOffsetMinutes());
+                const label = !pr ? '-' : pr.phase === 'belum_mulai' ? 'Belum mulai' : `Hari ke-${pr.day}`;
+                return `${label} dari ${activeExp.durationDays} Hari · Rapat Evaluasi: ${activeExp.evaluationDate}`;
+              })()}</span>
             </div>
 
             <button type="button"

@@ -3,14 +3,17 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import { dateToDayNumber } from '../core/dates';
 import type {
+  AcceptanceResponse,
+  AuditLog,
+  Experiment,
+  Facilitator,
+  Issue,
   Organization,
   Space,
-  User,
-  Issue,
   TemplateBlueprint,
-  Facilitator,
-  AuditLog,
+  User,
 } from '../types';
 
 export const SEED_ORGANIZATION: Organization = {
@@ -108,7 +111,7 @@ export const SEED_USERS: User[] = [
   },
 ];
 
-export const INITIAL_ISSUES: Issue[] = [
+const SEED_ISSUES: Issue[] = [
   {
     id: 'issue-parkir-lorong-b',
     spaceId: 'space-melati',
@@ -305,18 +308,16 @@ export const INITIAL_ISSUES: Issue[] = [
       reason:
         'Percobaan menunjukkan tingkat kebisingan malam turun 38% saat portal ditutup 22.00, namun ada 4 kejadian pekerja sif harus menunggu satpam >10 menit. Solusi kompromi yang disepakati adalah jam tutup 22.30 dan pembagian kartu RFID khusus warga sif.',
       officialStatement:
-        'Berdasarkan data 21 hari uji coba dan survei penerimaan yang mencapai 4.4 dari 5, pengurus RT 05 menetapkan penutupan portal pukul 22.30 terhitung 1 Oktober 2026.',
+        'Berdasarkan data uji coba 21 hari (contoh fiktif untuk demo), pengurus RT 05 menetapkan penutupan portal pukul 22.30 terhitung 1 Oktober 2026.',
       decidedBy: 'Pengurus RT 05 & Danang Kusuma',
       decidedAt: '2026-09-28T15:00:00Z',
       reviewDate1Month: '2026-11-01',
       reviewDate3Month: '2027-01-01',
-      acceptanceAverageScore: 4.4,
-      acceptancePercentage: 92,
     },
   },
 ];
 
-export const INITIAL_EXPERIMENTS: Record<string, any> = {
+const SEED_EXPERIMENTS: Record<string, Experiment> = {
   'exp-parkir-01': {
     id: 'exp-parkir-01',
     issueId: 'issue-parkir-lorong-b',
@@ -327,10 +328,18 @@ export const INITIAL_EXPERIMENTS: Record<string, any> = {
     startDate: '2026-10-15',
     endDate: '2026-10-28',
     durationDays: 14,
-    currentDay: 8,
     decisionRule:
       'Adopsi permanen bila: Waktu tempuh membaik minimal 15% (turun dari garis dasar 4.2 menit ke ≤ 3.5 menit) DAN jumlah keluhan warga tidak naik lebih dari 10% dibanding garis dasar.',
     evaluationDate: '2026-10-29',
+    // Kriteria terstruktur yang dikunci di muka. Sesuai teks aturan: waktu tempuh <= 3.5 menit
+    // DAN keluhan tidak naik lebih dari 10% dari garis dasar (1.2/hari). Metrik 2 dan 4 hanya dilaporkan.
+    criteria: {
+      mode: 'all',
+      criteria: [
+        { id: 'crit-1', metricId: 'met-1', kind: 'absolute', comparator: 'lte', value: 3.5, minDays: 3 },
+        { id: 'crit-2', metricId: 'met-3', kind: 'relative_change', comparator: 'lte', value: 0.1, minDays: 3 },
+      ],
+    },
     metrics: [
       {
         id: 'met-1',
@@ -341,7 +350,6 @@ export const INITIAL_EXPERIMENTS: Record<string, any> = {
         responsibleRole: 'Petugas Keamanan & Relawan Warga',
         baselineValue: 4.2,
         thresholdValue: 3.5,
-        currentValue: 3.2,
         direction: 'turun_lebih_baik',
         type: 'durasi',
       },
@@ -354,7 +362,6 @@ export const INITIAL_EXPERIMENTS: Record<string, any> = {
         responsibleRole: 'Petugas Jaga Malam',
         baselineValue: 14,
         thresholdValue: 20,
-        currentValue: 22,
         direction: 'naik_lebih_baik',
         type: 'hitungan',
       },
@@ -367,7 +374,6 @@ export const INITIAL_EXPERIMENTS: Record<string, any> = {
         responsibleRole: 'Pengurus RT Bidang Ketertiban',
         baselineValue: 1.2,
         thresholdValue: 1.0,
-        currentValue: 0.5,
         direction: 'turun_lebih_baik',
         type: 'hitungan',
       },
@@ -380,7 +386,6 @@ export const INITIAL_EXPERIMENTS: Record<string, any> = {
         responsibleRole: 'Fasilitator Mediasi',
         baselineValue: 2.6,
         thresholdValue: 3.8,
-        currentValue: 4.1,
         direction: 'naik_lebih_baik',
         type: 'skala_survei',
       },
@@ -426,6 +431,16 @@ export const INITIAL_EXPERIMENTS: Record<string, any> = {
       {
         id: 'sr-3',
         conditionDescription: 'Lebih dari 40% responden survei tengah masa menyatakan lalu lintas menjadi jauh lebih buruk',
+        severity: 'kritis_henti',
+        notifyRoles: ['pengurus', 'fasilitator'],
+        triggered: false,
+      },
+      {
+        id: 'sr-4',
+        conditionDescription: 'Keluhan warga lebih dari 3 per hari pada dua pencatatan berturut-turut (dinilai otomatis dari data)',
+        metricTriggerId: 'met-3',
+        thresholdLimit: 3,
+        trigger: { kind: 'metric', metricId: 'met-3', comparator: 'gt', limit: 3, consecutive: 2 },
         severity: 'kritis_henti',
         notifyRoles: ['pengurus', 'fasilitator'],
         triggered: false,
@@ -564,7 +579,227 @@ export const INITIAL_EXPERIMENTS: Record<string, any> = {
         recordedBy: 'Dr. Agus Pratama',
         recordedAt: '2026-10-22T08:00:00Z',
         dayNumber: 8,
-        notes: 'Hari ini hari ke-8. Rata-rata 7 hari terakhir: 3.28 menit (membaik 21.9% dari garis dasar 4.2 menit).',
+        notes: 'Hari ke-8. Arus tetap lancar pada jam sibuk.',
+      },
+      {
+        id: 'de-s2-1',
+        experimentId: 'exp-parkir-01',
+        metricId: 'met-2',
+        metricName: 'Jumlah slot mobil tertampung secara tertib',
+        unit: 'slot',
+        value: 15,
+        recordedBy: 'Petugas Jaga Malam',
+        recordedAt: '2026-10-15T19:35:00Z',
+        dayNumber: 1,
+      },
+      {
+        id: 'de-s2-2',
+        experimentId: 'exp-parkir-01',
+        metricId: 'met-2',
+        metricName: 'Jumlah slot mobil tertampung secara tertib',
+        unit: 'slot',
+        value: 16,
+        recordedBy: 'Petugas Jaga Malam',
+        recordedAt: '2026-10-16T19:35:00Z',
+        dayNumber: 2,
+      },
+      {
+        id: 'de-s2-3',
+        experimentId: 'exp-parkir-01',
+        metricId: 'met-2',
+        metricName: 'Jumlah slot mobil tertampung secara tertib',
+        unit: 'slot',
+        value: 17,
+        recordedBy: 'Petugas Jaga Malam',
+        recordedAt: '2026-10-17T19:35:00Z',
+        dayNumber: 3,
+      },
+      {
+        id: 'de-s2-4',
+        experimentId: 'exp-parkir-01',
+        metricId: 'met-2',
+        metricName: 'Jumlah slot mobil tertampung secara tertib',
+        unit: 'slot',
+        value: 19,
+        recordedBy: 'Petugas Jaga Malam',
+        recordedAt: '2026-10-18T19:35:00Z',
+        dayNumber: 4,
+      },
+      {
+        id: 'de-s2-5',
+        experimentId: 'exp-parkir-01',
+        metricId: 'met-2',
+        metricName: 'Jumlah slot mobil tertampung secara tertib',
+        unit: 'slot',
+        value: 20,
+        recordedBy: 'Petugas Jaga Malam',
+        recordedAt: '2026-10-19T19:35:00Z',
+        dayNumber: 5,
+      },
+      {
+        id: 'de-s2-6',
+        experimentId: 'exp-parkir-01',
+        metricId: 'met-2',
+        metricName: 'Jumlah slot mobil tertampung secara tertib',
+        unit: 'slot',
+        value: 21,
+        recordedBy: 'Petugas Jaga Malam',
+        recordedAt: '2026-10-20T19:35:00Z',
+        dayNumber: 6,
+      },
+      {
+        id: 'de-s2-7',
+        experimentId: 'exp-parkir-01',
+        metricId: 'met-2',
+        metricName: 'Jumlah slot mobil tertampung secara tertib',
+        unit: 'slot',
+        value: 22,
+        recordedBy: 'Petugas Jaga Malam',
+        recordedAt: '2026-10-21T19:35:00Z',
+        dayNumber: 7,
+      },
+      {
+        id: 'de-s2-8',
+        experimentId: 'exp-parkir-01',
+        metricId: 'met-2',
+        metricName: 'Jumlah slot mobil tertampung secara tertib',
+        unit: 'slot',
+        value: 22,
+        recordedBy: 'Petugas Jaga Malam',
+        recordedAt: '2026-10-22T19:35:00Z',
+        dayNumber: 8,
+      },
+      {
+        id: 'de-s3-1',
+        experimentId: 'exp-parkir-01',
+        metricId: 'met-3',
+        metricName: 'Keluhan warga Lorong B per hari',
+        unit: 'keluhan',
+        value: 1.4,
+        recordedBy: 'Pengurus RT Bidang Ketertiban',
+        recordedAt: '2026-10-15T20:00:00Z',
+        dayNumber: 1,
+      },
+      {
+        id: 'de-s3-2',
+        experimentId: 'exp-parkir-01',
+        metricId: 'met-3',
+        metricName: 'Keluhan warga Lorong B per hari',
+        unit: 'keluhan',
+        value: 1.0,
+        recordedBy: 'Pengurus RT Bidang Ketertiban',
+        recordedAt: '2026-10-16T20:00:00Z',
+        dayNumber: 2,
+      },
+      {
+        id: 'de-s3-3',
+        experimentId: 'exp-parkir-01',
+        metricId: 'met-3',
+        metricName: 'Keluhan warga Lorong B per hari',
+        unit: 'keluhan',
+        value: 0.8,
+        recordedBy: 'Pengurus RT Bidang Ketertiban',
+        recordedAt: '2026-10-17T20:00:00Z',
+        dayNumber: 3,
+      },
+      {
+        id: 'de-s3-4',
+        experimentId: 'exp-parkir-01',
+        metricId: 'met-3',
+        metricName: 'Keluhan warga Lorong B per hari',
+        unit: 'keluhan',
+        value: 0.6,
+        recordedBy: 'Pengurus RT Bidang Ketertiban',
+        recordedAt: '2026-10-18T20:00:00Z',
+        dayNumber: 4,
+      },
+      {
+        id: 'de-s3-5',
+        experimentId: 'exp-parkir-01',
+        metricId: 'met-3',
+        metricName: 'Keluhan warga Lorong B per hari',
+        unit: 'keluhan',
+        value: 0.5,
+        recordedBy: 'Pengurus RT Bidang Ketertiban',
+        recordedAt: '2026-10-19T20:00:00Z',
+        dayNumber: 5,
+      },
+      {
+        id: 'de-s3-6',
+        experimentId: 'exp-parkir-01',
+        metricId: 'met-3',
+        metricName: 'Keluhan warga Lorong B per hari',
+        unit: 'keluhan',
+        value: 0.4,
+        recordedBy: 'Pengurus RT Bidang Ketertiban',
+        recordedAt: '2026-10-20T20:00:00Z',
+        dayNumber: 6,
+      },
+      {
+        id: 'de-s3-7',
+        experimentId: 'exp-parkir-01',
+        metricId: 'met-3',
+        metricName: 'Keluhan warga Lorong B per hari',
+        unit: 'keluhan',
+        value: 0.6,
+        recordedBy: 'Pengurus RT Bidang Ketertiban',
+        recordedAt: '2026-10-21T20:00:00Z',
+        dayNumber: 7,
+      },
+      {
+        id: 'de-s3-8',
+        experimentId: 'exp-parkir-01',
+        metricId: 'met-3',
+        metricName: 'Keluhan warga Lorong B per hari',
+        unit: 'keluhan',
+        value: 0.5,
+        recordedBy: 'Pengurus RT Bidang Ketertiban',
+        recordedAt: '2026-10-22T20:00:00Z',
+        dayNumber: 8,
+      },
+      {
+        id: 'de-s4-2',
+        experimentId: 'exp-parkir-01',
+        metricId: 'met-4',
+        metricName: 'Skor kenyamanan berkendara warga (survei)',
+        unit: 'skala 1-5',
+        value: 3.2,
+        recordedBy: 'Hendra Setiawan',
+        recordedAt: '2026-10-16T18:30:00Z',
+        dayNumber: 2,
+      },
+      {
+        id: 'de-s4-4',
+        experimentId: 'exp-parkir-01',
+        metricId: 'met-4',
+        metricName: 'Skor kenyamanan berkendara warga (survei)',
+        unit: 'skala 1-5',
+        value: 3.6,
+        recordedBy: 'Hendra Setiawan',
+        recordedAt: '2026-10-18T18:30:00Z',
+        dayNumber: 4,
+      },
+      {
+        id: 'de-s4-6',
+        experimentId: 'exp-parkir-01',
+        metricId: 'met-4',
+        metricName: 'Skor kenyamanan berkendara warga (survei)',
+        unit: 'skala 1-5',
+        value: 3.9,
+        recordedBy: 'Hendra Setiawan',
+        recordedAt: '2026-10-20T18:30:00Z',
+        dayNumber: 6,
+      },
+      {
+        id: 'de-s4-8',
+        experimentId: 'exp-parkir-01',
+        metricId: 'met-4',
+        metricName: 'Skor kenyamanan berkendara warga (survei)',
+        unit: 'skala 1-5',
+        value: 4.1,
+        recordedBy: 'Hendra Setiawan',
+        recordedAt: '2026-10-22T18:30:00Z',
+        dayNumber: 8,
       },
     ],
     events: [
@@ -591,7 +826,7 @@ export const INITIAL_EXPERIMENTS: Record<string, any> = {
         experimentId: 'exp-parkir-01',
         type: 'catatan_fasilitator',
         title: 'Survei Tengah Masa (Hari ke-7)',
-        description: 'Hasil survei menunjukkan 78% warga merasa lorong lebih teratur, 12% netral, 10% ada saran sudut diseragamkan.',
+        description: 'Survei tengah masa (contoh fiktif untuk demo): sebagian besar responden merasa lorong lebih teratur, sebagian netral, dan ada saran menyeragamkan sudut.',
         occurredAt: '2026-10-21T18:00:00Z',
         authorName: 'Hendra Setiawan (Fasilitator)',
       },
@@ -799,3 +1034,55 @@ export const INITIAL_AUDIT_LOGS: AuditLog[] = [
     details: 'Masa uji coba 14 hari dimulai terhitung 15 Oktober 2026.',
   },
 ];
+
+
+// ---------------------------------------------------------------------------
+// Data demo FIKTIF. Semua nama, angka, dan kejadian di atas adalah contoh untuk mencoba aplikasi.
+// Tanggal percobaan contoh digeser agar hari ini jatuh pada hari ke-8, supaya demo selalu
+// terlihat "sedang berjalan" tanpa memalsukan kronologi relatif di dalamnya.
+
+const SEED_START = '2026-10-15';
+const ISO_DATE = /^\d{4}-\d{2}-\d{2}(T.*)?$/;
+
+export function shiftDates<T>(value: T, days: number): T {
+  if (days === 0) return value;
+  const walk = (v: unknown): unknown => {
+    if (typeof v === 'string' && ISO_DATE.test(v)) {
+      const t = Date.parse(v.length === 10 ? `${v}T00:00:00Z` : v);
+      if (Number.isNaN(t)) return v;
+      const shifted = new Date(t + days * 86_400_000).toISOString();
+      return v.length === 10 ? shifted.slice(0, 10) : shifted;
+    }
+    if (Array.isArray(v)) return v.map(walk);
+    if (v && typeof v === 'object') {
+      return Object.fromEntries(Object.entries(v as Record<string, unknown>).map(([k, x]) => [k, walk(x)]));
+    }
+    return v;
+  };
+  return walk(value) as T;
+}
+
+/** Selisih hari agar `today` menjadi hari ke-8 percobaan contoh. */
+export function seedShiftDays(today: Date): number {
+  const start = dateToDayNumber(SEED_START) as number;
+  const todayNum = Math.floor(Date.UTC(today.getFullYear(), today.getMonth(), today.getDate()) / 86_400_000);
+  return todayNum - 7 - start;
+}
+
+const SEED_SHIFT = seedShiftDays(new Date());
+
+export const INITIAL_EXPERIMENTS: Record<string, Experiment> = shiftDates(SEED_EXPERIMENTS, SEED_SHIFT);
+
+/** Jawaban survei penerimaan contoh (fiktif) untuk keputusan portal. Sengaja sedikit supaya interval lebar terlihat. */
+export const INITIAL_ACCEPTANCE: AcceptanceResponse[] = [
+  { id: 'acc-1', decisionId: 'dec-portal-anggrek', userId: 'demo-w1', userName: 'Warga contoh 1', stanceInitial: 'pro', score: 5, acceptsOutcome: true },
+  { id: 'acc-2', decisionId: 'dec-portal-anggrek', userId: 'demo-w2', userName: 'Warga contoh 2', stanceInitial: 'pro', score: 4, acceptsOutcome: true },
+  { id: 'acc-3', decisionId: 'dec-portal-anggrek', userId: 'demo-w3', userName: 'Warga contoh 3', stanceInitial: 'kontra', score: 4, acceptsOutcome: true },
+  { id: 'acc-4', decisionId: 'dec-portal-anggrek', userId: 'demo-w4', userName: 'Warga contoh 4', stanceInitial: 'kontra', score: 2, acceptsOutcome: false, comment: 'Masih menunggu lebih lama di malam hari.' },
+  { id: 'acc-5', decisionId: 'dec-portal-anggrek', userId: 'demo-w5', userName: 'Warga contoh 5', stanceInitial: 'netral', score: 4, acceptsOutcome: true },
+];
+
+
+export const INITIAL_ISSUES: Issue[] = SEED_ISSUES.map((i) =>
+  i.id === 'issue-parkir-lorong-b' ? shiftDates(i, SEED_SHIFT) : i,
+);

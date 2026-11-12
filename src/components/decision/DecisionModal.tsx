@@ -4,9 +4,11 @@
  */
 
 import type React from 'react';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { notify } from '../../lib/notify';
 import { useApp } from '../../context/AppContext';
+import { analyzeExperiment } from '../../lib/coreAdapter';
+import { describeMeasured } from '../results/format';
 import type { Experiment, Issue, DecisionOutcome } from '../../types';
 import { CobaSepakatLogo } from '../brand/CobaSepakatLogo';
 import { Copy,
@@ -31,16 +33,29 @@ export const DecisionModal: React.FC<DecisionModalProps> = ({
 }) => {
   const { recordDecision, submitAcceptanceRating, currentUser } = useApp();
 
-  const [outcome, setOutcome] = useState<DecisionOutcome>('adopsi');
-  const [title, setTitle] = useState<string>(
-    'Adopsi Resmi: Parkir Miring 45 Derajat Diterapkan Permanen di Lorong B'
+  const analysis = useMemo(() => analyzeExperiment(experiment), [experiment]);
+  const [outcome, setOutcome] = useState<DecisionOutcome>(
+    analysis.result.verdict === 'terpenuhi'
+      ? 'adopsi'
+      : analysis.result.verdict === 'tidak_terpenuhi'
+        ? 'kembalikan_ke_semula'
+        : 'ubah_coba_lagi',
   );
-  const [reason, setReason] = useState<string>(
-    'Berdasarkan pengujian 14 hari, waktu tempuh kendaraan membaik 21.9% (dari garis dasar 4.2 menit menjadi rata-rata 3.28 menit), keluhan warga turun 58%, dan tidak ada insiden ambulans/damkar terhalang. Ambang kriteria kesepakatan awal terbukti terpenuhi.'
-  );
-  const [statement, setStatement] = useState<string>(
-    'Pengurus RT 04 bersama warga Kluster Melati menetapkan penataan parkir miring 45 derajat secara permanen dengan pengecatan marka standar dan pemasangan rambu resmi pada 1 November 2026.'
-  );
+  const [title, setTitle] = useState<string>('');
+  // Draf alasan disusun dari hasil hitung nyata dan bernada hati-hati. Pengurus wajib meninjau dan menyuntingnya.
+  const [reason, setReason] = useState<string>(() => {
+    const lines = analysis.result.criteria.map((c) => {
+      const metric = experiment.metrics.find((m) => m.id === c.criterion.metricId);
+      const d = describeMeasured(c, metric?.unit ?? '');
+      return `- ${c.metricName}: taksiran ${d.value} (interval 95%: ${d.interval}; ${c.days} hari data). Syarat ${d.target}. Status: ${c.verdict.replace(/_/g, ' ')}.`;
+    });
+    return [
+      `Hasil evaluasi terhadap kriteria yang disepakati (${analysis.result.summary})`,
+      ...lines,
+      'Batasan: tanpa kelompok pembanding, garis dasar dianggap tetap, dan hasil bukan bukti pasti.',
+    ].join('\n');
+  });
+  const [statement, setStatement] = useState<string>('');
 
   const [isSaved, setIsSaved] = useState<boolean>(!!issue.decision);
   const [acceptanceScore, setAcceptanceScore] = useState<number>(5);
@@ -165,10 +180,13 @@ export const DecisionModal: React.FC<DecisionModalProps> = ({
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-brand-navy mb-1">
+                <label htmlFor="dec-title" className="block text-xs font-bold text-brand-navy mb-1">
                   Judul Keputusan:
                 </label>
                 <input
+                  id="dec-title"
+                  placeholder="Contoh: Adopsi parkir miring di Lorong B, ditinjau 1 bulan"
+                  required
                   type="text"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
@@ -177,11 +195,12 @@ export const DecisionModal: React.FC<DecisionModalProps> = ({
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-brand-navy mb-1">
-                  Alasan & Dasar Pertimbangan Empiris:
+                <label htmlFor="dec-reason" className="block text-xs font-bold text-brand-navy mb-1">
+                  Alasan & Dasar Pertimbangan Empiris (draf dari hasil hitung, mohon ditinjau):
                 </label>
                 <textarea
-                  rows={3}
+                  id="dec-reason"
+                  rows={6}
                   value={reason}
                   onChange={(e) => setReason(e.target.value)}
                   className="w-full text-xs p-3 rounded-xl border border-brand-border text-brand-navy"
@@ -189,10 +208,12 @@ export const DecisionModal: React.FC<DecisionModalProps> = ({
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-brand-navy mb-1">
+                <label htmlFor="dec-statement" className="block text-xs font-bold text-brand-navy mb-1">
                   Pernyataan Keputusan Resmi (Untuk Warga):
                 </label>
                 <textarea
+                  id="dec-statement"
+                  placeholder="Tulis pernyataan resmi yang akan dibacakan kepada warga."
                   rows={2}
                   value={statement}
                   onChange={(e) => setStatement(e.target.value)}
@@ -418,7 +439,8 @@ export const DecisionModal: React.FC<DecisionModalProps> = ({
               <button
                 type="button"
                 onClick={handleSaveDecision}
-                className="px-6 py-2.5 bg-brand-green hover:bg-[#258768] text-white text-xs font-bold rounded-full shadow-card transition-all flex items-center gap-1.5"
+                disabled={!title.trim() || !reason.trim() || !statement.trim()}
+                className="px-6 py-2.5 bg-brand-green hover:bg-[#258768] disabled:bg-slate-300 text-white text-xs font-bold rounded-full shadow-card transition-all flex items-center gap-1.5"
               >
                 <CheckCircle2 className="w-4 h-4" /> Simpan & Kunci Catatan Keputusan
               </button>

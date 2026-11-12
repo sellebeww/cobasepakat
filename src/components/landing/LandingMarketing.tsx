@@ -113,7 +113,7 @@ export const LandingMarketing: React.FC = () => {
             </li>
             <li className="flex items-start gap-2">
               <Check className="w-4 h-4 text-brand-green shrink-0 mt-0.5" />
-              <span>Penerimaan warga mencapai 84% bahkan di kalangan pihak yang dugaannya tidak terbukti.</span>
+              <span>Setelah keputusan, platform mengukur penerimaan warga, termasuk pihak yang dugaannya tidak terbukti, dengan ukuran sampel dan ketidakpastian yang ditampilkan apa adanya.</span>
             </li>
           </ul>
         </div>

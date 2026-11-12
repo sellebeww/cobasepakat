@@ -4,9 +4,12 @@
  */
 
 import type React from 'react';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useApp } from '../../context/AppContext';
-import { type Experiment, type Issue, } from '../../types';
+import { ResultsPanel } from '../results/ResultsPanel';
+import { trialProgress } from '../../core';
+import { analyzeExperiment, localUtcOffsetMinutes } from '../../lib/coreAdapter';
+import type { Experiment, Issue, } from '../../types';
 import {
   Clock,
   AlertTriangle,
@@ -15,8 +18,6 @@ import {
   Plus,
   Camera,
   Activity,
-  TrendingDown,
-  TrendingUp,
   FileText,
   Send,
 } from 'lucide-react';
@@ -40,6 +41,7 @@ export const ExperimentDashboard: React.FC<ExperimentDashboardProps> = ({
     verifyDataEntry,
     triggerEmergencyStop,
     submitApproval,
+    quorumFor,
   } = useApp();
   const [showAllEntries, setShowAllEntries] = useState(false);
   // Recorders cannot verify their own entries, so switching persona is part of the demo flow.
@@ -84,9 +86,14 @@ export const ExperimentDashboard: React.FC<ExperimentDashboardProps> = ({
   ).length;
   const userHasApproved = experiment.approvals.some((a) => a.userId === currentUser.id);
 
+  const isDone = experiment.status === 'selesai';
+  const progress = trialProgress(experiment.startDate, experiment.durationDays, new Date().toISOString(), localUtcOffsetMinutes());
+  const shownDay = isDone ? experiment.durationDays : (progress?.day ?? 0);
+  const analysis = useMemo(() => analyzeExperiment(experiment), [experiment]);
+  const quorum = quorumFor(experiment.id);
+
   // Status badge styling
   const isStopped = experiment.status === 'dihentikan';
-  const isDone = experiment.status === 'selesai';
   const _isPendingApproval = experiment.status === 'menunggu_persetujuan';
 
   return (
@@ -180,10 +187,10 @@ export const ExperimentDashboard: React.FC<ExperimentDashboardProps> = ({
           <div className="flex items-center justify-between text-xs mb-2">
             <span className="font-bold text-brand-navy flex items-center gap-1.5">
               <Clock className="w-4 h-4 text-brand-blue" />
-              Progres Percobaan: Hari ke-{isDone ? experiment.durationDays : 8} dari {experiment.durationDays} Hari
+              Progres Percobaan: Hari ke-{shownDay} dari {experiment.durationDays} Hari
             </span>
             <span className="font-mono text-brand-slate font-semibold">
-              {Math.round(((isDone ? experiment.durationDays : 8) / experiment.durationDays) * 100)}% Berjalan
+              {Math.round(((shownDay) / experiment.durationDays) * 100)}% Berjalan
             </span>
           </div>
           <div className="w-full bg-brand-border h-2.5 rounded-full overflow-hidden">
@@ -192,7 +199,7 @@ export const ExperimentDashboard: React.FC<ExperimentDashboardProps> = ({
                 isStopped ? 'bg-status-stopped' : 'bg-brand-blue'
               }`}
               style={{
-                width: `${Math.min(100, Math.round(((isDone ? experiment.durationDays : 8) / experiment.durationDays) * 100))}%`,
+                width: `${Math.min(100, Math.round(((shownDay) / experiment.durationDays) * 100))}%`,
               }}
             />
           </div>
@@ -223,86 +230,7 @@ export const ExperimentDashboard: React.FC<ExperimentDashboardProps> = ({
             </span>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {experiment.metrics.map((met) => {
-              const currentVal = met.currentValue ?? met.baselineValue;
-              const isImproved =
-                met.direction === 'turun_lebih_baik'
-                  ? currentVal <= met.thresholdValue
-                  : currentVal >= met.thresholdValue;
-
-              const percentDiff =
-                met.baselineValue !== 0
-                  ? Math.round(((currentVal - met.baselineValue) / met.baselineValue) * 100)
-                  : 0;
-
-              return (
-                <div
-                  key={met.id}
-                  className="bg-white rounded-3xl p-4 border border-brand-border shadow-card space-y-3"
-                >
-                  <div className="flex items-start justify-between gap-2">
-                    <div>
-                      <h4 className="text-xs font-bold text-brand-navy leading-snug">{met.name}</h4>
-                      <p className="text-xs text-brand-slate">{met.frequency}</p>
-                    </div>
-                    <span
-                      className={`shrink-0 whitespace-nowrap text-xs font-bold px-2 py-0.5 rounded-full flex items-center gap-1 ${
-                        isImproved
-                          ? 'bg-brand-green/10 text-brand-green'
-                          : 'bg-amber-50 text-amber-700'
-                      }`}
-                    >
-                      {isImproved ? 'Target Tercapai' : 'Di Bawah Target'}
-                    </span>
-                  </div>
-
-                  {/* Value comparison strip */}
-                  <div className="grid grid-cols-3 gap-2 text-center py-2 bg-brand-surface rounded-xl">
-                    <div>
-                      <div className="text-xs text-brand-slate">Garis Dasar</div>
-                      <div className="text-xs font-mono font-bold text-brand-navy">
-                        {met.baselineValue}
-                      </div>
-                    </div>
-                    <div>
-                      <div className="text-xs text-brand-slate">Saat Ini</div>
-                      <div
-                        className={`text-sm font-mono font-extrabold ${
-                          isImproved ? 'text-brand-green' : 'text-amber-600'
-                        }`}
-                      >
-                        {currentVal}
-                      </div>
-                    </div>
-                    <div>
-                      <div className="text-xs text-brand-slate">Ambang Target</div>
-                      <div className="text-xs font-mono font-bold text-brand-blue">
-                        {met.thresholdValue}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Visual delta indicator */}
-                  <div className="flex items-center justify-between text-xs">
-                    <span className="text-brand-slate">Selisih vs Garis Dasar:</span>
-                    <span
-                      className={`font-mono font-bold flex items-center gap-0.5 ${
-                        isImproved ? 'text-brand-green' : 'text-amber-700'
-                      }`}
-                    >
-                      {percentDiff > 0 ? `+${percentDiff}%` : `${percentDiff}%`}
-                      {percentDiff <= 0 ? (
-                        <TrendingDown className="w-3.5 h-3.5" />
-                      ) : (
-                        <TrendingUp className="w-3.5 h-3.5" />
-                      )}
-                    </span>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
+          <ResultsPanel experiment={experiment} />
 
           {/* Quick Data Logger Card (Mobile-First / Field Logger) */}
           <div className="bg-white rounded-3xl p-5 border border-brand-border shadow-sm space-y-4">
@@ -486,7 +414,12 @@ export const ExperimentDashboard: React.FC<ExperimentDashboardProps> = ({
                     <div>
                       <div className="font-semibold">{sr.conditionDescription}</div>
                       <div className="text-xs text-brand-slate mt-0.5">
-                        Status: {sr.triggered ? 'TERPICU - Percobaan Berhenti' : 'Aman (Belum pernah terpicu)'}
+                        {(() => {
+                          const st = analysis.stop.find((x) => x.ruleId === sr.id);
+                          if (sr.triggered) return `TERPICU${sr.triggerReason ? `: ${sr.triggerReason}` : ''}`;
+                          if (!sr.trigger) return 'Aturan manual: dinilai orang, tidak dipantau otomatis';
+                          return `Dipantau otomatis · rentetan pelanggaran ${st?.currentStreak ?? 0}/${st?.required ?? 1}`;
+                        })()}
                       </div>
                     </div>
                   </div>
@@ -507,7 +440,7 @@ export const ExperimentDashboard: React.FC<ExperimentDashboardProps> = ({
                 Kesepakatan Desain & Kuorum
               </h4>
               <span className="text-xs font-bold text-brand-blue">
-                {approvedCount} Disetujui
+                {quorum ? `${quorum.agree} dari ${quorum.required} suara setuju dibutuhkan` : `${approvedCount} Disetujui`}
               </span>
             </div>
 
