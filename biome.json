@@ -11,7 +11,8 @@
 				"useKeyWithClickEvents": "warn",
 				"noLabelWithoutControl": "warn",
 				"noSvgWithoutTitle": "off",
-				"useSemanticElements": "warn"
+				"useSemanticElements": "warn",
+				"noNoninteractiveTabindex": "off"
 			},
 			"suspicious": { "noExplicitAny": "warn", "noArrayIndexKey": "warn" },
 			"correctness": {
@@ -19,7 +20,8 @@
 				"noUnusedVariables": "warn",
 				"noUnusedImports": "warn"
 			},
-			"style": { "noNonNullAssertion": "off" }
+			"style": { "noNonNullAssertion": "off" },
+			"performance": { "useDomNodeTextContent": "off" }
 		}
 	}
 }

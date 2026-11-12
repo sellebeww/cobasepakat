@@ -21,7 +21,12 @@ export interface ReportInput {
 }
 
 const ascii = (s: string) =>
-  s.replace(/≤/g, '<=').replace(/≥/g, '>=').replace(/[‘’]/g, "'").replace(/[“”]/g, '"').replace(/[–—]/g, '-').replace(/[^\x09\x0a\x0d\x20-\x7e -ÿ]/g, '?');
+  [...s.replace(/≤/g, '<=').replace(/≥/g, '>=').replace(/[‘’]/g, "'").replace(/[“”]/g, '"').replace(/[–—]/g, '-')]
+    .map((ch) => {
+      const c = ch.charCodeAt(0);
+      return c === 9 || c === 10 || c === 13 || (c >= 32 && c <= 126) || (c >= 160 && c <= 255) ? ch : '?';
+    })
+    .join('');
 
 export async function buildReportPdf(input: ReportInput): Promise<Uint8Array> {
   const { jsPDF } = await import('jspdf');

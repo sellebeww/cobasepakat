@@ -27,6 +27,7 @@ function fakeClient(result: { data: unknown; error: { message: string; code?: st
       return chain;
     };
   }
+  // biome-ignore lint/suspicious/noThenProperty: klien Supabase asli juga thenable
   chain.then = (resolve: (v: unknown) => unknown) => resolve(result);
   const client = {
     auth: {
