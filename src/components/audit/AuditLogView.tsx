@@ -6,12 +6,15 @@
 import type React from 'react';
 import { useState } from 'react';
 import { useApp } from '../../context/AppContext';
-import { Download, Search } from 'lucide-react';
+import { Download, Search, ShieldCheck, ShieldAlert } from 'lucide-react';
+import type { ChainVerification } from '../../core';
 import { downloadCsv } from '../../lib/download';
 import { notify } from '../../lib/notify';
 
 export const AuditLogView: React.FC = () => {
-  const { auditLogs } = useApp();
+  const { auditLogs, verifyLedger, tamperLedgerForDemo } = useApp();
+  const [check, setCheck] = useState<ChainVerification | null>(null);
+  const runVerify = async () => setCheck(await verifyLedger());
   const [filterQuery, setFilterQuery] = useState('');
 
   const filteredLogs = auditLogs.filter(
@@ -69,6 +72,32 @@ export const AuditLogView: React.FC = () => {
         </div>
       </div>
 
+      <section aria-label="Verifikasi rantai hash" className="bg-white rounded-3xl p-6 border border-brand-border shadow-sm space-y-3">
+        <h2 className="text-base font-bold text-brand-navy">Verifikasi keutuhan riwayat</h2>
+        <p className="text-xs text-brand-slate">
+          Setiap entri memuat hash SHA-256 dari isinya dan hash entri sebelumnya. Mengubah, menghapus, atau menukar entri lama
+          memutus rantai dan terdeteksi di sini. Batas: rantai tidak mencegah penulisan ulang seluruh riwayat atau pemotongan entri terakhir,
+          jadi catat/bagikan &ldquo;hash ujung&rdquo; di tempat lain. Hash bukan tanda tangan digital.
+        </p>
+        <div className="flex flex-wrap gap-2">
+          <button type="button" onClick={runVerify} className="px-4 py-2 bg-brand-blue text-white rounded-full text-xs font-bold flex items-center gap-1.5">
+            <ShieldCheck className="w-4 h-4" aria-hidden="true" /> Verifikasi sekarang
+          </button>
+          <button type="button" onClick={() => { tamperLedgerForDemo(); setCheck(null); }} className="px-4 py-2 bg-brand-surface border border-brand-border text-brand-navy rounded-full text-xs font-semibold">
+            Simulasikan penyuntingan diam-diam (demo)
+          </button>
+        </div>
+        {check && (
+          <div role="status" data-testid="ledger-status" className={`rounded-xl border p-3 text-xs ${check.valid ? 'border-emerald-300 bg-emerald-50 text-emerald-950' : 'border-red-300 bg-red-50 text-red-950'}`}>
+            <p className="flex items-center gap-1.5 font-bold">
+              {check.valid ? <ShieldCheck className="w-4 h-4" aria-hidden="true" /> : <ShieldAlert className="w-4 h-4" aria-hidden="true" />}
+              {check.valid ? `Rantai utuh (${check.length} entri).` : `Rantai rusak mulai entri #${check.brokenAt} (${check.reason}).`}
+            </p>
+            <p className="mt-1 font-mono break-all">Hash ujung: {check.head}</p>
+          </div>
+        )}
+      </section>
+
       <div className="bg-white rounded-3xl p-6 border border-brand-border shadow-sm">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
@@ -79,11 +108,12 @@ export const AuditLogView: React.FC = () => {
                 <th className="py-3 px-3 font-semibold">Aksi Sistem</th>
                 <th className="py-3 px-3 font-semibold">Objek Target</th>
                 <th className="py-3 px-3 font-semibold">Rincian Perubahan</th>
+                <th className="py-3 px-3 font-semibold">Hash</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-brand-border">
               {filteredLogs.map((log) => (
-                <tr key={log.id} className="hover:bg-brand-surface">
+                <tr key={log.id} className={`hover:bg-brand-surface ${check && !check.valid && log.index === check.brokenAt ? 'bg-red-50' : ''}`}>
                   <td className="py-3 px-3 font-mono text-brand-slate whitespace-nowrap">
                     {new Date(log.timestamp).toLocaleString('id-ID', {
                       dateStyle: 'short',
@@ -103,6 +133,7 @@ export const AuditLogView: React.FC = () => {
                   </td>
                   <td className="py-3 px-3 text-brand-slate font-medium">{log.target}</td>
                   <td className="py-3 px-3 text-brand-slate max-w-xs">{log.details}</td>
+                  <td className="py-3 px-3 font-mono text-slate-500" title={log.hash}>#{log.index} {log.hash?.slice(0, 8)}</td>
                 </tr>
               ))}
             </tbody>

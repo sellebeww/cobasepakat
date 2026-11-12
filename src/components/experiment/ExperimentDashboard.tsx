@@ -7,6 +7,7 @@ import type React from 'react';
 import { useMemo, useState } from 'react';
 import { useApp } from '../../context/AppContext';
 import { ResultsPanel } from '../results/ResultsPanel';
+import { ReportButton } from '../results/ReportButton';
 import { trialProgress } from '../../core';
 import { analyzeExperiment, localUtcOffsetMinutes } from '../../lib/coreAdapter';
 import type { Experiment, Issue, } from '../../types';
@@ -160,6 +161,8 @@ export const ExperimentDashboard: React.FC<ExperimentDashboardProps> = ({
                 Hentikan Sekarang
               </button>
             )}
+
+            <ReportButton experiment={experiment} issue={issue} />
 
             {/* Quick Link to Evaluation or Decision */}
             <button type="button"

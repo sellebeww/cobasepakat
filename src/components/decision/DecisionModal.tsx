@@ -8,6 +8,7 @@ import { useMemo, useState } from 'react';
 import { notify } from '../../lib/notify';
 import { useApp } from '../../context/AppContext';
 import { analyzeExperiment } from '../../lib/coreAdapter';
+import { ReportButton } from '../results/ReportButton';
 import { describeMeasured } from '../results/format';
 import type { Experiment, Issue, DecisionOutcome } from '../../types';
 import { CobaSepakatLogo } from '../brand/CobaSepakatLogo';
@@ -116,6 +117,11 @@ export const DecisionModal: React.FC<DecisionModalProps> = ({
               <p className="text-xs text-brand-slate">
                 Penetapan resmi hasil uji coba berdasarkan fakta dan komitmen bersama.
               </p>
+              {issue.decision?.ledgerHash && (
+                <p className="text-xs font-mono text-brand-slate break-all" data-testid="decision-hash">
+                  Hash riwayat berantai: {issue.decision.ledgerHash}
+                </p>
+              )}
             </div>
           </div>
           <button type="button"
@@ -445,6 +451,8 @@ export const DecisionModal: React.FC<DecisionModalProps> = ({
                 <CheckCircle2 className="w-4 h-4" /> Simpan & Kunci Catatan Keputusan
               </button>
             ) : (
+              <>
+              <ReportButton experiment={experiment} issue={issue} />
               <button
                 type="button"
                 onClick={onClose}
@@ -452,6 +460,7 @@ export const DecisionModal: React.FC<DecisionModalProps> = ({
               >
                 Selesai
               </button>
+              </>
             )}
           </div>
         </div>

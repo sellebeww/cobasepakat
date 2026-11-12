@@ -77,6 +77,8 @@ interface AppContextType {
   auditLogs: AuditLog[];
   ledger: LedgerEntry[];
   verifyLedger: () => Promise<ChainVerification>;
+  /** Hanya untuk demo: mengubah satu entri tanpa menghitung ulang hash, untuk memperlihatkan deteksi. */
+  tamperLedgerForDemo: () => void;
   acceptance: AcceptanceResponse[];
   quorumFor: (experimentId: string) => QuorumResult | null;
   flagDataEntry: (experimentId: string, entryId: string, flagged: boolean) => void;
@@ -250,6 +252,14 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   );
 
   const verifyLedger = useCallback(() => verifyChain(ledgerRef.current), []);
+  const tamperLedgerForDemo = useCallback(() => {
+    const chain = ledgerRef.current;
+    if (chain.length < 2) return;
+    const i = Math.floor(chain.length / 2);
+    const next = chain.map((e, k) => (k === i ? { ...e, payload: { ...(e.payload as object), details: 'DIUBAH DIAM-DIAM' } } : e));
+    ledgerRef.current = next;
+    setLedger(next);
+  }, []);
 
   // Save changes to localStorage
   useEffect(() => save('issues', issues), [issues]);
@@ -904,6 +914,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         auditLogs,
         ledger,
         verifyLedger,
+        tamperLedgerForDemo,
         acceptance,
         quorumFor,
         flagDataEntry: withToast(flagDataEntry, 'Tanda data diperbarui.'),
