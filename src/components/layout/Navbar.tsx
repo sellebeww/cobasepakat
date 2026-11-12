@@ -3,27 +3,18 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useEffect, useRef, useState } from 'react';
+import type React from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useApp } from '../../context/AppContext';
 import { CobaSepakatLogo } from '../brand/CobaSepakatLogo';
 import { scrollToSection } from '../company/CompanyProfile';
 import {
-  Users,
   ChevronDown,
   Building2,
   RotateCcw,
   Menu,
   X,
-  Sparkles,
-  ArrowRight,
   ArrowLeft,
-  ShieldCheck,
-  Sliders,
-  Layers,
-  Palette,
-  Play,
-  FileCheck2,
-  Clock,
 } from 'lucide-react';
 
 export const Navbar: React.FC = () => {
@@ -117,7 +108,7 @@ export const Navbar: React.FC = () => {
               <span className="hidden sm:inline">Mode Demo Interaktif Aktif: Kluster Melati RT 04 (Hari ke-8 Uji Coba)</span>
             </span>
 
-            <button
+            <button type="button"
               onClick={() => setAppMode('company_profile')}
               className="px-3.5 py-1 bg-white hover:bg-brand-surface-blue text-brand-blue border border-brand-border rounded-full text-xs font-bold flex items-center gap-1.5 transition-colors"
             >
@@ -132,7 +123,7 @@ export const Navbar: React.FC = () => {
           <div className="flex items-center justify-between h-16 gap-4">
             {/* Zone 1: Brand Wordmark */}
             <div className="flex items-center gap-3 shrink-0">
-              <button
+              <button type="button"
                 onClick={() => setAppMode('company_profile')}
                 className="text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-blue rounded-lg"
               >
@@ -150,7 +141,7 @@ export const Navbar: React.FC = () => {
             {appMode === 'company_profile' ? (
               <nav aria-label="Navigasi utama" className="hidden lg:flex items-center gap-10 text-sm font-semibold text-brand-navy">
                 {companyLinks.map((l) => (
-                  <button
+                  <button type="button"
                     key={l.id}
                     onClick={() => scrollToSection(l.id)}
                     className="hover:text-brand-blue transition-colors"
@@ -162,7 +153,7 @@ export const Navbar: React.FC = () => {
             ) : (
               /* Demo Mode Navigation Tabs */
               <nav aria-label="Navigasi demo" className="hidden xl:flex items-center gap-0.5 text-xs font-medium text-brand-slate">
-                <button
+                <button type="button"
                   onClick={() => setActiveTab('beranda')}
                   className={`hover:text-brand-navy transition-colors whitespace-nowrap px-2.5 py-1.5 rounded-full ${
                     activeTab === 'beranda'
@@ -172,7 +163,7 @@ export const Navbar: React.FC = () => {
                 >
                   Dasbor Ruang
                 </button>
-                <button
+                <button type="button"
                   onClick={() => setActiveTab('isu')}
                   className={`hover:text-brand-navy transition-colors whitespace-nowrap px-2.5 py-1.5 rounded-full ${
                     activeTab === 'isu' || activeTab === 'percobaan'
@@ -182,7 +173,7 @@ export const Navbar: React.FC = () => {
                 >
                   Isu & Percobaan
                 </button>
-                <button
+                <button type="button"
                   onClick={() => setActiveTab('pustaka')}
                   className={`hover:text-brand-navy transition-colors whitespace-nowrap px-2.5 py-1.5 rounded-full ${
                     activeTab === 'pustaka'
@@ -192,7 +183,7 @@ export const Navbar: React.FC = () => {
                 >
                   Pustaka Keputusan
                 </button>
-                <button
+                <button type="button"
                   onClick={() => setActiveTab('templat')}
                   className={`hover:text-brand-navy transition-colors whitespace-nowrap px-2.5 py-1.5 rounded-full ${
                     activeTab === 'templat'
@@ -202,7 +193,7 @@ export const Navbar: React.FC = () => {
                 >
                   Templat Uji Coba
                 </button>
-                <button
+                <button type="button"
                   onClick={() => setActiveTab('analitik')}
                   className={`hover:text-brand-navy transition-colors whitespace-nowrap px-2.5 py-1.5 rounded-full ${
                     activeTab === 'analitik'
@@ -212,7 +203,7 @@ export const Navbar: React.FC = () => {
                 >
                   Analitik Dampak
                 </button>
-                <button
+                <button type="button"
                   onClick={() => setActiveTab('fasilitator')}
                   className={`hover:text-brand-navy transition-colors whitespace-nowrap px-2.5 py-1.5 rounded-full ${
                     activeTab === 'fasilitator'
@@ -222,7 +213,7 @@ export const Navbar: React.FC = () => {
                 >
                   Layanan Fasilitasi
                 </button>
-                <button
+                <button type="button"
                   onClick={() => setActiveTab('audit')}
                   className={`hover:text-brand-navy transition-colors whitespace-nowrap px-2.5 py-1.5 rounded-full ${
                     activeTab === 'audit'
@@ -239,13 +230,13 @@ export const Navbar: React.FC = () => {
             <div className="flex items-center gap-3 shrink-0">
               {appMode === 'company_profile' ? (
                 <>
-                  <button
+                  <button type="button"
                     onClick={() => enterDemo()}
                     className="hidden sm:block px-5 py-2 rounded-full border border-brand-blue text-brand-blue hover:bg-brand-surface-blue text-xs font-bold transition-colors"
                   >
                     Masuk
                   </button>
-                  <button
+                  <button type="button"
                     onClick={() => enterDemo()}
                     className="px-3 sm:px-5 py-2.5 bg-brand-blue-dark hover:bg-brand-navy text-white rounded-full text-xs font-bold transition-colors shadow-card"
                   >
@@ -257,7 +248,7 @@ export const Navbar: React.FC = () => {
                 <>
                   {/* Space selector */}
                   <div className="relative hidden 2xl:block">
-                    <button
+                    <button type="button"
                       onClick={() => setShowSpaceDropdown(!showSpaceDropdown)}
                       className="flex items-center gap-1.5 text-xs text-brand-slate hover:text-brand-navy font-medium py-1.5 px-2.5 rounded-xl border border-brand-border hover:bg-brand-surface transition-colors"
                     >
@@ -272,7 +263,7 @@ export const Navbar: React.FC = () => {
                           Pilih Ruang Komunitas
                         </div>
                         {spaces.map((sp) => (
-                          <button
+                          <button type="button"
                             key={sp.id}
                             onClick={() => {
                               setCurrentSpaceId(sp.id);
@@ -296,7 +287,7 @@ export const Navbar: React.FC = () => {
 
                   {/* Role Persona Switcher */}
                   <div className="relative">
-                    <button
+                    <button type="button"
                       onClick={() => setShowUserDropdown(!showUserDropdown)}
                       className="flex items-center gap-2 px-2.5 py-1.5 rounded-xl border border-brand-border hover:border-brand-blue bg-brand-surface hover:bg-white transition-all text-left"
                       title="Ganti Persona untuk Menguji Hak Akses (RBAC)"
@@ -329,7 +320,7 @@ export const Navbar: React.FC = () => {
                         </div>
                         <div className="max-h-72 overflow-y-auto py-1">
                           {users.map((u) => (
-                            <button
+                            <button type="button"
                               key={u.id}
                               onClick={() => {
                                 setCurrentUser(u);
@@ -362,7 +353,7 @@ export const Navbar: React.FC = () => {
                           ))}
                         </div>
                         <div className="px-4 pt-2 border-t border-brand-border flex justify-between items-center">
-                          <button
+                          <button type="button"
                             onClick={() => {
                               if (!confirmReset) {
                                 setConfirmReset(true);
@@ -385,7 +376,7 @@ export const Navbar: React.FC = () => {
                     )}
                   </div>
 
-                  <button
+                  <button type="button"
                     onClick={() => setAppMode('company_profile')}
                     aria-label="Kembali ke Company Profile"
                     title="Kembali ke Company Profile"
@@ -399,7 +390,7 @@ export const Navbar: React.FC = () => {
               )}
 
               {/* Mobile Hamburger */}
-              <button
+              <button type="button"
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                 aria-label={mobileMenuOpen ? 'Tutup menu' : 'Buka menu'}
                 aria-expanded={mobileMenuOpen}
@@ -416,7 +407,7 @@ export const Navbar: React.FC = () => {
           <div className={`${appMode === 'demo' ? 'xl:hidden' : 'lg:hidden'} border-t border-brand-border bg-white px-4 pt-2 pb-4 space-y-2`}>
             <div className="flex items-center justify-between pb-2 border-b border-brand-border">
               <span className="text-xs font-bold text-brand-navy">Navigasi Aplikasi</span>
-              <button
+              <button type="button"
                 onClick={() => {
                   setAppMode(appMode === 'company_profile' ? 'demo' : 'company_profile');
                   setMobileMenuOpen(false);
@@ -430,7 +421,7 @@ export const Navbar: React.FC = () => {
             {appMode === 'company_profile' ? (
               <div className="space-y-1">
                 {companyLinks.map((l) => (
-                  <button
+                  <button type="button"
                     key={l.id}
                     onClick={() => {
                       scrollToSection(l.id);
@@ -441,7 +432,7 @@ export const Navbar: React.FC = () => {
                     {l.label}
                   </button>
                 ))}
-                <button
+                <button type="button"
                   onClick={() => {
                     enterDemo();
                     setMobileMenuOpen(false);
@@ -453,7 +444,7 @@ export const Navbar: React.FC = () => {
               </div>
             ) : (
               <div className="space-y-1">
-                <button
+                <button type="button"
                   onClick={() => {
                     setActiveTab('beranda');
                     setMobileMenuOpen(false);
@@ -464,7 +455,7 @@ export const Navbar: React.FC = () => {
                 >
                   Dasbor Ruang Komunitas
                 </button>
-                <button
+                <button type="button"
                   onClick={() => {
                     setActiveTab('isu');
                     setMobileMenuOpen(false);
@@ -475,7 +466,7 @@ export const Navbar: React.FC = () => {
                 >
                   Isu & Percobaan
                 </button>
-                <button
+                <button type="button"
                   onClick={() => {
                     setActiveTab('pustaka');
                     setMobileMenuOpen(false);
@@ -486,7 +477,7 @@ export const Navbar: React.FC = () => {
                 >
                   Pustaka Keputusan
                 </button>
-                <button
+                <button type="button"
                   onClick={() => {
                     setActiveTab('templat');
                     setMobileMenuOpen(false);
@@ -497,7 +488,7 @@ export const Navbar: React.FC = () => {
                 >
                   Templat Uji Coba
                 </button>
-                <button
+                <button type="button"
                   onClick={() => {
                     setActiveTab('analitik');
                     setMobileMenuOpen(false);
@@ -508,7 +499,7 @@ export const Navbar: React.FC = () => {
                 >
                   Analitik Dampak
                 </button>
-                <button
+                <button type="button"
                   onClick={() => {
                     setActiveTab('fasilitator');
                     setMobileMenuOpen(false);
@@ -519,7 +510,7 @@ export const Navbar: React.FC = () => {
                 >
                   Layanan Fasilitasi
                 </button>
-                <button
+                <button type="button"
                   onClick={() => {
                     setActiveTab('audit');
                     setMobileMenuOpen(false);

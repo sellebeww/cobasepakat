@@ -3,23 +3,19 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState } from 'react';
+import type React from 'react';
+import { useState } from 'react';
 import { notify } from '../../lib/notify';
 import { useApp } from '../../context/AppContext';
-import { Experiment, Issue, DecisionOutcome } from '../../types';
+import type { Experiment, Issue, DecisionOutcome } from '../../types';
 import { CobaSepakatLogo } from '../brand/CobaSepakatLogo';
 import { Copy,
   FileCheck2,
   CheckCircle2,
-  RotateCcw,
-  Sparkles,
   Printer,
   Share2,
   X,
   Star,
-  Calendar,
-  AlertCircle,
-  Award,
 } from 'lucide-react';
 
 interface DecisionModalProps {
@@ -107,7 +103,7 @@ export const DecisionModal: React.FC<DecisionModalProps> = ({
               </p>
             </div>
           </div>
-          <button
+          <button type="button"
             onClick={onClose}
             className="p-1.5 rounded-full text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors"
           >
@@ -395,19 +391,19 @@ export const DecisionModal: React.FC<DecisionModalProps> = ({
           <div>
             {isSaved && (
               <div className="flex items-center gap-2">
-                <button
+                <button type="button"
                   onClick={() => window.print()}
                   className="px-4 py-2 bg-brand-surface hover:bg-slate-200 text-brand-navy text-xs font-semibold rounded-xl flex items-center gap-1.5 transition-colors"
                 >
                   <Printer className="w-3.5 h-3.5" /> Cetak / Unduh PDF
                 </button>
-                <button
+                <button type="button"
                   onClick={handleShareWhatsApp}
                   className="px-3 py-2 bg-brand-surface hover:bg-slate-200 text-brand-navy text-xs font-semibold rounded-xl flex items-center gap-1.5 transition-colors"
                 >
                   <Share2 className="w-3.5 h-3.5" /> Bagikan WhatsApp
                 </button>
-                <button
+                <button type="button"
                   onClick={handleCopy}
                   className="px-3 py-2 bg-brand-surface hover:bg-slate-200 text-brand-navy text-xs font-semibold rounded-xl flex items-center gap-1.5 transition-colors"
                 >

@@ -3,9 +3,10 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState } from 'react';
+import type React from 'react';
+import { useState } from 'react';
 import { CobaSepakatLogo } from './CobaSepakatLogo';
-import { X, Download, Copy, Check, Palette, Sparkles, Layers } from 'lucide-react';
+import { X, Download, Copy, Check, Palette, Sparkles, } from 'lucide-react';
 
 interface BrandKitModalProps {
   onClose: () => void;
@@ -29,7 +30,7 @@ export const BrandKitModal: React.FC<BrandKitModalProps> = ({ onClose }) => {
     setTimeout(() => setCopiedHex(null), 2000);
   };
 
-  const handleDownloadLogo = () => {
+  const _handleDownloadLogo = () => {
     const a = document.createElement('a');
     a.href = '/brand/cobasepakat-logo.png';
     a.download = 'CobaSepakat_Embrace_Check_Logo.png';
@@ -54,7 +55,7 @@ export const BrandKitModal: React.FC<BrandKitModalProps> = ({ onClose }) => {
               </p>
             </div>
           </div>
-          <button
+          <button type="button"
             onClick={onClose}
             className="p-1.5 rounded-full text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors"
           >
@@ -136,7 +137,16 @@ export const BrandKitModal: React.FC<BrandKitModalProps> = ({ onClose }) => {
               {colors.map((c) => (
                 <div
                   key={c.hex}
+                  role="button"
+                  tabIndex={0}
+                  aria-label={`Salin warna ${c.name} ${c.hex}`}
                   onClick={() => copyColor(c.hex)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      copyColor(c.hex);
+                    }
+                  }}
                   className="p-3 rounded-2xl border border-brand-border hover:border-brand-blue cursor-pointer bg-white transition-all space-y-2 group"
                 >
                   <div
@@ -180,7 +190,7 @@ export const BrandKitModal: React.FC<BrandKitModalProps> = ({ onClose }) => {
 
         {/* Footer */}
         <div className="pt-3 border-t border-brand-border flex justify-end shrink-0">
-          <button
+          <button type="button"
             onClick={onClose}
             className="px-5 py-2.5 bg-brand-navy hover:bg-brand-blue-dark text-white text-xs font-semibold rounded-xl"
           >

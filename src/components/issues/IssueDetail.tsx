@@ -3,29 +3,25 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState } from 'react';
+import type React from 'react';
+import { useState } from 'react';
 import { useApp } from '../../context/AppContext';
-import { Issue, CommentKind } from '../../types';
+import type { Issue, CommentKind } from '../../types';
 import { FeasibilityGateModal } from '../feasibility/FeasibilityGateModal';
 import { ExperimentWizardModal } from '../wizard/ExperimentWizardModal';
 import { ExperimentDashboard } from '../experiment/ExperimentDashboard';
 import { EvaluationView } from '../evaluation/EvaluationView';
 import { DecisionModal } from '../decision/DecisionModal';
 import {
-  HelpCircle,
   ShieldCheck,
   Sparkles,
   Play,
   CheckCircle2,
-  AlertTriangle,
   MessageSquare,
   Send,
   Plus,
-  Users,
   Compass,
-  ArrowRight,
   Sliders,
-  Scale,
   FileCheck2,
 } from 'lucide-react';
 
@@ -156,7 +152,7 @@ export const IssueDetail: React.FC<IssueDetailProps> = ({ issue, onBack }) => {
       {/* View Switcher Tabs (Detail Isu vs Percobaan Berjalan vs Evaluasi) */}
       {currentExperiment && (
         <div className="flex items-center gap-2 p-1 bg-brand-border/50 rounded-2xl w-fit">
-          <button
+          <button type="button"
             onClick={() => setViewMode('isu')}
             className={`px-4 py-2 text-xs font-semibold rounded-xl transition-all ${
               viewMode === 'isu' ? 'bg-white text-brand-navy shadow-sm' : 'text-brand-slate hover:text-brand-navy'
@@ -164,7 +160,7 @@ export const IssueDetail: React.FC<IssueDetailProps> = ({ issue, onBack }) => {
           >
             Pertanyaan & Dugaan
           </button>
-          <button
+          <button type="button"
             onClick={() => setViewMode('percobaan')}
             className={`px-4 py-2 text-xs font-semibold rounded-xl transition-all ${
               viewMode === 'percobaan'
@@ -174,7 +170,7 @@ export const IssueDetail: React.FC<IssueDetailProps> = ({ issue, onBack }) => {
           >
             Dasbor Percobaan ({currentExperiment.status.replace('_', ' ')})
           </button>
-          <button
+          <button type="button"
             onClick={() => setViewMode('evaluasi')}
             className={`px-4 py-2 text-xs font-semibold rounded-xl transition-all ${
               viewMode === 'evaluasi'
@@ -245,7 +241,7 @@ export const IssueDetail: React.FC<IssueDetailProps> = ({ issue, onBack }) => {
 
               {/* Action Buttons for Next Stages */}
               <div className="flex flex-col sm:flex-row md:flex-col gap-2 shrink-0">
-                <button
+                <button type="button"
                   onClick={() => setShowFeasibilityModal(true)}
                   className="px-4 py-2.5 bg-white hover:bg-brand-surface text-brand-blue border border-brand-blue rounded-full text-xs font-bold transition-all shadow-card flex items-center justify-center gap-2"
                 >
@@ -254,7 +250,7 @@ export const IssueDetail: React.FC<IssueDetailProps> = ({ issue, onBack }) => {
                 </button>
 
                 {issue.feasibilityOutcome?.status !== 'tidak_layak' && (
-                  <button
+                  <button type="button"
                     onClick={() => {
                       if (currentExperiment) {
                         setViewMode('percobaan');
@@ -277,7 +273,7 @@ export const IssueDetail: React.FC<IssueDetailProps> = ({ issue, onBack }) => {
                 )}
 
                 {issue.decision && (
-                  <button
+                  <button type="button"
                     onClick={() => setShowDecisionModal(true)}
                     className="px-4 py-2.5 bg-brand-green hover:bg-[#258768] text-white rounded-full text-xs font-bold transition-all shadow-card flex items-center justify-center gap-2"
                   >
@@ -328,7 +324,7 @@ export const IssueDetail: React.FC<IssueDetailProps> = ({ issue, onBack }) => {
                 </p>
               </div>
 
-              <button
+              <button type="button"
                 onClick={() => setShowClaimForm(!showClaimForm)}
                 className="px-3.5 py-2 bg-brand-surface hover:bg-slate-200 text-brand-navy text-xs font-semibold rounded-xl transition-colors flex items-center gap-1.5 self-start sm:self-auto"
               >

@@ -3,21 +3,18 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState } from 'react';
+import type React from 'react';
+import { useState } from 'react';
 import { useApp } from '../../context/AppContext';
-import { Experiment, Issue, Claim } from '../../types';
+import { type Experiment, type Issue, } from '../../types';
 import {
   CheckCircle2,
-  XCircle,
   TrendingDown,
   TrendingUp,
   Scale,
-  Award,
   Users,
   AlertCircle,
   FileText,
-  ArrowRight,
-  ShieldCheck,
 } from 'lucide-react';
 
 interface EvaluationViewProps {
@@ -97,14 +94,14 @@ export const EvaluationView: React.FC<EvaluationViewProps> = ({
           </div>
 
           <div className="flex items-center gap-2">
-            <button
+            <button type="button"
               onClick={onBackToDashboard}
               className="px-4 py-2 bg-brand-surface hover:bg-slate-200 text-brand-navy text-xs font-semibold rounded-xl transition-colors"
             >
               &larr; Kembali ke Dasbor
             </button>
             {(currentUser.role === 'pengurus' || currentUser.role === 'pengelola_kawasan') && (
-              <button
+              <button type="button"
                 onClick={onProceedToDecision}
                 className="px-5 py-2.5 bg-brand-green hover:bg-[#258768] text-white text-xs font-bold rounded-full transition-all shadow-card flex items-center gap-1.5"
               >
@@ -289,7 +286,7 @@ export const EvaluationView: React.FC<EvaluationViewProps> = ({
                   />
                   <div className="flex justify-between items-center pt-1">
                     <span className="text-xs text-brand-slate">0% (Sangat Ragu)</span>
-                    <button
+                    <button type="button"
                       onClick={() => handleSaveConfidence(claim.id)}
                       className="px-3 py-1 bg-white hover:bg-slate-100 text-brand-navy text-xs font-semibold border border-brand-border rounded-lg transition-colors"
                     >

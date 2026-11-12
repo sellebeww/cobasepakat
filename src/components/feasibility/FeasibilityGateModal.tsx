@@ -3,9 +3,10 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState } from 'react';
+import type React from 'react';
+import { useState } from 'react';
 import { useApp } from '../../context/AppContext';
-import { Issue, FeasibilityCheckItem } from '../../types';
+import { type Issue, } from '../../types';
 import {
   ShieldAlert,
   ShieldCheck,
@@ -13,8 +14,6 @@ import {
   CheckCircle2,
   XCircle,
   HelpCircle,
-  ArrowRight,
-  Info,
   X,
 } from 'lucide-react';
 
@@ -124,7 +123,7 @@ export const FeasibilityGateModal: React.FC<FeasibilityGateModalProps> = ({
               </p>
             </div>
           </div>
-          <button
+          <button type="button"
             onClick={onClose}
             className="p-1.5 rounded-full text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors"
           >
@@ -138,7 +137,7 @@ export const FeasibilityGateModal: React.FC<FeasibilityGateModalProps> = ({
             const currentAns = selectedAnswers[item.questionNumber]?.answer;
             const isItemActive = idx === activeItemIndex;
             return (
-              <button
+              <button type="button"
                 key={item.id}
                 onClick={() => setActiveItemIndex(idx)}
                 className={`px-3 py-1.5 rounded-xl text-xs font-medium whitespace-nowrap transition-all flex items-center gap-1.5 ${

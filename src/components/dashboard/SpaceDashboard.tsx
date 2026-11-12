@@ -3,22 +3,13 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState } from 'react';
+import type React from 'react';
 import { useApp } from '../../context/AppContext';
 import {
   Plus,
-  Play,
   Clock,
-  CheckCircle2,
-  AlertTriangle,
   Building2,
-  Users,
-  Compass,
-  ArrowRight,
-  ShieldCheck,
-  FileText,
   Activity,
-  Layers,
 } from 'lucide-react';
 
 interface SpaceDashboardProps {
@@ -67,7 +58,7 @@ export const SpaceDashboard: React.FC<SpaceDashboardProps> = ({
           </div>
 
           <div className="flex items-center gap-2 shrink-0">
-            <button
+            <button type="button"
               onClick={onOpenNewIssueModal}
               className="px-4 py-2.5 bg-brand-blue hover:bg-brand-blue-dark text-white rounded-full text-xs font-bold transition-all shadow-card flex items-center gap-1.5"
             >
@@ -166,7 +157,7 @@ export const SpaceDashboard: React.FC<SpaceDashboardProps> = ({
               <span>Hari ke-8 dari 14 Hari · Rapat Evaluasi: {activeExp.evaluationDate}</span>
             </div>
 
-            <button
+            <button type="button"
               onClick={() => {
                 setActiveIssueId(activeTrialIssue.id);
                 setActiveTab('isu');
@@ -192,9 +183,18 @@ export const SpaceDashboard: React.FC<SpaceDashboardProps> = ({
           {spaceIssues.map((iss) => (
             <div
               key={iss.id}
+              role="button"
+              tabIndex={0}
               onClick={() => {
                 setActiveIssueId(iss.id);
                 setActiveTab('isu');
+              }}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  setActiveIssueId(iss.id);
+                  setActiveTab('isu');
+                }
               }}
               className="bg-white rounded-3xl p-5 border border-brand-border hover:border-brand-blue transition-all cursor-pointer shadow-card flex flex-col md:flex-row md:items-center justify-between gap-4"
             >

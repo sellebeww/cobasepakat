@@ -3,7 +3,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState } from 'react';
+import type React from 'react';
+import { useState } from 'react';
 import { useApp } from '../../context/AppContext';
 import { Download, Search } from 'lucide-react';
 import { downloadCsv } from '../../lib/download';
@@ -57,7 +58,7 @@ export const AuditLogView: React.FC = () => {
               className="w-full text-xs pl-9 pr-3 py-2 rounded-xl border border-brand-border bg-brand-surface focus:bg-white outline-none"
             />
           </div>
-          <button
+          <button type="button"
             onClick={handleExport}
             disabled={filteredLogs.length === 0}
             className="shrink-0 px-3.5 py-2 bg-brand-navy hover:bg-brand-blue-dark disabled:opacity-40 text-white rounded-full text-xs font-bold flex items-center gap-1.5"

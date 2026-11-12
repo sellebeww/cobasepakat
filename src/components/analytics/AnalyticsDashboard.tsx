@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React from 'react';
+import type React from 'react';
 import { useApp } from '../../context/AppContext';
 import { downloadCsv } from '../../lib/download';
 import { notify } from '../../lib/notify';
@@ -15,8 +15,6 @@ import {
   ShieldCheck,
   AlertTriangle,
   Download,
-  Award,
-  ArrowUpRight,
   ArrowDownRight,
 } from 'lucide-react';
 
@@ -63,7 +61,7 @@ export const AnalyticsDashboard: React.FC = () => {
             </p>
           </div>
 
-          <button
+          <button type="button"
             onClick={handleExportCSV}
             className="px-4 py-2.5 bg-brand-navy hover:bg-brand-blue-dark text-white rounded-full text-xs font-bold transition-all shadow-card flex items-center gap-2 self-start sm:self-auto"
           >

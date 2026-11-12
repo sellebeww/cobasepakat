@@ -3,7 +3,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { Suspense, lazy, useEffect, useState } from 'react';
+import type React from 'react';
+import { Suspense, lazy, useEffect, useState } from 'react';
 import { motion, AnimatePresence, MotionConfig } from 'motion/react';
 import { AppProvider, useApp } from './context/AppContext';
 import { Navbar } from './components/layout/Navbar';
@@ -134,7 +135,7 @@ const MainAppContent: React.FC = () => {
             </div>
 
             <div className="flex flex-wrap items-center gap-6 text-xs text-brand-slate">
-              <button
+              <button type="button"
                 onClick={() => {
                   setAppMode('company_profile');
                   window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -143,19 +144,19 @@ const MainAppContent: React.FC = () => {
               >
                 Company Profile
               </button>
-              <button
+              <button type="button"
                 onClick={() => handleEnterDemo()}
                 className="hover:text-brand-blue font-semibold transition-colors flex items-center gap-1"
               >
                 <Play className="w-3 h-3 fill-brand-blue" /> Demo Interaktif
               </button>
-              <button
+              <button type="button"
                 onClick={() => setShowBrandKitModal(true)}
                 className="hover:text-brand-green font-semibold transition-colors flex items-center gap-1"
               >
                 <Palette className="w-3 h-3" /> Logo & Brand Kit (No-BG)
               </button>
-              <button
+              <button type="button"
                 onClick={() => {
                   setAppMode('demo');
                   setActiveTab('audit');

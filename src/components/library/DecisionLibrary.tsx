@@ -3,20 +3,12 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState } from 'react';
+import type React from 'react';
+import { useState } from 'react';
 import { useApp } from '../../context/AppContext';
-import { Issue } from '../../types';
 import {
-  BookOpen,
   Search,
-  Filter,
-  CheckCircle2,
-  RotateCcw,
-  Scale,
-  Calendar,
   Building2,
-  FileText,
-  Share2,
   Sparkles,
 } from 'lucide-react';
 
@@ -89,7 +81,7 @@ export const DecisionLibrary: React.FC = () => {
               { id: 'ubah', label: 'Ubah & Coba Lagi' },
               { id: 'berjalan', label: 'Sedang Berjalan' },
             ].map((f) => (
-              <button
+              <button type="button"
                 key={f.id}
                 onClick={() => setSelectedOutcomeFilter(f.id)}
                 className={`px-3 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
@@ -175,7 +167,7 @@ export const DecisionLibrary: React.FC = () => {
                 <div className="text-xs text-brand-slate">
                   Lokasi: <span className="font-medium text-brand-navy">{iss.location}</span>
                 </div>
-                <button
+                <button type="button"
                   onClick={() => {
                     setActiveIssueId(iss.id);
                     setActiveTab('isu');

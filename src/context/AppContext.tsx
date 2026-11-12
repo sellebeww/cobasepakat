@@ -3,8 +3,9 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import {
+import type React from 'react';
+import { createContext, useContext, useState, useEffect } from 'react';
+import type {
   User,
   Organization,
   Space,
@@ -29,7 +30,7 @@ import {
   SEED_FACILITATORS,
   INITIAL_AUDIT_LOGS,
 } from '../data/seedData';
-import { notify, ToastTone } from '../lib/notify';
+import { notify, type ToastTone } from '../lib/notify';
 
 export type NavigationTab =
   | 'beranda'
@@ -465,7 +466,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     const updatedApprovals = [...existingFiltered, newApproval];
 
     // Check quorum: e.g. 70% of active members
-    const quorumTarget = Math.ceil(currentSpace.activeMemberCount * 0.7);
+    const _quorumTarget = Math.ceil(currentSpace.activeMemberCount * 0.7);
     const agreeCount = updatedApprovals.filter(
       (a) => a.stance === 'setuju' || a.stance === 'setuju_dengan_catatan'
     ).length;

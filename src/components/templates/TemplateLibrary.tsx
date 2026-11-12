@@ -3,18 +3,13 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React from 'react';
+import type React from 'react';
 import { useApp } from '../../context/AppContext';
-import { TemplateBlueprint } from '../../types';
+import type { TemplateBlueprint } from '../../types';
 import {
-  Layers,
   Clock,
-  Activity,
   ShieldAlert,
   ArrowRight,
-  Sparkles,
-  Building2,
-  CheckCircle,
 } from 'lucide-react';
 
 export const TemplateLibrary: React.FC = () => {
@@ -99,7 +94,7 @@ export const TemplateLibrary: React.FC = () => {
               <span className="text-xs text-brand-slate">
                 Ruang: <span className="font-semibold text-brand-navy">{currentSpace.name}</span>
               </span>
-              <button
+              <button type="button"
                 onClick={() => handleApply(tpl)}
                 className="px-4 py-2 bg-brand-blue hover:bg-brand-blue-dark text-white rounded-full text-xs font-bold transition-all shadow-card flex items-center gap-1.5"
               >

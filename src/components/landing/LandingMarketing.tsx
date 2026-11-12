@@ -3,21 +3,13 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React from 'react';
+import type React from 'react';
 import { useApp } from '../../context/AppContext';
 import { CobaSepakatLogo } from '../brand/CobaSepakatLogo';
 import {
   ShieldCheck,
-  Scale,
-  Sparkles,
   ArrowRight,
-  CheckCircle2,
-  Users,
-  Compass,
-  Clock,
-  Building2,
   Check,
-  HelpCircle,
 } from 'lucide-react';
 
 export const LandingMarketing: React.FC = () => {
@@ -42,13 +34,13 @@ export const LandingMarketing: React.FC = () => {
         </div>
 
         <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
-          <button
+          <button type="button"
             onClick={() => setActiveTab('beranda')}
             className="w-full sm:w-auto px-8 py-3.5 bg-brand-blue hover:bg-brand-blue-dark text-white text-sm font-bold rounded-2xl shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2"
           >
             Masuk ke Dasbor Komunitas <ArrowRight className="w-4 h-4" />
           </button>
-          <button
+          <button type="button"
             onClick={() => setActiveTab('pustaka')}
             className="w-full sm:w-auto px-6 py-3.5 bg-white hover:bg-brand-surface text-brand-navy border border-brand-border text-sm font-semibold rounded-2xl transition-colors"
           >
@@ -207,7 +199,7 @@ export const LandingMarketing: React.FC = () => {
         <p className="text-xs md:text-sm text-slate-300 max-w-lg mx-auto">
           Mulai uji coba perbedaan pendapat komunitas Anda hari ini dengan CobaSepakat.
         </p>
-        <button
+        <button type="button"
           onClick={() => setActiveTab('beranda')}
           className="px-8 py-3 bg-brand-green hover:bg-[#258768] text-white text-xs font-bold rounded-2xl shadow-lg transition-all"
         >

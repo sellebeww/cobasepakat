@@ -3,21 +3,18 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState } from 'react';
+import type React from 'react';
+import { useState } from 'react';
 import { useApp } from '../../context/AppContext';
-import { Issue, Metric, BudgetItem, StopRule } from '../../types';
+import type { Issue, Metric, BudgetItem, StopRule } from '../../types';
 import {
   Sparkles,
   Plus,
   Trash2,
   AlertCircle,
   CheckCircle,
-  HelpCircle,
-  Calendar,
   X,
   ShieldCheck,
-  TrendingUp,
-  DollarSign,
   ArrowRight,
   ArrowLeft,
 } from 'lucide-react';
@@ -232,7 +229,7 @@ export const ExperimentWizardModal: React.FC<ExperimentWizardModalProps> = ({
               </p>
             </div>
           </div>
-          <button
+          <button type="button"
             onClick={onClose}
             className="p-1.5 rounded-full text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors"
           >
@@ -249,7 +246,7 @@ export const ExperimentWizardModal: React.FC<ExperimentWizardModalProps> = ({
             { n: 4, label: '4. Aturan Berhenti' },
             { n: 5, label: '5. Aturan Keputusan' },
           ].map((s) => (
-            <button
+            <button type="button"
               key={s.n}
               onClick={() => setStep(s.n)}
               className={`py-1.5 text-center rounded-lg transition-colors truncate px-1 ${
@@ -363,7 +360,7 @@ export const ExperimentWizardModal: React.FC<ExperimentWizardModalProps> = ({
                       <div className="font-semibold text-xs text-brand-navy">
                         {idx + 1}. {m.name} ({m.unit})
                       </div>
-                      <button
+                      <button type="button"
                         onClick={() => setMetrics((prev) => prev.filter((item) => item.id !== m.id))}
                         className="text-slate-400 hover:text-status-stopped"
                       >
@@ -470,7 +467,7 @@ export const ExperimentWizardModal: React.FC<ExperimentWizardModalProps> = ({
                       <span className="font-mono font-bold text-brand-navy">
                         Rp {b.amount.toLocaleString('id-ID')}
                       </span>
-                      <button
+                      <button type="button"
                         onClick={() => setBudgetItems((prev) => prev.filter((item) => item.id !== b.id))}
                         className="text-slate-400 hover:text-status-stopped"
                       >
@@ -548,7 +545,7 @@ export const ExperimentWizardModal: React.FC<ExperimentWizardModalProps> = ({
                       <span className="font-bold">{idx + 1}.</span>
                       <span className="font-medium text-brand-navy">{sr.conditionDescription}</span>
                     </div>
-                    <button
+                    <button type="button"
                       onClick={() => setStopRules((prev) => prev.filter((item) => item.id !== sr.id))}
                       className="text-slate-400 hover:text-status-stopped ml-2"
                     >

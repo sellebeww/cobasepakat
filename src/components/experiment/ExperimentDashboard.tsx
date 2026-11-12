@@ -3,27 +3,22 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState } from 'react';
+import type React from 'react';
+import { useState } from 'react';
 import { useApp } from '../../context/AppContext';
-import { Experiment, Issue, Metric } from '../../types';
+import { type Experiment, type Issue, } from '../../types';
 import {
-  Calendar,
   Clock,
   AlertTriangle,
   ShieldAlert,
   ShieldCheck,
-  CheckCircle2,
-  XCircle,
   Plus,
   Camera,
   Activity,
   TrendingDown,
   TrendingUp,
   FileText,
-  UserCheck,
   Send,
-  Flag,
-  Info,
 } from 'lucide-react';
 
 interface ExperimentDashboardProps {
@@ -66,7 +61,7 @@ export const ExperimentDashboard: React.FC<ExperimentDashboardProps> = ({
 
   const handleQuickSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (entryValue === '' || isNaN(Number(entryValue))) return;
+    if (entryValue === '' || Number.isNaN(Number(entryValue))) return;
     addDataEntry(experiment.id, selectedMetricId, Number(entryValue), entryNotes);
     setEntryValue('');
     setEntryNotes('');
@@ -92,7 +87,7 @@ export const ExperimentDashboard: React.FC<ExperimentDashboardProps> = ({
   // Status badge styling
   const isStopped = experiment.status === 'dihentikan';
   const isDone = experiment.status === 'selesai';
-  const isPendingApproval = experiment.status === 'menunggu_persetujuan';
+  const _isPendingApproval = experiment.status === 'menunggu_persetujuan';
 
   return (
     <div className="space-y-6">
@@ -113,7 +108,7 @@ export const ExperimentDashboard: React.FC<ExperimentDashboardProps> = ({
               Waktu Penghentian: {experiment.stoppedAt ? new Date(experiment.stoppedAt).toLocaleString('id-ID') : 'Baru saja'}
             </div>
             <div className="pt-2">
-              <button
+              <button type="button"
                 onClick={onOpenEvaluation}
                 className="px-4 py-1.5 bg-status-stopped text-white rounded-xl text-xs font-semibold hover:bg-red-700 transition-colors"
               >
@@ -149,7 +144,7 @@ export const ExperimentDashboard: React.FC<ExperimentDashboardProps> = ({
           <div className="flex flex-wrap items-center gap-2 md:shrink-0">
             {/* Panic Stop Button */}
             {!isStopped && !isDone && (
-              <button
+              <button type="button"
                 onClick={() => setShowStopModal(true)}
                 className="px-4 py-2.5 bg-red-50 hover:bg-red-100 text-status-stopped border border-red-200 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shadow-sm active:scale-95"
                 title="Hentikan percobaan detik ini juga jika keselamatan terancam"
@@ -160,7 +155,7 @@ export const ExperimentDashboard: React.FC<ExperimentDashboardProps> = ({
             )}
 
             {/* Quick Link to Evaluation or Decision */}
-            <button
+            <button type="button"
               onClick={onOpenEvaluation}
               className="px-4 py-2.5 bg-brand-navy hover:bg-brand-blue-dark text-white rounded-full text-xs font-bold transition-all shadow-card flex items-center gap-1.5"
             >
@@ -169,7 +164,7 @@ export const ExperimentDashboard: React.FC<ExperimentDashboardProps> = ({
             </button>
 
             {(currentUser.role === 'pengurus' || currentUser.role === 'pengelola_kawasan') && (
-              <button
+              <button type="button"
                 onClick={onOpenDecision}
                 className="px-4 py-2.5 bg-brand-green hover:bg-[#258768] text-white rounded-full text-xs font-bold transition-all shadow-card flex items-center gap-1.5"
               >
@@ -432,7 +427,7 @@ export const ExperimentDashboard: React.FC<ExperimentDashboardProps> = ({
                             Terverifikasi · {entry.verifiedBy}
                           </span>
                         ) : canVerify && entry.recordedBy !== currentUser.name ? (
-                          <button
+                          <button type="button"
                             onClick={() => verifyDataEntry(experiment.id, entry.id)}
                             className="shrink-0 px-3 py-1.5 bg-brand-blue hover:bg-brand-blue-dark text-white text-xs font-bold rounded-lg"
                           >
@@ -447,7 +442,7 @@ export const ExperimentDashboard: React.FC<ExperimentDashboardProps> = ({
                     ))}
                 </ul>
                 {experiment.dataEntries.length > 6 && (
-                  <button
+                  <button type="button"
                     onClick={() => setShowAllEntries((v) => !v)}
                     className="text-xs font-bold text-brand-blue hover:text-brand-blue-dark"
                   >
@@ -546,7 +541,7 @@ export const ExperimentDashboard: React.FC<ExperimentDashboardProps> = ({
             </div>
 
             {!userHasApproved && (
-              <button
+              <button type="button"
                 onClick={() => setShowApprovalModal(true)}
                 className="w-full py-2 bg-brand-blue hover:bg-brand-blue-dark text-white rounded-xl text-xs font-bold transition-all shadow-sm"
               >
