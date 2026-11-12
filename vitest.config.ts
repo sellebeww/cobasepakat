@@ -4,7 +4,7 @@ import { defineConfig } from 'vitest/config';
 export default defineConfig({
   resolve: { alias: { '@': path.resolve(import.meta.dirname, '.') } },
   test: {
-    include: ['tests/**/*.test.ts', 'tests/**/*.test.tsx', 'src/**/*.test.ts'],
+    include: ['tests/**/*.test.ts', 'tests/**/*.test.tsx', 'src/**/*.test.ts', 'supabase/tests/**/*.test.ts'],
     environment: 'node',
     coverage: {
       provider: 'v8',

@@ -64,7 +64,7 @@ Peran pada tingkat **ruang** (`memberships.role`):
 | `participant` (peserta) | Menulis dugaan dan komentar, memberi suara pada desain, mencatat data uji coba, menghentikan percobaan (hak "Hentikan Sekarang"), mengisi survei penerimaan. |
 | `observer` (pengamat) | Hanya membaca. Tidak bisa menulis apa pun. |
 
-Peran persona di demo (pengurus, fasilitator, pemantau, dll.) tetap ada sebagai label peran lapangan. Pemetaan ke peran akses: pengurus dan pengelola kawasan menjadi `creator`; anggota, pengusul, dan fasilitator menjadi `participant`; pemantau independen menjadi `observer` dengan hak verifikasi data yang dicatat lewat tabel terpisah.
+Peran persona di demo (pengurus, fasilitator, pemantau, dll.) tetap ada sebagai label peran lapangan. Pemetaan ke peran akses: pengurus dan pengelola kawasan menjadi `creator`; anggota, pengusul, dan fasilitator menjadi `participant`; pemantau independen menjadi `observer` (hanya baca). Verifikasi data dilakukan peserta atau pembuat yang bukan pencatatnya (fungsi `verify_entry`), sehingga pengamat benar-benar tidak punya hak tulis.
 
 ### 3.2 Tabel utama (Supabase)
 
